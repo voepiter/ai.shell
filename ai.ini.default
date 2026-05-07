@@ -13,7 +13,7 @@ default = "deepseek"
 # default model per provider — change here, no code edits needed
 google     = "gemini-2.5-flash"
 openai     = "gpt-5.3-mini"
-xai        = "grok-4-mini"
+xai        = "grok-4.1-mini"
 deepseek   = "deepseek-v4-flash"
 anthropic  = "claude-sonnet-4-6"
 openrouter = "openrouter/free"
@@ -27,14 +27,8 @@ DEEPSEEK_API_KEY   = ""
 ANTHROPIC_API_KEY  = ""
 OPENROUTER_API_KEY = ""
 
-[assistant]
-# default agent name (must be defined below)
-default = "admin"
-
-admin   = "IT expert: Linux, DevOps, Docker, Kubernetes. Short, practical answers."
-coder   = "Expert programmer: Python, JavaScript, Go, Rust. Write clean, efficient code."
-writer  = "Professional writer: Clear, engaging, well-structured text."
-general = "Helpful assistant: Friendly, informative, concise answers."
+[system]
+instruction = "IT expert: Linux, DevOps, Docker, Kubernetes. Short, practical answers."
 
 [shell]
 shell_mode      = true
