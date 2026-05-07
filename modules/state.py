@@ -1,0 +1,37 @@
+# AppState — shared runtime state passed across all modules
+from dataclasses import dataclass
+from .config import Config
+from .api import APIFactory
+from .logger import Logger
+from .counter import RequestCounter
+
+
+@dataclass
+class AppState:
+    config:          Config
+    api_client:      object   # BaseAPIClient
+    logger:          Logger
+    request_counter: RequestCounter
+    shell_mode:      bool
+
+    @classmethod
+    def from_args(cls, args) -> "AppState":
+        config = Config(
+            provider=args.provider,
+            model=args.model,
+            system_instruction=args.instruction,
+            agent_name=args.agent,
+        )
+        return cls(
+            config          = config,
+            api_client      = APIFactory.create_client(
+                provider=config.provider,
+                model=config.model,
+                timeout=config.timeout,
+            ),
+            logger          = Logger(config.logfile),
+            request_counter = RequestCounter(str(config.logfile)),
+            shell_mode      = bool(
+                config.config_loader.get("shell", "shell_mode", default=False)
+            ),
+        )
