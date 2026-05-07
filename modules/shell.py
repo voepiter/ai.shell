@@ -4,7 +4,8 @@ import subprocess
 from dataclasses import dataclass
 from typing import List
 
-BASH_RE = re.compile(r"<bash>(.*?)</bash>", re.DOTALL | re.IGNORECASE)
+BASH_RE     = re.compile(r"<bash>(.*?)</bash>", re.DOTALL | re.IGNORECASE)
+MARKDOWN_RE = re.compile(r"```(?:bash|sh)\s*\n?(.*?)```", re.DOTALL)
 
 
 @dataclass
@@ -30,7 +31,10 @@ class CommandResult:
 
 
 def extract_commands(text: str) -> List[str]:
-    return [m.strip() for m in BASH_RE.findall(text) if m.strip()]
+    cmds = [m.strip() for m in BASH_RE.findall(text) if m.strip()]
+    if not cmds:
+        cmds = [m.strip() for m in MARKDOWN_RE.findall(text) if m.strip()]
+    return cmds
 
 
 def is_dangerous(command: str, patterns: List[str]) -> bool:

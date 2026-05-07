@@ -10,9 +10,10 @@ _R = ct.resetcolor
 
 _SHELL_HINT = (
     "You have shell access on this machine. "
-    "When you need to run a command, wrap it in <bash>command</bash> tags "
-    "(one command per response). You will receive the output and can continue. "
-    "When done, give a final answer with no <bash> tags."
+    "To answer questions that require running commands, execute them — do not just suggest. "
+    "Wrap each command in <bash>command</bash> tags (one per response). "
+    "You will receive the output and can continue reasoning. "
+    "Give a final answer only after all needed commands have run."
 )
 
 
