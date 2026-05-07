@@ -33,8 +33,9 @@ def run(state: AppState):
 
     while True:
         try:
-            print(f"\n {_col.command}{sym.user_prompt}{_R}  ", end="", flush=True)
-            raw = input().strip()
+            # \001/\002 tell readline the true visible width of the escape codes
+            prompt = f"\n \001{_col.command}\002{sym.user_prompt}\001{_R}\002  "
+            raw = input(prompt).strip()
         except (KeyboardInterrupt, EOFError):
             ui.print_chat_totals(total_in, total_out, total_elapsed)
             break
