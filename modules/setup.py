@@ -164,10 +164,15 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
             out.append(f'default = "{provider}"\n')
             continue
 
-        # rewrite unicode flag
+        # rewrite unicode flag, preserve inline comment if present
         if "unicode" in line and "=" in line and not stripped.startswith("#"):
             flag = "true" if unicode_ok else "false"
-            out.append(line[:line.index("=") + 1] + f" {flag}\n")
+            eq = line.index("=")
+            comment = ""
+            rest = line[eq + 1:]
+            if "#" in rest:
+                comment = "  " + rest[rest.index("#"):].rstrip()
+            out.append(line[:eq + 1] + f" {flag}{comment}\n")
             continue
 
         out.append(line)
