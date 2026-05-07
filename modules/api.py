@@ -35,10 +35,11 @@ class APIFactory:
     @classmethod
     def create_client(
         cls,
-        provider:  Optional[str] = None,
-        api_key:   Optional[str] = None,
-        model:     Optional[str] = None,
-        timeout:   int = 30,
+        provider:      Optional[str] = None,
+        api_key:       Optional[str] = None,
+        model:         Optional[str] = None,
+        timeout:       int = 30,
+        config_loader=None,
     ) -> BaseAPIClient:
         provider = (provider or os.getenv("AI_PROVIDER", "google")).lower()
         if provider not in cls.PROVIDERS:
@@ -47,8 +48,10 @@ class APIFactory:
         if not api_key:
             env_var = cls.API_KEY_ENV_VARS[provider]
             api_key = os.getenv(env_var)
+            if not api_key and config_loader is not None:
+                api_key = config_loader.get_api_key(env_var)
             if not api_key:
-                raise ValueError(f"{env_var} environment variable is not set")
+                raise ValueError(f"{env_var} is not set (env var or [api_keys] in ai.ini)")
         if not model:
             raise ValueError(
                 f"No model configured for '{provider}'. "

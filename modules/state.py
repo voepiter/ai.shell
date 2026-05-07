@@ -28,6 +28,7 @@ class AppState:
                 provider=config.provider,
                 model=config.model,
                 timeout=config.timeout,
+                config_loader=config.config_loader,
             ),
             logger          = Logger(config.logfile),
             request_counter = RequestCounter(str(config.logfile)),

@@ -55,6 +55,10 @@ class ConfigLoader:
     def get_default_model(self, provider: str) -> Optional[str]:
         return self.get("models", provider.lower(), default=None)
 
+    def get_api_key(self, env_var: str) -> Optional[str]:
+        val = self.get("api_keys", env_var, default=None)
+        return val if val else None
+
     def get_assistant_instruction(self, assistant_name: str) -> Optional[str]:
         return self.get("assistant", assistant_name, default=None)
 

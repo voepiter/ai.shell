@@ -1,0 +1,29 @@
+title = "ai.shell — first-run setup"
+
+[unicode]
+title    = "Step 1/3 — Terminal symbols"
+preview  = """
+  ✨  AI marker          ▸  shell command prefix
+  🗨️  your input         🖥️  computer output
+  →  arrows             —  em dash
+  ·  middle dot         •  bullet
+  ⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏  spinner (animated)"""
+question  = "Do these symbols display correctly?"
+font_tip  = "For best experience, install Roboto Mono Nerd Font:"
+font_url  = "  https://www.nerdfonts.com/font-downloads"
+ascii_note = "Unicode disabled — ASCII fallback will be used."
+
+[keys]
+title    = "Step 2/3 — API keys"
+intro    = "Enter your API keys. Press Enter to skip a provider."
+from_env = "(already set in environment)"
+skip     = "(skipped)"
+
+[settings]
+title             = "Step 3/3 — Default settings"
+available         = "Providers configured: {providers}"
+none_configured   = "No keys configured — you can add them to ai.ini later."
+provider_question = "Default provider"
+
+done    = "Config saved → {path}"
+restart = "Restart ai to begin."

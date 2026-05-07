@@ -1,20 +1,31 @@
-# Example ai.ini — copy to ai.ini and adjust
+# ai.ini.example — copy to ai.ini and fill in your API keys
+# Keys are read from [api_keys] below; environment variables override them.
+# Priority: env var > ai.ini
 
 [connection]
 timeout = 30
 
 [providers]
-# default provider (google, openai, xai, deepseek, anthropic, openrouter)
+# default provider: google, openai, xai, deepseek, anthropic, openrouter
 default = "google"
 
 [models]
-# default model per provider — edit here when models change, no code changes needed
+# default model per provider — change here, no code edits needed
 google     = "gemini-2.5-flash"
 openai     = "gpt-4.1-mini"
 xai        = "grok-3-mini"
 deepseek   = "deepseek-chat"
 anthropic  = "claude-sonnet-4-6"
 openrouter = "meta-llama/llama-3.3-70b-instruct:free"
+
+[api_keys]
+# Leave empty to rely on environment variables instead
+GOOGLE_API_KEY     = ""
+OPENAI_API_KEY     = ""
+XAI_API_KEY        = ""
+DEEPSEEK_API_KEY   = ""
+ANTHROPIC_API_KEY  = ""
+OPENROUTER_API_KEY = ""
 
 [assistant]
 # default agent name (must be defined below)
@@ -25,8 +36,29 @@ coder   = "Expert programmer: Python, JavaScript, Go, Rust. Write clean, efficie
 writer  = "Professional writer: Clear, engaging, well-structured text."
 general = "Helpful assistant: Friendly, informative, concise answers."
 
+[shell]
+shell_mode      = true
+max_iterations  = 5
+command_timeout = 30
+dangerous_patterns = ["rm -rf", "rm -r /", "dd if=", "mkfs", "| bash", "| sh"]
+
 [ui]
-disable_logo = 0    # 1 = skip logo on startup
-logo_delay   = 0.05 # seconds between lines (0 = instant)
-gradient     = 0.08 # hue range across logo width
-unicode      = true # false = replace ✨ ╭─╮ ▸ etc. with ASCII equivalents
+disable_logo = 0     # 1 = skip logo on startup
+logo_delay   = 0.05  # seconds between lines (0 = instant)
+gradient     = 0.08  # hue range across logo width
+unicode      = true  # false = replace ✨ ▸ → etc. with ASCII equivalents
+
+[color]
+accent    = 99    # purple   — borders / accents
+provider  = 214   # orange   — provider name
+model     = 157   # green    — model / numbers
+command   = 75    # cyan     — commands / prompt
+dim       = 243   # grey     — secondary text
+marker    = 141   # lavender — AI marker (✨)
+error     = 196   # red      — errors
+bold      = 157   # **bold** markdown
+bash      = 75    # ▸ bash command lines
+code_bg   = 233   # code block background
+code_lang = 243   # code block language label
+code_body = 215   # code block content
+inline    = 222   # `inline code`
