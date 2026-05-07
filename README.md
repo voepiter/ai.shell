@@ -1,24 +1,29 @@
-# AI CLI Tool
+# AI.SHELL 
 
-CLI-утилита для работы с различными LLM API: Google Gemini, OpenAI, XAI (Grok), DeepSeek, Anthropic Claude.
+CLI-утилита для работы с различными LLM API из терминала: Google Gemini, OpenAI ChatGpt, XAI Grok, DeepSeek, Anthropic Claude.
 
 ## Установка
 
+рекомендуется через менеджер UV 
+если он не установлен
+
 ```bash
-pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+установка AI.SHELL
+
+```bash
+uv tool install git+https://github.com/voepiter/ai.shell.git
+
 ```
 
 ## Конфигурация
 
-Создайте файл `ai.ini` (см. `ai.ini.example`):
-
-```bash
-cp ai.ini.example ai.ini
-```
+файл `ai.ini` создается при первом запуске мастером, настройки по умолчанию из `ai.ini.example`:
 
 ### API ключи
 
-Задаются через переменные окружения:
+Задаются через переменные окружения env или из ai.ini в секции [api_keys]:
 
 | Провайдер   | Переменная окружения  |
 |-------------|-----------------------|
@@ -32,21 +37,25 @@ cp ai.ini.example ai.ini
 ## Использование
 
 ```bash
-# Простой запрос (провайдер из ai.ini)
+# Интерактивный режим с bash агентом
+ai
+
+# Одиночный запрос
 ai "ваш запрос"
 
 # Выбор провайдера и модели
-ai -p openai -m gpt-4.1 "ваш запрос"
+ai -p openai -m gpt-5.4 "ваш запрос"
 
 # Системная инструкция
 ai -i "You are a Python expert" "напиши функцию для сортировки"
 
 # Ассистент из конфига
-ai -a devops "напиши docker-compose для nginx"
+ai -a admin "напиши docker-compose для nginx"
 
-# Список моделей провайдера
-ai -l
-ai -p anthropic -l
+# Список провайдеров
+ai -lp
+# Cписок моделей
+ai -p deepseek -lm
 ```
 
 ## Опции командной строки
@@ -67,12 +76,12 @@ ai -p anthropic -l
 | Gemini      | `gemini-2.5-flash`                          |
 | OpenAI      | `gpt-4.1-mini`                              |
 | XAI         | `grok-3-mini`                               |
-| DeepSeek    | `deepseek-chat`                             |
+| DeepSeek    | `deepseek-v4-flash`                             |
 | Anthropic   | `claude-sonnet-4-6`                         |
-| OpenRouter  | `meta-llama/llama-3.3-70b-instruct:free`    |
+| OpenRouter  | `openrouter/free`    |
 
-OpenRouter даёт доступ к сотням моделей (GPT, Claude, Llama, Gemini и др.) через один API ключ.
-Бесплатные модели имеют суффикс `:free`. Полный список: `ai -p openrouter -l`
+OpenRouter даёт доступ к множеству моделей через один API ключ.
+Бесплатные модели имеют суффикс `:free`. Полный список: `ai -p openrouter -lm`
 
 ## Приоритет настроек
 
@@ -80,33 +89,4 @@ OpenRouter даёт доступ к сотням моделей (GPT, Claude, Ll
 2. Конфиг `ai.ini` (`[providers].default`, `[assistant].default`)
 3. Значения по умолчанию
 
-## Добавление нового провайдера
-
-1. Создайте `providers/new_provider.py`, унаследуйтесь от `BaseAPIClient`
-2. Реализуйте `_make_request()`, `extract_response()`, `extract_usage()`, `list_models()`
-3. Добавьте провайдер в `api.py` в словари `PROVIDERS`, `API_KEY_ENV_VARS`
-
 ## Структура проекта
-
-```
-ai/
-├── ai.py                 # Точка входа
-├── cli.py                # CLI и основная логика
-├── config.py             # Конфигурация
-├── config_loader.py      # Загрузчик TOML конфига
-├── api.py                # Фабрика для создания клиентов
-├── providers/            # Провайдеры API
-│   ├── base.py           # Базовый класс
-│   ├── gemini.py
-│   ├── openai.py
-│   ├── xai.py
-│   ├── deepseek.py
-│   └── anthropic.py
-├── logger.py             # Логирование
-├── spinner.py            # Индикатор загрузки
-├── RequestCounter.py     # Счётчик запросов
-├── ColoredText.py        # Цветной вывод
-├── requirements.txt      # Зависимости
-├── ai.ini               # Конфиг (создайте из примера)
-└── ai.ini.example       # Пример конфига
-```

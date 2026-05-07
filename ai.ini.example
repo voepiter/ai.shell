@@ -7,16 +7,16 @@ timeout = 30
 
 [providers]
 # default provider: google, openai, xai, deepseek, anthropic, openrouter
-default = "google"
+default = "deepseek"
 
 [models]
 # default model per provider — change here, no code edits needed
 google     = "gemini-2.5-flash"
-openai     = "gpt-4.1-mini"
-xai        = "grok-3-mini"
-deepseek   = "deepseek-chat"
+openai     = "gpt-5.3-mini"
+xai        = "grok-4-mini"
+deepseek   = "deepseek-v4-flash"
 anthropic  = "claude-sonnet-4-6"
-openrouter = "meta-llama/llama-3.3-70b-instruct:free"
+openrouter = "openrouter/free"
 
 [api_keys]
 # Leave empty to rely on environment variables instead
@@ -29,9 +29,9 @@ OPENROUTER_API_KEY = ""
 
 [assistant]
 # default agent name (must be defined below)
-default = "devops"
+default = "admin"
 
-devops  = "IT expert: Linux, DevOps, Docker, Kubernetes. Short, practical answers."
+admin   = "IT expert: Linux, DevOps, Docker, Kubernetes. Short, practical answers."
 coder   = "Expert programmer: Python, JavaScript, Go, Rust. Write clean, efficient code."
 writer  = "Professional writer: Clear, engaging, well-structured text."
 general = "Helpful assistant: Friendly, informative, concise answers."
@@ -44,8 +44,8 @@ dangerous_patterns = ["rm -rf", "rm -r /", "dd if=", "mkfs", "| bash", "| sh"]
 
 [ui]
 disable_logo = 0     # 1 = skip logo on startup
-logo_delay   = 0.05  # seconds between lines (0 = instant)
-gradient     = 0.08  # hue range across logo width
+logo_delay   = 0.02  # seconds between lines (0 = instant)
+gradient     = 0.2  # hue range across logo width
 unicode      = true  # false = replace ✨ ▸ → etc. with ASCII equivalents
 
 [color]
