@@ -23,8 +23,7 @@ def run(state: AppState):
             gradient=cfg.get("ui", "gradient", default=0.08),
         )
 
-    agent_name = state.config.agent_name or cfg.get_default_assistant() or sym.em_dash
-    ui.print_banner(state.config.provider, state.api_client.model, agent_name, state.shell_mode)
+    ui.print_banner(state.config.provider, state.api_client.model, state.shell_mode)
 
     history       = []
     total_in      = 0

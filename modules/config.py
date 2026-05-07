@@ -49,9 +49,6 @@ class ConfigLoader:
     def get_default_provider(self, default: str = "google") -> str:
         return str(self.get("providers", "default", default=default)).lower()
 
-    def get_default_assistant(self, default: Optional[str] = None) -> Optional[str]:
-        return self.get("assistant", "default", default=default)
-
     def get_default_model(self, provider: str) -> Optional[str]:
         return self.get("models", provider.lower(), default=None)
 
@@ -59,8 +56,8 @@ class ConfigLoader:
         val = self.get("api_keys", env_var, default=None)
         return val if val else None
 
-    def get_assistant_instruction(self, assistant_name: str) -> Optional[str]:
-        return self.get("assistant", assistant_name, default=None)
+    def get_system_instruction(self) -> Optional[str]:
+        return self.get("system", "instruction", default=None)
 
 
 class Config:
@@ -69,7 +66,6 @@ class Config:
         provider:           Optional[str] = None,
         model:              Optional[str] = None,
         system_instruction: Optional[str] = None,
-        agent_name:         Optional[str] = None,
     ):
         self.base_dir      = Path(__file__).parent.parent.absolute()
         self.logfile       = self.base_dir / "ai.log"
@@ -79,20 +75,4 @@ class Config:
         self.model    = model or self.config_loader.get_default_model(self.provider)
         self.timeout  = self.config_loader.get_connection_timeout()
 
-        if system_instruction:
-            self.system_instruction = system_instruction
-        elif agent_name:
-            instr = self.config_loader.get_assistant_instruction(agent_name)
-            self.system_instruction = instr or self._default_instruction()
-        else:
-            default_agent = self.config_loader.get_default_assistant()
-            if default_agent:
-                instr = self.config_loader.get_assistant_instruction(default_agent)
-                self.system_instruction = instr or self._default_instruction()
-            else:
-                self.system_instruction = self._default_instruction()
-
-        self.agent_name = agent_name
-
-    def _default_instruction(self) -> str:
-        return "IT expert: Linux,DevOps,Coder.short answer"
+        self.system_instruction = system_instruction or self.config_loader.get_system_instruction() or ""

@@ -70,18 +70,5 @@ def handle(raw: str, history: list, state) -> str | None:
         print(f" {_col.dim}shell agent {sym.arrow}{_R} {status}")
         return None
 
-    if cmd == "/agent":
-        if not arg:
-            print(f" {_col.error}usage: /agent <name>{_R}", file=sys.stderr)
-            return None
-        instr = state.config.config_loader.get_assistant_instruction(arg)
-        if instr:
-            state.config.system_instruction = instr
-            state.config.agent_name         = arg
-            print(f" {_col.dim}agent {sym.arrow}{_R} {_col.model}{arg}{_R}")
-        else:
-            print(f" {_col.error}agent '{arg}' not found in ai.ini{_R}", file=sys.stderr)
-        return None
-
     print(f" {_col.error}unknown command: {cmd}  (type /help){_R}", file=sys.stderr)
     return None

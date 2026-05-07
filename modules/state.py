@@ -20,7 +20,6 @@ class AppState:
             provider=args.provider,
             model=args.model,
             system_instruction=args.instruction,
-            agent_name=args.agent,
         )
         return cls(
             config          = config,

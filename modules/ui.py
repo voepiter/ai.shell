@@ -15,14 +15,13 @@ def fmt_num(n: int | None) -> str:
     return f"{n / 1000:.1f}k" if n >= 1000 else str(n)
 
 
-def print_banner(provider: str, model: str, agent_name: str, shell_mode: bool):
+def print_banner(provider: str, model: str, shell_mode: bool):
     sh = f"{_col.model}on{_R}" if shell_mode else f"{_col.dim}off{_R}"
-    
+
     print(f" {_col.marker}{sym.ai_marker}{_R} interactive chat mode")
     print(
         f"    {_col.dim}provider:{_R}{_col.provider}{provider}{_R}  "
         f"{_col.dim}model:{_R}{_col.model}{model}{_R}  "
-        f"{_col.dim}agent:{_R}{_col.model}{agent_name}{_R}  "
         f"{_col.dim}shell:{_R}{sh}"
     )
     print(f"    {_col.command}/help{_R}{_col.dim} for commands  {sym.middle_dot}  Ctrl+C to exit{_R}")
@@ -40,7 +39,6 @@ def print_chat_help():
     print(f" {_col.dim}commands:{_R}")
     print(f"  {_col.command}/model{_R} {_col.dim}<name>{_R}         switch model")
     print(f"  {_col.command}/provider{_R} {_col.dim}<name>{_R}      switch provider  {_col.dim}(resets history){_R}")
-    print(f"  {_col.command}/agent{_R} {_col.dim}<name>{_R}         switch agent / system prompt")
     print(f"  {_col.command}/shell{_R} {_col.dim}[on|off]{_R}       toggle shell agent mode")
     print(f"  {_col.command}/list-models, /lm{_R}     list models for current provider")
     print(f"  {_col.command}/list-providers, /lp{_R}  list all providers")
