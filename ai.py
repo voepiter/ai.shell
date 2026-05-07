@@ -19,7 +19,7 @@ from modules.state import AppState
 
 def main():
     from pathlib import Path
-    if not (Path(__file__).parent / "ai.ini").exists():
+    if not (Path(__file__).resolve().parent / "ai.ini").exists():
         from modules.setup import run as _setup
         _setup()
         return
