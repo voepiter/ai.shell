@@ -1,4 +1,4 @@
-# ai.ini.example — copy to ai.ini and fill in your API keys
+# ai.ini.default — copy to ai.ini and fill in your API keys
 # Keys are read from [api_keys] below; environment variables override them.
 # Priority: env var > ai.ini
 

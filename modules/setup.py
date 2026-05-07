@@ -1,4 +1,4 @@
-# First-run setup wizard — creates ai.ini from ai.ini.example
+# First-run setup wizard — creates ai.ini from ai.ini.default
 import locale
 import os
 import sys
@@ -10,7 +10,7 @@ except ImportError:
     import tomli as tomllib  # type: ignore
 
 _BASE     = Path(__file__).parent.parent
-_EXAMPLE  = _BASE / "ai.ini.example"
+_EXAMPLE  = _BASE / "ai.ini.default"
 _CONFIG   = _BASE / "ai.ini"
 _LOCALES  = _BASE / "locales"
 

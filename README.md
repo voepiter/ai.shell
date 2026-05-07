@@ -1,10 +1,11 @@
 # AI.SHELL 
 
-CLI-утилита для работы с различными LLM API из терминала: Google Gemini, OpenAI ChatGpt, XAI Grok, DeepSeek, Anthropic Claude.
+утилита для работы с различными LLM API из терминала: Google Gemini, OpenAI ChatGpt, XAI Grok, DeepSeek, Anthropic Claude, Openrouter.
 
 ## Установка
 
 рекомендуется через менеджер UV 
+
 если он не установлен
 
 ```bash
@@ -19,20 +20,21 @@ uv tool install git+https://github.com/voepiter/ai.shell.git
 
 ## Конфигурация
 
-файл `ai.ini` создается при первом запуске мастером, настройки по умолчанию из `ai.ini.example`:
+файл `ai.ini` создается при первом запуске мастером, настройки по умолчанию из `ai.ini.default`:
 
 ### API ключи
 
-Задаются через переменные окружения env или из ai.ini в секции [api_keys]:
+Для доступа к моделям LLM вам нужны API ключи
+Они задаются через переменные окружения или из ai.ini в секции [api_keys]:
 
-| Провайдер   | Переменная окружения  |
-|-------------|-----------------------|
-| Gemini      | `GEMINI_API_KEY`      |
-| OpenAI      | `OPENAI_API_KEY`      |
-| XAI         | `XAI_API_KEY`        |
-| DeepSeek    | `DEEPSEEK_API_KEY`    |
-| Anthropic   | `ANTHROPIC_API_KEY`   |
-| OpenRouter  | `OPENROUTER_API_KEY`  |
+| Провайдер        | Переменная окружения |
+|------------------|----------------------|
+| DeepSeek         | `DEEPSEEK_API_KEY`   |
+| Anthropic Claude | `ANTHROPIC_API_KEY`  |
+| OpenAI ChatGPT   | `OPENAI_API_KEY`     |
+| XAI Grok         | `XAI_API_KEY`        |
+| Google Gemini    | `GOOGLE_API_KEY`     |
+| OpenRouter       | `OPENROUTER_API_KEY` |
 
 ## Использование
 
@@ -55,30 +57,30 @@ ai -a admin "напиши docker-compose для nginx"
 # Список провайдеров
 ai -lp
 # Cписок моделей
-ai -p deepseek -lm
+ai -p openrouter -lm
 ```
 
 ## Опции командной строки
 
-| Опция                   | Описание                                           |
-|-------------------------|----------------------------------------------------|
-| `prompt`                | Текст запроса к AI                                 |
-| `-p` / `--provider`     | Провайдер: `gemini`, `openai`, `xai`, `deepseek`, `anthropic` |
-| `-m` / `--model`        | Имя модели                                         |
-| `-i` / `--instruction`  | Системная инструкция                               |
-| `-a` / `--assistant`    | Имя ассистента из `ai.ini`                        |
-| `-l` / `--list-models`  | Показать список доступных моделей и выйти          |
+| Опция                   | Описание                                  |
+|-------------------------|-------------------------------------------|
+| `prompt`                | Текст запроса к AI                        |
+| `-p` / `--provider`     | Провайдер                                 |
+| `-m` / `--model`        | Имя модели                                |
+| `-i` / `--instruction`  | Системная инструкция                      |
+| `-a` / `--assistant`    | Имя ассистента из `ai.ini`                |
+| `-l` / `--list-models`  | Показать список доступных моделей и выйти |
 
 ## Поддерживаемые провайдеры
 
-| Провайдер   | Модель по умолчанию                        |
-|-------------|---------------------------------------------|
-| Gemini      | `gemini-2.5-flash`                          |
-| OpenAI      | `gpt-4.1-mini`                              |
-| XAI         | `grok-3-mini`                               |
-| DeepSeek    | `deepseek-v4-flash`                             |
-| Anthropic   | `claude-sonnet-4-6`                         |
+| Провайдер   | Модель по умолчанию  |
+|-------------|----------------------|
+| DeepSeek    | `deepseek-v4-flash`  |
 | OpenRouter  | `openrouter/free`    |
+| Anthropic   | `claude-sonnet-4-6`  |
+| OpenAI      | `gpt-5.4-mini`       |
+| XAI         | `grok-4.1-fast`      |
+| Gemini      | `gemini-2.5-flash`   |
 
 OpenRouter даёт доступ к множеству моделей через один API ключ.
 Бесплатные модели имеют суффикс `:free`. Полный список: `ai -p openrouter -lm`
@@ -89,4 +91,3 @@ OpenRouter даёт доступ к множеству моделей через
 2. Конфиг `ai.ini` (`[providers].default`, `[assistant].default`)
 3. Значения по умолчанию
 
-## Структура проекта
