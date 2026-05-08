@@ -37,6 +37,7 @@ command_timeout = 30
 dangerous_patterns = ["rm -r",  "dd if=", "mkfs", "| bash", "| sh"]
 
 [ui]
+language     = en    # interface language: en, ru (overrides system locale)
 logo = 0     # 1 = skip logo on startup
 logo_delay   = 0.02  # seconds between lines (0 = instant)
 logo_logo_gradient     = 0.2  # hue range across logo width

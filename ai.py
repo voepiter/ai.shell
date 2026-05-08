@@ -14,15 +14,12 @@ except ImportError:
     pass
 
 from modules import parser, chat, single_turn, ui
+from modules.locale import set_lang
 from modules.state import AppState
 
 
 def main():
     args = parser.build().parse_args()
-
-    if args.language:
-        from modules.locale import set_lang
-        set_lang(args.language)
 
     from pathlib import Path
     if not (Path(__file__).resolve().parent / "ai.ini").exists():
@@ -35,6 +32,10 @@ def main():
     except ValueError as e:
         print(f"{e}", file=sys.stderr)
         sys.exit(1)
+
+    lang = args.language or state.config.config_loader.get("ui", "language", default=None)
+    if lang:
+        set_lang(lang)
 
     if args.list_providers:
         ui.print_providers(state.config.config_loader)
