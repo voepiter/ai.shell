@@ -1,38 +1,27 @@
-# Request counter — daily sequence number from log file
+# Request counter — daily sequence number from today's log file
 import os
 import re
 from datetime import datetime
+from pathlib import Path
 
 
 class RequestCounter:
-    def __init__(self, logfile: str = "ai.log"):
-        self.logfile  = logfile
-        self.request  = 1
-        self.lastdate = None
-        self._load_last()
-        self._update()
+    def __init__(self, log_dir: Path):
+        today = datetime.now().strftime("%Y%m%d")
+        self._logfile = log_dir / f"{today}.log"
+        self.request  = self._load_last() + 1
 
-    def _load_last(self):
-        if not os.path.exists(self.logfile):
-            return
-        with open(self.logfile, "rb") as f:
+    def _load_last(self) -> int:
+        if not self._logfile.exists():
+            return 0
+        with self._logfile.open("rb") as f:
             try:
                 f.seek(-4096, os.SEEK_END)
             except OSError:
                 f.seek(0)
             lines = f.read().decode(errors="ignore").splitlines()
         for line in reversed(lines):
-            m_req  = re.search(r"request:\s*(\d+)", line)
-            m_date = re.match(r"^(\d{4}-\d{2}-\d{2})", line)
-            if m_req and m_date:
-                self.request  = int(m_req.group(1))
-                self.lastdate = m_date.group(1)
-                break
-
-    def _update(self):
-        today = datetime.now().strftime("%Y-%m-%d")
-        if self.lastdate == today:
-            self.request += 1
-        else:
-            self.request  = 1
-            self.lastdate = today
+            m = re.search(r"request:\s*(\d+)", line)
+            if m:
+                return int(m.group(1))
+        return 0

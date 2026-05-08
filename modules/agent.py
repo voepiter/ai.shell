@@ -5,6 +5,7 @@ from .shell import extract_commands, is_dangerous, run_command
 from .spinner import Spinner
 from .ui import print_stats
 from . import symbols as sym
+from providers import APIError
 
 _R = ct.resetcolor
 
@@ -85,6 +86,9 @@ def agentic_loop(
         except KeyboardInterrupt:
             spinner.stop()
             print(f"\n {_col.error}interrupted{_R}")
+            break
+        except APIError:
+            spinner.stop()
             break
         finally:
             spinner.stop()

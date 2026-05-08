@@ -1,23 +1,14 @@
 # File logger for requests
-import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 
 class Logger:
-    def __init__(self, logfile: Path):
-        self.logfile = logfile
-        self._logger = self._setup()
-
-    def _setup(self) -> logging.Logger:
-        logger = logging.getLogger("ai")
-        if not logger.handlers:
-            handler = logging.FileHandler(str(self.logfile), encoding="utf-8")
-            handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
-            logger.addHandler(handler)
-            logger.setLevel(logging.INFO)
-            logger.propagate = False
-        return logger
+    def __init__(self, log_dir: Path):
+        log_dir.mkdir(exist_ok=True)
+        today = datetime.now().strftime("%Y%m%d")
+        self.logfile = log_dir / f"{today}.log"
 
     def log_request(
         self,
@@ -29,9 +20,12 @@ class Logger:
         prompt:    str,
         answer:    str,
     ):
-        self._logger.info(
-            f"{model}: request: {request} time: {elapsed:.1f} "
-            f"tokens in: {token_in} out: {token_out} \n"
-            f"\t prompt: {prompt} \n"
-            f"\t answer: {answer}"
+        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        entry = (
+            f"{ts} {model}: request: {request} time: {elapsed:.1f} "
+            f"tokens in: {token_in} out: {token_out}\n"
+            f"\t prompt: {prompt}\n"
+            f"\t answer: {answer}\n"
         )
+        with self.logfile.open("a", encoding="utf-8") as f:
+            f.write(entry)

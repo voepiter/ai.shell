@@ -29,8 +29,8 @@ class AppState:
                 timeout=config.timeout,
                 config_loader=config.config_loader,
             ),
-            logger          = Logger(config.logfile),
-            request_counter = RequestCounter(str(config.logfile)),
+            logger          = Logger(config.log_dir),
+            request_counter = RequestCounter(config.log_dir),
             shell_mode      = bool(
                 config.config_loader.get("shell", "shell_mode", default=False)
             ),
