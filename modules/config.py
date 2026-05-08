@@ -68,7 +68,7 @@ class Config:
         system_instruction: Optional[str] = None,
     ):
         self.base_dir      = Path(__file__).parent.parent.absolute()
-        self.log_dir       = self.base_dir / ".log"
+        self.log_dir       = self.base_dir / "log"
         self.config_loader = ConfigLoader()
 
         self.provider = (provider or self.config_loader.get_default_provider()).lower()
