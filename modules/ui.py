@@ -57,12 +57,12 @@ def print_stats(
 ):
     if token_in is None and token_out is None:
         return
-    req = f"{_col.dim}{t('ui','tok_request')}{request_num}  " if request_num is not None else ""
+    req = f"{_col.dim}#{request_num} " if request_num is not None else ""
     s = (
-        f" {_col.dim}{sym.bullet}{_R}  "
+        f" {_col.dim}{sym.bullet}{_R} "
         f"{req}"
-        f"{_col.dim}{t('ui','tok_tokens')} {t('ui','tok_in')}{fmt_num(token_in)}  "
-        f"{t('ui','tok_out')}{fmt_num(token_out)}  "
+        f"{_col.dim}{t('ui','tok_tokens')} ↑{fmt_num(token_in)}  "
+        f"↓{fmt_num(token_out)} "
         f"{t('ui','tok_time')}{elapsed:.1f}{_R}s"
     )
     print(s)
@@ -74,8 +74,8 @@ def print_usage(total_in: int, total_out: int, total_elapsed: float):
         return
     print(
         f" {_col.dim}{sym.bullet} {t('ui','tok_session')}  "
-        f"{t('ui','tok_in')}{fmt_num(total_in)}  "
-        f"{t('ui','tok_out')}{fmt_num(total_out)}  "
+        f"↑{fmt_num(total_in)} "
+        f"↓{fmt_num(total_out)} "
         f"{t('ui','tok_time')}{total_elapsed:.1f}s{_R}"
     )
 

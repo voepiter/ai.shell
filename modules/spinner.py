@@ -39,7 +39,6 @@ class Spinner:
                 f"\r{_col.marker}{spin}{ct.resetcolor} "
                 f"{_col.provider}{self.provider}{ct.resetcolor}"
                 f"/{self.model}"
-                f"  req:{self.request}"
                 f"  {_col.model}{elapsed:.1f}{ct.resetcolor}s ",
                 end="", flush=True,
             )
