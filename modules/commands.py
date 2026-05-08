@@ -80,6 +80,10 @@ def handle(raw: str, history: list, state) -> str | None:
         print(f" {_col.dim}{t('commands','language_set',lang=resolved)}{_R}")
         return None
 
+    if cmd in ("/usage", "/u"):
+        ui.print_usage(state.total_in, state.total_out, state.total_elapsed)
+        return None
+
     if cmd in ("/clear", "/cls"):
         return "reset"
 

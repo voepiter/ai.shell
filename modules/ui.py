@@ -21,9 +21,9 @@ def print_banner(provider: str, model: str, shell_mode: bool):
 
     print(f" {_col.marker}{sym.ai_marker}{_R} {t('ui','interactive_chat')}")
     print(
-        f"    {_col.dim}provider:{_R}{_col.provider}{provider}{_R}  "
-        f"{_col.dim}model:{_R}{_col.model}{model}{_R}  "
-        f"{_col.dim}shell:{_R}{sh}"
+        f"    {_col.dim}{t('ui','provider_label')}{_R}{_col.provider}{provider}{_R}  "
+        f"{_col.dim}{t('ui','model_label')}{_R}{_col.model}{model}{_R}  "
+        f"{_col.dim}{t('ui','shell_label')}{_R}{sh}"
     )
     print(f"    {_col.command}/help{_R}{_col.dim} {t('ui','help_for_cmds')}  {sym.middle_dot}  {t('ui','ctrl_c_exit')}{_R}")
 
@@ -44,45 +44,45 @@ def print_chat_help():
     print(f"  {_col.command}/list-models, /lm{_R}     {t('ui','help_list_models')}")
     print(f"  {_col.command}/list-providers, /lp{_R}  {t('ui','help_list_providers')}")
     print(f"  {_col.command}/language{_R} {_col.dim}<code>{_R}      {t('ui','help_language')}")
+    print(f"  {_col.command}/usage{_R}                {t('ui','help_usage')}")
     print(f"  {_col.command}/clear{_R}                {t('ui','help_clear')}")
     print(f"  {_col.command}/quit{_R}                 {t('ui','help_quit')}")
 
 
 def print_stats(
-    token_in:      int | None,
-    token_out:     int | None,
-    elapsed:       float,
-    total_in:      int | None = None,
-    total_out:     int | None = None,
-    total_elapsed: float | None = None,
+    token_in:    int | None,
+    token_out:   int | None,
+    elapsed:     float,
+    request_num: int | None = None,
 ):
     if token_in is None and token_out is None:
         return
+    req = f"{_col.dim}{t('ui','tok_request')}{request_num}  " if request_num is not None else ""
     s = (
         f" {_col.dim}{sym.bullet}{_R}  "
-        f"{_col.dim}{t('ui','tok_tokens')} {t('ui','tok_in')}{_R}{_col.model}{fmt_num(token_in)}{_R}  "
-        f"{_col.dim}{t('ui','tok_out')}{_R}{_col.model}{fmt_num(token_out)}{_R}  "
-        f"{_col.dim}{t('ui','tok_time')}{_R}{_col.model}{elapsed:.1f}{_R}s"
+        f"{req}"
+        f"{_col.dim}{t('ui','tok_tokens')} {t('ui','tok_in')}{fmt_num(token_in)}  "
+        f"{t('ui','tok_out')}{fmt_num(token_out)}  "
+        f"{t('ui','tok_time')}{elapsed:.1f}{_R}s"
     )
-    if total_in is not None and (total_in != token_in or total_out != token_out):
-        s += (
-            f"  {_col.dim}{sym.middle_dot}  {t('ui','tok_total')} "
-            f"{t('ui','tok_in')}{_R}{_col.model}{fmt_num(total_in)}{_R}  "
-            f"{_col.dim}{t('ui','tok_out')}{_R}{_col.model}{fmt_num(total_out)}{_R}"
-        )
-        if total_elapsed is not None:
-            s += f" {t('ui','tok_time')} {_col.model}{total_elapsed:.1f}{_R}s"
     print(s)
 
 
+def print_usage(total_in: int, total_out: int, total_elapsed: float):
+    if not total_in and not total_out:
+        print(f" {_col.dim}—{_R}")
+        return
+    print(
+        f" {_col.dim}{sym.bullet} {t('ui','tok_session')}  "
+        f"{t('ui','tok_in')}{fmt_num(total_in)}  "
+        f"{t('ui','tok_out')}{fmt_num(total_out)}  "
+        f"{t('ui','tok_time')}{total_elapsed:.1f}s{_R}"
+    )
+
+
 def print_chat_totals(total_in: int, total_out: int, total_elapsed: float = 0.0):
-    if total_in or total_out:
-        print(
-            f"\n {_col.dim} {sym.bullet} {t('ui','tok_session')}  "
-            f"{t('ui','tok_in')}{_R}{_col.model}{fmt_num(total_in)}{_R}  "
-            f"{_col.dim}{t('ui','tok_out')}{_R}{_col.model}{fmt_num(total_out)}{_R}  "
-            f"{_col.dim}{t('ui','tok_time')}{_R}{_col.model}{total_elapsed:.1f}{_R}s"
-        )
+    print()
+    print_usage(total_in, total_out, total_elapsed)
     print()
 
 

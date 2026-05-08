@@ -13,6 +13,9 @@ class AppState:
     logger:          Logger
     request_counter: RequestCounter
     shell_mode:      bool
+    total_in:        int   = 0
+    total_out:       int   = 0
+    total_elapsed:   float = 0.0
 
     @classmethod
     def from_args(cls, args) -> "AppState":

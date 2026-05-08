@@ -26,10 +26,7 @@ def run(state: AppState):
 
     ui.print_banner(state.config.provider, state.api_client.model, state.shell_mode)
 
-    history       = []
-    total_in      = 0
-    total_out     = 0
-    total_elapsed = 0.0
+    history = []
 
     while True:
         try:
@@ -37,7 +34,7 @@ def run(state: AppState):
             prompt = f"\n \001{_col.command}\002{sym.user_prompt}\001{_R}\002  "
             raw = input(prompt).strip()
         except (KeyboardInterrupt, EOFError):
-            ui.print_chat_totals(total_in, total_out, total_elapsed)
+            ui.print_chat_totals(state.total_in, state.total_out, state.total_elapsed)
             break
 
         if not raw:
@@ -46,10 +43,10 @@ def run(state: AppState):
         if raw.startswith("/"):
             result = commands.handle(raw, history, state)
             if result == "quit":
-                ui.print_chat_totals(total_in, total_out, total_elapsed)
+                ui.print_chat_totals(state.total_in, state.total_out, state.total_elapsed)
                 break
             if result == "reset":
-                history, total_in, total_out, total_elapsed = [], 0, 0, 0.0
+                history = []
                 print(f" {_col.dim}{t('common','history_cleared')}{_R}")
             continue
 
@@ -79,9 +76,9 @@ def run(state: AppState):
             spinner.stop()
 
         token_in, token_out = state.api_client.extract_usage(data)
-        if token_in:  total_in  += token_in
-        if token_out: total_out += token_out
-        total_elapsed += elapsed
+        if token_in:  state.total_in  += token_in
+        if token_out: state.total_out += token_out
+        state.total_elapsed += elapsed
 
         try:
             text = state.api_client.extract_response(data)
@@ -92,7 +89,7 @@ def run(state: AppState):
 
         print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(text)}")
         print()
-        ui.print_stats(token_in, token_out, elapsed, total_in, total_out, total_elapsed)
+        ui.print_stats(token_in, token_out, elapsed, request)
 
         history.append({"role": "assistant", "content": text})
         state.logger.log_request(
@@ -102,7 +99,7 @@ def run(state: AppState):
         state.request_counter.request += 1
 
         if state.shell_mode:
-            total_in, total_out, total_elapsed = agentic_loop(
+            state.total_in, state.total_out, state.total_elapsed = agentic_loop(
                 history, text, state.api_client, state.config, state.logger,
-                state.request_counter, state.shell_mode, total_in, total_out, total_elapsed,
+                state.request_counter, state.shell_mode, state.total_in, state.total_out, state.total_elapsed,
             )
