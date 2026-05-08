@@ -24,6 +24,8 @@ examples:
                         help="model name (default: from ai.ini [models])")
     parser.add_argument("-i", "--instruction", dest="instruction", metavar="TEXT",
                         help="system instruction (overrides ai.ini [system] instruction)")
+    parser.add_argument("-l", "--language", dest="language", metavar="CODE",
+                        help="language code: en, ru (overrides system locale)")
     parser.add_argument("-lm", "--list-models", dest="list_models", action="store_true",
                         help="list available models for selected provider and exit")
     parser.add_argument("-lp", "--list-providers", dest="list_providers", action="store_true",

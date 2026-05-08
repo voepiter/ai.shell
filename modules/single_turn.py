@@ -9,6 +9,7 @@ from .shell import extract_commands
 from .agent import agentic_loop, build_system_instruction
 from . import ui
 from . import symbols as sym
+from .locale import t
 from providers import APIError
 
 _R = ct.resetcolor
@@ -27,7 +28,7 @@ def run(state: AppState, prompt: str):
             ),
         )
     except KeyboardInterrupt:
-        print(f"\n{_col.error}interrupted{_R}")
+        print(f"\n{_col.error}{t('common','interrupted')}{_R}")
         sys.exit(130)
     except APIError:
         sys.exit(1)

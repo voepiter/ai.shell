@@ -27,3 +27,45 @@ provider_question = "Default provider"
 
 done    = "Config saved → {path}"
 restart = "Restart ai to begin."
+
+[ui]
+interactive_chat   = "interactive chat mode"
+help_for_cmds      = "for commands"
+ctrl_c_exit        = "Ctrl+C to exit"
+commands_header    = "commands:"
+help_model         = "switch model"
+help_provider      = "switch provider"
+resets_history     = "(resets history)"
+help_shell         = "toggle shell agent mode"
+help_list_models   = "list models for current provider"
+help_list_providers = "list all providers"
+help_clear         = "clear history and reset totals"
+help_quit          = "exit chat"
+help_language      = "switch language  (en, ru)"
+tok_tokens         = "tokens:"
+tok_in             = "in:"
+tok_out            = "out:"
+tok_time           = "time:"
+tok_total          = "total"
+tok_session        = "session"
+providers_header   = "providers:"
+provider_label     = "provider:"
+default_marker     = "(default)"
+
+[common]
+interrupted     = "interrupted"
+history_cleared = "history cleared"
+
+[commands]
+usage_model    = "usage: /model <name>"
+usage_provider = "usage: /provider <name>"
+shell_agent    = "shell agent"
+unknown_cmd    = "unknown command: {cmd}  (type /help)"
+usage_language = "usage: /language <code>"
+language_set   = "language → {lang}"
+
+[agent]
+dangerous      = "dangerous:"
+execute_prompt = "execute? [y/N]"
+skipped        = "[skipped by user]"
+cmd_output     = "Command output:"

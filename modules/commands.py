@@ -5,6 +5,8 @@ from . import text as ct
 from . import symbols as sym
 from .api import APIFactory
 from . import ui
+from . import locale as _locale
+from .locale import t
 
 _R = ct.resetcolor
 
@@ -32,7 +34,7 @@ def handle(raw: str, history: list, state) -> str | None:
 
     if cmd == "/model":
         if not arg:
-            print(f" {_col.error}usage: /model <name>{_R}", file=sys.stderr)
+            print(f" {_col.error}{t('commands','usage_model')}{_R}", file=sys.stderr)
             return None
         try:
             state.config.model = arg
@@ -48,7 +50,7 @@ def handle(raw: str, history: list, state) -> str | None:
 
     if cmd == "/provider":
         if not arg:
-            print(f" {_col.error}usage: /provider <name>{_R}", file=sys.stderr)
+            print(f" {_col.error}{t('commands','usage_provider')}{_R}", file=sys.stderr)
             return None
         try:
             state.config.provider = arg.lower()
@@ -67,11 +69,19 @@ def handle(raw: str, history: list, state) -> str | None:
     if cmd == "/shell":
         state.shell_mode = (arg == "on") if arg in ("on", "off") else not state.shell_mode
         status = f"{_col.model}on{_R}" if state.shell_mode else f"{_col.dim}off{_R}"
-        print(f" {_col.dim}shell agent {sym.arrow}{_R} {status}")
+        print(f" {_col.dim}{t('commands','shell_agent')} {sym.arrow}{_R} {status}")
+        return None
+
+    if cmd == "/language":
+        if not arg:
+            print(f" {_col.error}{t('commands','usage_language')}{_R}", file=sys.stderr)
+            return None
+        resolved = _locale.set_lang(arg)
+        print(f" {_col.dim}{t('commands','language_set',lang=resolved)}{_R}")
         return None
 
     if cmd in ("/clear", "/cls"):
         return "reset"
 
-    print(f" {_col.error}unknown command: {cmd}  (type /help){_R}", file=sys.stderr)
+    print(f" {_col.error}{t('commands','unknown_cmd',cmd=cmd)}{_R}", file=sys.stderr)
     return None

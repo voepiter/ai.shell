@@ -19,7 +19,7 @@ Multi-model LLM CLI client + bash agent.
 | File | Lines | Key symbols |
 |------|-------|-------------|
 | `state.py` | 37 | `AppState` — shared runtime state (provider, model, history, flags) |
-| `parser.py` | 31 | `build()` → `argparse.ArgumentParser` |
+| `parser.py` | 35 | `build()` → `argparse.ArgumentParser` |
 | `config.py` | 78 | `ConfigLoader` — reads ai.ini; `Config` — typed config object |
 | `api.py` | 64 | `APIFactory` — instantiates the right provider client from config |
 | `chat.py` | 107 | `run(state)` — interactive REPL loop |
@@ -45,6 +45,7 @@ Multi-model LLM CLI client + bash agent.
 |------|-------|-------------|
 | `logger.py` | 31 | `Logger` — daily rotating file logger (`log/YYYYMMDD.log`) |
 | `counter.py` | 27 | `RequestCounter` — tracks request count per session |
+| `locale.py` | 47 | `t(*keys, **fmt)` — translated string lookup; `set_lang(code)` — runtime switch |
 | `setup.py` | 202 | `run()` — first-run interactive setup wizard; helpers: `_detect_lang`, `_ask`, `_yn`, `_step_unicode`, `_step_keys`, `_step_settings`, `_write_config` |
 
 ---

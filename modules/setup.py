@@ -182,8 +182,8 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
     _CONFIG.chmod(0o600)
 
 
-def run():
-    lang = _detect_lang()
+def run(lang: str | None = None):
+    lang = lang or _detect_lang()
     s    = _load_strings(lang)
 
     print(f"\n{'─' * 52}")

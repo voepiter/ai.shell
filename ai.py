@@ -18,13 +18,18 @@ from modules.state import AppState
 
 
 def main():
+    args = parser.build().parse_args()
+
+    if args.language:
+        from modules.locale import set_lang
+        set_lang(args.language)
+
     from pathlib import Path
     if not (Path(__file__).resolve().parent / "ai.ini").exists():
         from modules.setup import run as _setup
-        _setup()
+        _setup(lang=args.language)
         return
 
-    args = parser.build().parse_args()
     try:
         state = AppState.from_args(args)
     except ValueError as e:

@@ -9,6 +9,7 @@ from .logo import print_logo
 from .agent import agentic_loop, build_system_instruction
 from . import commands, ui
 from . import symbols as sym
+from .locale import t
 from providers import APIError
 
 _R = ct.resetcolor
@@ -49,7 +50,7 @@ def run(state: AppState):
                 break
             if result == "reset":
                 history, total_in, total_out, total_elapsed = [], 0, 0, 0.0
-                print(f" {_col.dim}history cleared{_R}")
+                print(f" {_col.dim}{t('common','history_cleared')}{_R}")
             continue
 
         history.append({"role": "user", "content": raw})
@@ -68,7 +69,7 @@ def run(state: AppState):
         except KeyboardInterrupt:
             spinner.stop()
             history.pop()
-            print(f"\n {_col.error}interrupted{_R}")
+            print(f"\n {_col.error}{t('common','interrupted')}{_R}")
             continue
         except APIError:
             spinner.stop()

@@ -27,3 +27,45 @@ provider_question = "Провайдер по умолчанию"
 
 done    = "Конфиг сохранён → {path}"
 restart = "Запустите ai снова."
+
+[ui]
+interactive_chat    = "интерактивный режим"
+help_for_cmds       = "команды"
+ctrl_c_exit         = "Ctrl+C для выхода"
+commands_header     = "команды:"
+help_model          = "сменить модель"
+help_provider       = "сменить провайдер"
+resets_history      = "(сбрасывает историю)"
+help_shell          = "режим shell агента"
+help_list_models    = "список моделей провайдера"
+help_list_providers = "список провайдеров"
+help_clear          = "очистить историю"
+help_quit           = "выйти"
+help_language       = "сменить язык  (en, ru)"
+tok_tokens          = "токены:"
+tok_in              = "вх:"
+tok_out             = "вых:"
+tok_time            = "время:"
+tok_total           = "итого"
+tok_session         = "сессия"
+providers_header    = "провайдеры:"
+provider_label      = "провайдер:"
+default_marker      = "(умолч.)"
+
+[common]
+interrupted     = "прервано"
+history_cleared = "история очищена"
+
+[commands]
+usage_model    = "использование: /model <имя>"
+usage_provider = "использование: /provider <имя>"
+shell_agent    = "shell агент"
+unknown_cmd    = "неизвестная команда: {cmd}  (введите /help)"
+usage_language = "использование: /language <код>"
+language_set   = "язык → {lang}"
+
+[agent]
+dangerous      = "опасная команда:"
+execute_prompt = "выполнить? [y/N]"
+skipped        = "[пропущено]"
+cmd_output     = "Вывод команды:"

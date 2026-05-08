@@ -5,6 +5,7 @@ from .shell import extract_commands, is_dangerous, run_command
 from .spinner import Spinner
 from .ui import print_stats
 from . import symbols as sym
+from .locale import t
 from providers import APIError
 
 _R = ct.resetcolor
@@ -49,14 +50,14 @@ def agentic_loop(
         results = []
         for cmd in commands:
             if is_dangerous(cmd, danger_pat):
-                print(f"\n {_col.error}dangerous:{_R} {cmd}")
-                print(f" {_col.dim}execute? [y/N]{_R} ", end="", flush=True)
+                print(f"\n {_col.error}{t('agent','dangerous')}{_R} {cmd}")
+                print(f" {_col.dim}{t('agent','execute_prompt')}{_R} ", end="", flush=True)
                 try:
                     answer = input().strip().lower()
                 except (KeyboardInterrupt, EOFError):
                     answer = "n"
                 if answer != "y":
-                    results.append(f"$ {cmd}\n[skipped by user]")
+                    results.append(f"$ {cmd}\n{t('agent','skipped')}")
                     continue
 
             print(f" {_col.dim}{sym.computer} {cmd}{_R}")
@@ -69,7 +70,7 @@ def agentic_loop(
         if not results:
             break
 
-        tool_msg = "Command output:\n" + "\n\n".join(results)
+        tool_msg = f"{t('agent','cmd_output')}\n" + "\n\n".join(results)
         history.append({"role": "user", "content": tool_msg})
 
         model_name = api_client.model
@@ -86,7 +87,7 @@ def agentic_loop(
         except KeyboardInterrupt:
             spinner.stop()
             history.pop()
-            print(f"\n {_col.error}interrupted{_R}")
+            print(f"\n {_col.error}{t('common','interrupted')}{_R}")
             break
         except APIError:
             spinner.stop()
