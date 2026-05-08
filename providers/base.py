@@ -26,24 +26,28 @@ class BaseAPIClient(ABC):
         return self._send(messages, system_instruction)
 
     def _send(self, messages: List[Dict], system_instruction: str) -> Tuple[Dict, float]:
-        start_time = time.perf_counter()
-        try:
-            response = self._make_request(messages, system_instruction)
-            response.raise_for_status()
-            elapsed = time.perf_counter() - start_time
-            # Force utf-8 so response.text uses errors='replace' instead of
-            # guess_json_utf which throws UnicodeDecodeError on some responses.
-            response.encoding = "utf-8"
-            return response.json(), elapsed
+        for attempt in range(2):
+            start_time = time.perf_counter()
+            try:
+                response = self._make_request(messages, system_instruction)
+                response.raise_for_status()
+                elapsed = time.perf_counter() - start_time
+                # Force utf-8 so response.text uses errors='replace' instead of
+                # guess_json_utf which throws UnicodeDecodeError on some responses.
+                response.encoding = "utf-8"
+                return response.json(), elapsed
 
-        except requests.exceptions.Timeout:
-            print(f"\n{ct.forecolor(196)}error: request timeout{ct.resetcolor}", file=sys.stderr)
-            raise APIError("request timeout")
-        except requests.exceptions.HTTPError as e:
-            self._handle_http_error(e)
-        except requests.exceptions.RequestException:
-            print(f"\n{ct.forecolor(196)}error: network connection error{ct.resetcolor}", file=sys.stderr)
-            raise APIError("network connection error")
+            except requests.exceptions.Timeout:
+                print(f"\n{ct.forecolor(196)}error: request timeout{ct.resetcolor}", file=sys.stderr)
+                raise APIError("request timeout")
+            except requests.exceptions.HTTPError as e:
+                self._handle_http_error(e)
+            except requests.exceptions.RequestException:
+                if attempt == 0:
+                    time.sleep(3)
+                    continue
+                print(f"\n{ct.forecolor(196)}error: network connection error{ct.resetcolor}", file=sys.stderr)
+                raise APIError("network connection error")
 
     @abstractmethod
     def _make_request(self, messages: List[Dict], system_instruction: str) -> requests.Response:

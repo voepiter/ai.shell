@@ -42,6 +42,7 @@ def print_chat_help():
     print(f"  {_col.command}/shell{_R} {_col.dim}[on|off]{_R}       toggle shell agent mode")
     print(f"  {_col.command}/list-models, /lm{_R}     list models for current provider")
     print(f"  {_col.command}/list-providers, /lp{_R}  list all providers")
+    print(f"  {_col.command}/clear{_R}                clear history and reset totals")
     print(f"  {_col.command}/quit{_R}                 exit chat")
 
 
@@ -69,6 +70,7 @@ def print_stats(
         )
         if total_elapsed is not None:
             s += f" time: {_col.model}{total_elapsed:.1f}{_R}s"
+        s += f"  {_col.dim}context:{_R}{_col.model}{fmt_num(total_in)}{_R}"
     print(s)
 
 

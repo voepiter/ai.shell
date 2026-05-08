@@ -70,5 +70,8 @@ def handle(raw: str, history: list, state) -> str | None:
         print(f" {_col.dim}shell agent {sym.arrow}{_R} {status}")
         return None
 
+    if cmd in ("/clear", "/cls"):
+        return "reset"
+
     print(f" {_col.error}unknown command: {cmd}  (type /help){_R}", file=sys.stderr)
     return None

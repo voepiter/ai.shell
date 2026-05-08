@@ -85,10 +85,12 @@ def agentic_loop(
             )
         except KeyboardInterrupt:
             spinner.stop()
+            history.pop()
             print(f"\n {_col.error}interrupted{_R}")
             break
         except APIError:
             spinner.stop()
+            history.pop()
             break
         finally:
             spinner.stop()
