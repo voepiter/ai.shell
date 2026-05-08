@@ -16,12 +16,12 @@ _R = ct.resetcolor
 
 def run(state: AppState):
     cfg = state.config.config_loader
-    if not cfg.get("ui", "disable_logo", default=0):
+    if cfg.get("ui", "logo", default=True):
         print_logo(
             state.config.base_dir / "logo.ascii",
-            delay=cfg.get("ui", "logo_delay", default=0.05),
-            gradient=cfg.get("ui", "gradient", default=0.08),
-        )
+            delay=cfg.get("ui", "logo_delay", default=0.02),
+            logo_gradient=cfg.get("ui", "logo_gradient", default=0.25)
+            )
 
     ui.print_banner(state.config.provider, state.api_client.model, state.shell_mode)
 

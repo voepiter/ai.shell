@@ -4,12 +4,12 @@ import argparse
 
 def build() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="shell tool for interacting with various LLM APIs",
+        description="Multi-model AI terminal interface with a built-in agent. ",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 examples:
-  ai "your question"               single-turn request
-  ai                               enter interactive chat mode
+  ai                               interactive chat mode
+  ai "your question"               single request
   ai -p openai -m gpt-5.3 "..."    use specific provider/model
   ai --list-models
   ai -p openai --list-models

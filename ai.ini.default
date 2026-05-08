@@ -28,18 +28,18 @@ ANTHROPIC_API_KEY  = ""
 OPENROUTER_API_KEY = ""
 
 [system]
-instruction = "IT expert: Linux, DevOps, Docker, Kubernetes. Short, practical answers."
+instruction = "IT expert: Linux, WSL, DevOps. Short, practical answers."
 
 [shell]
 shell_mode      = true
 max_iterations  = 5
 command_timeout = 30
-dangerous_patterns = ["rm -rf", "rm -r /", "dd if=", "mkfs", "| bash", "| sh"]
+dangerous_patterns = ["rm -r",  "dd if=", "mkfs", "| bash", "| sh"]
 
 [ui]
-disable_logo = 0     # 1 = skip logo on startup
+logo = 0     # 1 = skip logo on startup
 logo_delay   = 0.02  # seconds between lines (0 = instant)
-gradient     = 0.2  # hue range across logo width
+logo_logo_gradient     = 0.2  # hue range across logo width
 unicode      = true  # false = replace ✨ ▸ → etc. with ASCII equivalents
 
 [color]
@@ -48,7 +48,7 @@ provider  = 214   # orange   — provider name
 model     = 157   # green    — model / numbers
 command   = 75    # cyan     — commands / prompt
 dim       = 243   # grey     — secondary text
-marker    = 141   # lavender — AI marker (✨)
+marker    = 222   # gold     — AI marker,spinner (✨)
 error     = 196   # red      — errors
 bold      = 157   # **bold** markdown
 bash      = 75    # ▸ bash command lines

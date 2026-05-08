@@ -31,7 +31,7 @@ def _colorize(line: str, hue_start: float, col_freq: float) -> str:
     return "".join(parts)
 
 
-def print_logo(path: Path | str, delay: float = 0.05, gradient: float = 0.08):
+def print_logo(path: Path | str, delay: float = 0.05, logo_gradient: float = 0.08):
     p = Path(path)
     if not p.exists():
         return
@@ -39,8 +39,8 @@ def print_logo(path: Path | str, delay: float = 0.05, gradient: float = 0.08):
     if not lines:
         return
     max_width = max((len(l) for l in lines), default=1)
-    col_freq  = gradient / max_width
-    row_freq  = gradient / max(len(lines), 1) * 0.4
+    col_freq  = logo_gradient / max_width
+    row_freq  = logo_gradient / max(len(lines), 1) * 0.4
     hue_start = random.random()
     print()
     for row, line in enumerate(lines):
