@@ -11,8 +11,10 @@ except ImportError:
 
 _BASE     = Path(__file__).parent.parent
 _EXAMPLE  = _BASE / "ai.ini.default"
-_CONFIG   = _BASE / "ai.ini"
 _LOCALES  = _BASE / "locales"
+_installed = "site-packages" in str(_BASE)
+_CONFIG   = (Path.home() / ".config" / "ai-shell" / "ai.ini"
+             if _installed else _BASE / "ai.ini")
 
 _PROVIDERS = {
     "google":     ("GOOGLE_API_KEY",     "https://aistudio.google.com/apikey"),
@@ -177,6 +179,7 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
 
         out.append(line)
 
+    _CONFIG.parent.mkdir(parents=True, exist_ok=True)
     with open(_CONFIG, "w", encoding="utf-8") as f:
         f.writelines(out)
     _CONFIG.chmod(0o600)

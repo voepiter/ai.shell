@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ai-shell"
+version = "0.1.0"
+description = "Multi-model LLM CLI client + bash agent"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.28.0",
+    "tomli>=2.0.0; python_version < '3.11'",
+]
+
+[project.scripts]
+ai = "ai:main"
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "ai.py",
+    "modules",
+    "providers",
+    "locales",
+    "logo.ascii",
+    "ai.ini.default",
+]

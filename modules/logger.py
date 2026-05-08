@@ -6,7 +6,7 @@ from typing import Optional
 
 class Logger:
     def __init__(self, log_dir: Path):
-        log_dir.mkdir(exist_ok=True)
+        log_dir.mkdir(parents=True, exist_ok=True)
         today = datetime.now().strftime("%Y%m%d")
         self.logfile = log_dir / f"{today}.log"
 

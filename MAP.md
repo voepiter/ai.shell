@@ -76,6 +76,7 @@ All clients stream responses and return token usage.
 | `locales/en.toml` | English UI strings (setup wizard) |
 | `locales/ru.toml` | Russian UI strings (setup wizard) |
 | `requirements.txt` | Python dependencies |
+| `pyproject.toml` | Build config for `uv tool install git+...` |
 
 ---
 

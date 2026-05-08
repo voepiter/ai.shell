@@ -22,7 +22,9 @@ def main():
     args = parser.build().parse_args()
 
     from pathlib import Path
-    if not (Path(__file__).resolve().parent / "ai.ini").exists():
+    from modules.config import _USER_CFG
+    _here = Path(__file__).resolve().parent
+    if not (_here / "ai.ini").exists() and not _USER_CFG.exists():
         from modules.setup import run as _setup
         _setup(lang=args.language)
         return

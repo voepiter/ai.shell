@@ -12,6 +12,10 @@ except ImportError:
         raise ImportError("tomli is required for Python < 3.11. Install: pip install tomli")
 
 
+_USER_CFG = Path.home() / ".config" / "ai-shell" / "ai.ini"
+_USER_LOG = Path.home() / ".local" / "share" / "ai-shell" / "log"
+
+
 class ConfigLoader:
     def __init__(self, config_path: Optional[Path] = None):
         if config_path is None:
@@ -20,6 +24,8 @@ class ConfigLoader:
             config_path = current_dir / "ai.ini"
             if not config_path.exists():
                 config_path = script_dir / "ai.ini"
+            if not config_path.exists():
+                config_path = _USER_CFG
         self.config_path = config_path
         self.config = self._load()
 
@@ -67,8 +73,9 @@ class Config:
         model:              Optional[str] = None,
         system_instruction: Optional[str] = None,
     ):
-        self.base_dir      = Path(__file__).parent.parent.absolute()
-        self.log_dir       = self.base_dir / "log"
+        self.base_dir = Path(__file__).parent.parent.absolute()
+        _installed    = "site-packages" in str(self.base_dir)
+        self.log_dir  = _USER_LOG if _installed else self.base_dir / "log"
         self.config_loader = ConfigLoader()
 
         self.provider = (provider or self.config_loader.get_default_provider()).lower()
