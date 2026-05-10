@@ -1,33 +1,35 @@
-# AI.SHELL 
+[English](README.md) | [Русский](README.ru.md)
 
-утилита для работы с различными LLM API из терминала: Openrouter, DeepSeek, OpenAI ChatGpt, Anthropic Claude, Google Gemini, XAI Grok.
+# AI.SHELL
 
-## Установка
+A terminal utility for interacting with various LLM APIs: Openrouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
 
-рекомендуется через менеджер пакетов UV 
+## Installation
 
-если он не установлен
+Recommended via the UV package manager.
+
+If not installed:
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
-установка AI.SHELL
+
+Install AI.SHELL:
 
 ```bash
 uv tool install git+https://github.com/voepiter/ai.shell.git
-
 ```
 
-## Конфигурация
+## Configuration
 
-файл `ai.ini` создается при первом запуске мастером, настройки по умолчанию из `ai.ini.default`:
+The `ai.ini` file is created on first run by a setup wizard. Default settings come from `ai.ini.default`.
 
-### API ключи
+### API Keys
 
-Для доступа к моделям LLM вам нужны API ключи
-Они задаются через переменные окружения или из ai.ini в секции [api_keys]:
+Access to LLM models requires API keys.
+They can be set via environment variables or in `ai.ini` under the `[api_keys]` section:
 
-| Провайдер        | Переменная окружения |
+| Provider         | Environment variable |
 |------------------|----------------------|
 | DeepSeek         | `DEEPSEEK_API_KEY`   |
 | Anthropic Claude | `ANTHROPIC_API_KEY`  |
@@ -36,44 +38,43 @@ uv tool install git+https://github.com/voepiter/ai.shell.git
 | Google Gemini    | `GOOGLE_API_KEY`     |
 | OpenRouter       | `OPENROUTER_API_KEY` |
 
-## Использование
+## Usage
 
 ```bash
-# Интерактивный режим с bash агентом
+# Interactive mode with bash agent
 ai
 
-# Одиночный запрос
-ai "ваш запрос"
+# Single-turn query
+ai "your question"
 
-# Выбор провайдера и модели
-ai -p openai -m gpt-5.3-mini "ваш запрос"
+# Select provider and model
+ai -p openai -m gpt-5.3-mini "your question"
 
-# Системная инструкция
-ai -i "You are a Python expert" "напиши функцию для сортировки"
+# System instruction
+ai -i "You are a Python expert" "write a sorting function"
 
-# Список провайдеров
+# List providers
 ai -lp
-# Cписок моделей
+# List models
 ai -p openrouter -lm
 ```
 
-## Опции командной строки
+## Command-line Options
 
-| Опция                     | Описание                     |
+| Option                    | Description                  |
 |---------------------------|------------------------------|
-| `"prompt"`                | Текст запроса к AI           |
-| `-h` / `--help`           | Вывод справки по опциям      |
-| `-l` / `--language`       | Выбор языка                  |
-| `-i` / `--instruction`    | Системная инструкция         |
-| `-p` / `--provider`       | Провайдер                    |
-| `-m` / `--model`          | Имя модели                   |
-| `-lp`/ `--list-providers` | Cписок доступных провайдеров |
-| `-lm`/ `--list-models`    | Cписок доступных моделей     |
+| `"prompt"`                | Query text for the AI        |
+| `-h` / `--help`           | Show help                    |
+| `-l` / `--language`       | Select language              |
+| `-i` / `--instruction`    | System instruction           |
+| `-p` / `--provider`       | Provider                     |
+| `-m` / `--model`          | Model name                   |
+| `-lp`/ `--list-providers` | List available providers     |
+| `-lm`/ `--list-models`    | List available models        |
 
+## Supported Providers
 
-## Поддерживаемые провайдеры
-
-| Провайдер   | Модель по умолчанию  |
+| Provider    | Default model        |
 |-------------|----------------------|
 | OpenRouter  | `openrouter/free`    |
 | DeepSeek    | `deepseek-v4-flash`  |
@@ -82,7 +83,5 @@ ai -p openrouter -lm
 | Google      | `gemini-2.5-flash`   |
 | XAI         | `grok-4.1-fast`      |
 
-OpenRouter даёт доступ к множеству моделей через один API ключ.
-Бесплатные модели имеют суффикс `free`. Полный список: `ai -p openrouter -lm`
-
-
+OpenRouter provides access to many models through a single API key.
+Free models have the `free` suffix. Full list: `ai -p openrouter -lm`
