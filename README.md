@@ -1,10 +1,10 @@
 # AI.SHELL 
 
-утилита для работы с различными LLM API из терминала: Google Gemini, OpenAI ChatGpt, XAI Grok, DeepSeek, Anthropic Claude, Openrouter.
+утилита для работы с различными LLM API из терминала: Openrouter, DeepSeek, OpenAI ChatGpt, Anthropic Claude, Google Gemini, XAI Grok.
 
 ## Установка
 
-рекомендуется через менеджер UV 
+рекомендуется через менеджер пакетов UV 
 
 если он не установлен
 
@@ -59,26 +59,30 @@ ai -p openrouter -lm
 
 ## Опции командной строки
 
-| Опция                   | Описание                                  |
-|-------------------------|-------------------------------------------|
-| `prompt`                | Текст запроса к AI                        |
-| `-p` / `--provider`     | Провайдер                                 |
-| `-m` / `--model`        | Имя модели                                |
-| `-i` / `--instruction`  | Системная инструкция                      |
-| `-l` / `--list-models`  | Показать список доступных моделей и выйти |
+| Опция                     | Описание                     |
+|---------------------------|------------------------------|
+| `"prompt"`                | Текст запроса к AI           |
+| `-h` / `--help`           | Вывод справки по опциям      |
+| `-l` / `--language`       | Выбор языка                  |
+| `-i` / `--instruction`    | Системная инструкция         |
+| `-p` / `--provider`       | Провайдер                    |
+| `-m` / `--model`          | Имя модели                   |
+| `-lp`/ `--list-providers` | Cписок доступных провайдеров |
+| `-lm`/ `--list-models`    | Cписок доступных моделей     |
+
 
 ## Поддерживаемые провайдеры
 
 | Провайдер   | Модель по умолчанию  |
 |-------------|----------------------|
-| DeepSeek    | `deepseek-v4-flash`  |
 | OpenRouter  | `openrouter/free`    |
-| Anthropic   | `claude-sonnet-4-6`  |
+| DeepSeek    | `deepseek-v4-flash`  |
 | OpenAI      | `gpt-5.4-mini`       |
+| Anthropic   | `claude-sonnet-4-6`  |
+| Google      | `gemini-2.5-flash`   |
 | XAI         | `grok-4.1-fast`      |
-| Gemini      | `gemini-2.5-flash`   |
 
 OpenRouter даёт доступ к множеству моделей через один API ключ.
-Бесплатные модели имеют суффикс `:free`. Полный список: `ai -p openrouter -lm`
+Бесплатные модели имеют суффикс `free`. Полный список: `ai -p openrouter -lm`
 
 
