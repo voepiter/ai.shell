@@ -6,6 +6,7 @@ from . import colors as _col
 from . import symbols as sym
 from .api import APIFactory
 from .locale import t
+from .version import get_version
 
 _R = ct.resetcolor
 
@@ -20,7 +21,7 @@ def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = Tr
     sh  = f"{_col.model}on{_R}"  if shell_mode else f"{_col.dim}off{_R}"
     vrb = f"{_col.model}on{_R}"  if verbose    else f"{_col.dim}off{_R}"
 
-    print(f" {_col.marker}{sym.ai_marker}{_R} {t('ui','interactive_chat')}")
+    print(f" {_col.marker}{sym.ai_marker}{_R} {t('ui','interactive_chat')}  {_col.dim}v{get_version()}{_R}")
     print(
         f"    {_col.dim}{t('ui','provider_label')}{_R}{_col.provider}{provider}{_R}  "
         f"{_col.dim}{t('ui','model_label')}{_R}{_col.model}{model}{_R}  "

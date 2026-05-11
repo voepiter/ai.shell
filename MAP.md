@@ -46,6 +46,7 @@ Multi-model LLM CLI client + bash agent.
 | `logger.py` | 38 | `Logger` — per-session JSONL logger (`log/YYYYMMDD_HHMMSS.jsonl`); `log_user()`, `log_assistant()`, `session_id` |
 | `counter.py` | 3  | `RequestCounter` — in-memory request counter, starts at 1 per session |
 | `locale.py` | 47 | `t(*keys, **fmt)` — translated string lookup; `set_lang(code)` — runtime switch |
+| `version.py` | 9  | `get_version()` — reads version from `pyproject.toml` |
 | `setup.py` | 202 | `run()` — first-run interactive setup wizard; helpers: `_detect_lang`, `_ask`, `_yn`, `_step_unicode`, `_step_keys`, `_step_settings`, `_write_config` |
 
 ---

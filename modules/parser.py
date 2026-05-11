@@ -1,10 +1,11 @@
 # CLI argument parser
 import argparse
+from .version import get_version
 
 
 def build() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Multi-model AI terminal assistant with a shell agent. ",
+        description=f"Multi-model AI terminal assistant with a shell agent. v{get_version()}",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 examples:
@@ -14,6 +15,7 @@ examples:
   ai -p openrouter -m gpt-5.3 "prompt" use specific provider/model
         """,
     )
+    parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {get_version()}")
     parser.add_argument("prompt", nargs="?",
                         help="prompt text (omit to enter chat mode)")
     parser.add_argument("-p", "--provider", dest="provider", metavar="NAME",
