@@ -36,12 +36,11 @@ def run(state: AppState, prompt: str):
         spinner.stop()
 
     token_in, token_out = state.api_client.extract_usage(data)
-    ui.print_stats(token_in, token_out, elapsed)
 
     try:
         text = state.api_client.extract_response(data)
-        print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(text)}")
-        print()
+        print(ct.highlight(text))
+        ui.print_stats(token_in, token_out, elapsed)
         state.logger.log_user(prompt)
         state.logger.log_assistant(text, model_name, token_in, token_out, elapsed)
         state.request_counter.request += 1
