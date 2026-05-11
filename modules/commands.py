@@ -116,7 +116,8 @@ def _cmd_sessions(log_dir: Path) -> None:
         print(f" {_col.dim}no sessions found{_R}")
         return
     print(f"\n {_col.dim}{'ID':<20} {'Model':<22} Last prompt{_R}")
-    print(f" {_col.dim}{'-'*20} {'-'*22} {'-'*40}{_R}")
+    print(f" {_col.dim}{'-'*20} {'-'*22} {'-'*50}{_R}")
+    _TOOL_PREFIXES = ("Command output:", "Вывод команды:")
     for f in files:
         session_id = f.stem
         last_user  = ""
@@ -125,13 +126,16 @@ def _cmd_sessions(log_dir: Path) -> None:
             with f.open(encoding="utf-8") as fh:
                 for raw in fh:
                     rec = json.loads(raw)
-                    if rec.get("role") == "user" and not rec.get("tool"):
-                        last_user = rec.get("content", "")
+                    if rec.get("role") == "user":
+                        content = rec.get("content", "")
+                        is_tool = rec.get("tool") or content.startswith(_TOOL_PREFIXES)
+                        if not is_tool:
+                            last_user = content
                     elif rec.get("role") == "assistant" and not model:
                         model = rec.get("model", "")
         except Exception:
             continue
-        short = (last_user[:50] + "…") if len(last_user) > 51 else last_user
+        short = (last_user[:70] + "…") if len(last_user) > 71 else last_user
         short = short.replace("\n", " ")
         print(f" {_col.model}{session_id:<20}{_R} {_col.dim}{model:<22}{_R} {short}")
     print()
