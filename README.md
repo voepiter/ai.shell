@@ -25,7 +25,7 @@ uv tool install git+https://github.com/voepiter/ai.shell.git
 ### Update
 
 ```bash
-uv tool upgrade ai-shell
+uv tool upgrade ai.shell
 ```
 
 ## Configuration

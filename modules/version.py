@@ -4,7 +4,7 @@ from pathlib import Path
 
 def get_version() -> str:
     try:
-        return version("ai-shell")
+        return version("ai.shell")
     except PackageNotFoundError:
         pass
     try:
