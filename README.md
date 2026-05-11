@@ -1,5 +1,7 @@
 [English](README.md) | [Русский](README.ru.md)
 
+![AI.SHELL](ai.shell.jpg)
+
 # AI.SHELL
 
 A terminal utility for interacting with various LLM APIs: Openrouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.

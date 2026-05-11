@@ -1,5 +1,7 @@
 [English](README.md) | [Русский](README.ru.md)
 
+![AI.SHELL](ai.shell.jpg)
+
 # AI.SHELL
 
 
