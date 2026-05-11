@@ -24,8 +24,8 @@ Multi-model LLM CLI client + bash agent.
 | `api.py` | 64 | `APIFactory` — instantiates the right provider client from config |
 | `chat.py` | 107 | `run(state)` — interactive REPL loop |
 | `single_turn.py` | 61 | `run(state, prompt)` — one-shot prompt then exit |
-| `agent.py` | 120 | `agentic_loop(...)` — bash agent loop; `build_system_instruction(...)` |
-| `commands.py` | 77 | `handle(raw, history, state)` — slash-command dispatcher (`/help`, `/clear`, `/model`, …) |
+| `agent.py` | 123 | `agentic_loop(..., verbose)` — bash agent loop; `build_system_instruction(...)` |
+| `commands.py` | 117 | `handle(raw, history, state)` — slash-command dispatcher (`/help`, `/clear`, `/model`, `/verbose`, `/sessions`, `/resume`, …) |
 | `shell.py` | 63 | `CommandResult`; `extract_commands(text)`, `is_dangerous(cmd, patterns)`, `run_command(cmd, timeout)` |
 
 ### UI / display
@@ -43,8 +43,8 @@ Multi-model LLM CLI client + bash agent.
 
 | File | Lines | Key symbols |
 |------|-------|-------------|
-| `logger.py` | 31 | `Logger` — daily rotating file logger (`log/YYYYMMDD.log`) |
-| `counter.py` | 27 | `RequestCounter` — tracks request count per session |
+| `logger.py` | 38 | `Logger` — per-session JSONL logger (`log/YYYYMMDD_HHMMSS.jsonl`); `log_user()`, `log_assistant()`, `session_id` |
+| `counter.py` | 3  | `RequestCounter` — in-memory request counter, starts at 1 per session |
 | `locale.py` | 47 | `t(*keys, **fmt)` — translated string lookup; `set_lang(code)` — runtime switch |
 | `setup.py` | 202 | `run()` — first-run interactive setup wizard; helpers: `_detect_lang`, `_ask`, `_yn`, `_step_unicode`, `_step_keys`, `_step_settings`, `_write_config` |
 

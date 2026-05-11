@@ -42,10 +42,8 @@ def run(state: AppState, prompt: str):
         text = state.api_client.extract_response(data)
         print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(text)}")
         print()
-        state.logger.log_request(
-            model=model_name, request=request, elapsed=elapsed,
-            token_in=token_in, token_out=token_out, prompt=prompt, answer=text,
-        )
+        state.logger.log_user(prompt)
+        state.logger.log_assistant(text, model_name, token_in, token_out, elapsed)
         state.request_counter.request += 1
         if state.shell_mode and extract_commands(text):
             history = [
@@ -56,6 +54,7 @@ def run(state: AppState, prompt: str):
                 history, text, state.api_client, state.config, state.logger,
                 state.request_counter, state.shell_mode,
                 token_in or 0, token_out or 0, elapsed,
+                verbose=state.verbose,
             )
     except ValueError:
         print(json.dumps(data, ensure_ascii=False, indent=2), file=sys.stderr)

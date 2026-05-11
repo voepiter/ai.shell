@@ -1,31 +1,40 @@
-# File logger for requests
+# Session logger — one JSONL file per session
+import json
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
 
 class Logger:
     def __init__(self, log_dir: Path):
         log_dir.mkdir(parents=True, exist_ok=True)
-        today = datetime.now().strftime("%Y%m%d")
-        self.logfile = log_dir / f"{today}.log"
+        self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self._logfile = log_dir / f"{self.session_id}.jsonl"
 
-    def log_request(
+    def log_user(self, content: str) -> None:
+        self._write({"role": "user", "content": content, "ts": self._ts()})
+
+    def log_assistant(
         self,
-        model:     str,
-        request:   int,
-        elapsed:   float,
-        token_in:  Optional[int],
-        token_out: Optional[int],
-        prompt:    str,
-        answer:    str,
-    ):
-        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        entry = (
-            f"{ts} {model}: request: {request} time: {elapsed:.1f} "
-            f"tokens in: {token_in} out: {token_out}\n"
-            f"\t prompt: {prompt}\n"
-            f"\t answer: {answer}\n"
-        )
-        with self.logfile.open("a", encoding="utf-8") as f:
-            f.write(entry)
+        content:    str,
+        model:      str,
+        tokens_in:  int | None,
+        tokens_out: int | None,
+        elapsed:    float,
+    ) -> None:
+        self._write({
+            "role":       "assistant",
+            "content":    content,
+            "ts":         self._ts(),
+            "model":      model,
+            "tokens_in":  tokens_in,
+            "tokens_out": tokens_out,
+            "elapsed":    elapsed,
+        })
+
+    def _write(self, record: dict) -> None:
+        with self._logfile.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    @staticmethod
+    def _ts() -> str:
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")

@@ -92,14 +92,13 @@ def run(state: AppState):
         ui.print_stats(token_in, token_out, elapsed, request)
 
         history.append({"role": "assistant", "content": text})
-        state.logger.log_request(
-            model=model_name, request=request, elapsed=elapsed,
-            token_in=token_in, token_out=token_out, prompt=raw, answer=text,
-        )
+        state.logger.log_user(raw)
+        state.logger.log_assistant(text, model_name, token_in, token_out, elapsed)
         state.request_counter.request += 1
 
         if state.shell_mode:
             state.total_in, state.total_out, state.total_elapsed = agentic_loop(
                 history, text, state.api_client, state.config, state.logger,
                 state.request_counter, state.shell_mode, state.total_in, state.total_out, state.total_elapsed,
+                verbose=state.verbose,
             )

@@ -1,5 +1,7 @@
 # Chat slash-command handler (/model, /provider, /agent, /shell, /help, /quit …)
+import json
 import sys
+from pathlib import Path
 from . import colors as _col
 from . import text as ct
 from . import symbols as sym
@@ -87,5 +89,88 @@ def handle(raw: str, history: list, state) -> str | None:
     if cmd in ("/clear", "/cls"):
         return "reset"
 
+    if cmd == "/verbose":
+        state.verbose = (arg == "true") if arg in ("true", "false") else not state.verbose
+        status = f"{_col.model}on{_R}" if state.verbose else f"{_col.dim}off{_R}"
+        print(f" {_col.dim}verbose {sym.arrow}{_R} {status}")
+        return None
+
+    if cmd == "/sessions":
+        _cmd_sessions(state.config.log_dir)
+        return None
+
+    if cmd == "/resume":
+        if not arg:
+            print(f" {_col.error}usage: /resume <session_id>{_R}", file=sys.stderr)
+            return None
+        _cmd_resume(arg, history, state.config.log_dir)
+        return None
+
     print(f" {_col.error}{t('commands','unknown_cmd',cmd=cmd)}{_R}", file=sys.stderr)
     return None
+
+
+def _cmd_sessions(log_dir: Path) -> None:
+    files = sorted(log_dir.glob("*.jsonl"), reverse=True)[:10]
+    if not files:
+        print(f" {_col.dim}no sessions found{_R}")
+        return
+    print(f"\n {_col.dim}{'ID':<20} {'Date':<17} {'Model':<22} Last prompt{_R}")
+    print(f" {_col.dim}{'-'*20} {'-'*17} {'-'*22} {'-'*30}{_R}")
+    for f in files:
+        session_id = f.stem
+        last_user  = ""
+        model      = ""
+        ts         = ""
+        try:
+            with f.open(encoding="utf-8") as fh:
+                for raw in fh:
+                    rec = json.loads(raw)
+                    if rec.get("role") == "user":
+                        last_user = rec.get("content", "")
+                        ts        = rec.get("ts", "")
+                    elif rec.get("role") == "assistant" and not model:
+                        model = rec.get("model", "")
+        except Exception:
+            continue
+        short = (last_user[:45] + "…") if len(last_user) > 46 else last_user
+        short = short.replace("\n", " ")
+        date  = ts[:16] if ts else session_id[:13].replace("_", " ")
+        print(f" {_col.model}{session_id:<20}{_R} {_col.dim}{date:<17}{_R} {_col.dim}{model:<22}{_R} {short}")
+    print()
+
+
+def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
+    logfile = log_dir / f"{session_id}.jsonl"
+    if not logfile.exists():
+        print(f" {_col.error}session not found: {session_id}{_R}", file=sys.stderr)
+        return
+    records = []
+    try:
+        with logfile.open(encoding="utf-8") as f:
+            for raw in f:
+                records.append(json.loads(raw.strip()))
+    except Exception as e:
+        print(f" {_col.error}failed to read session: {e}{_R}", file=sys.stderr)
+        return
+
+    # Filter to conversation messages only (skip agent tool_msg noise)
+    conv = [r for r in records if r.get("role") in ("user", "assistant")]
+    if not conv:
+        print(f" {_col.dim}session is empty{_R}")
+        return
+
+    print(f"\n {_col.dim}── resumed session {session_id} ({len(conv)} messages) ──{_R}\n")
+    for rec in conv:
+        role    = rec["role"]
+        content = rec.get("content", "")
+        ts      = rec.get("ts", "")
+        if role == "user":
+            print(f" {_col.dim}{ts}  {sym.user_prompt}{_R}  {content}")
+        else:
+            print(f" {_col.dim}{ts}  {sym.ai_marker}{_R}  {ct.highlight(content)}")
+        print()
+
+    history.clear()
+    history.extend({"role": r["role"], "content": r["content"]} for r in conv)
+    print(f" {_col.dim}history loaded — continuing conversation{_R}\n")

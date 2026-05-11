@@ -74,6 +74,24 @@ ai -p openrouter -lm
 | `-lp`/ `--list-providers` | List available providers     |
 | `-lm`/ `--list-models`    | List available models        |
 
+## Session Management
+
+Each interactive session is saved as a JSONL file in `~/.local/share/ai-shell/log/` (or `log/` when running from source).
+
+| Command                   | Description                                        |
+|---------------------------|----------------------------------------------------|
+| `/sessions`               | List the 10 most recent sessions with last prompt  |
+| `/resume <session_id>`    | Load a previous session and continue the dialogue  |
+| `/verbose [true\|false]`  | Toggle display of bash commands in agent mode      |
+
+```bash
+# List recent sessions
+/sessions
+
+# Resume a previous session
+/resume 20260511_143022
+```
+
 ## Supported Providers
 
 | Provider    | Default model        |

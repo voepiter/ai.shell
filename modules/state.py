@@ -13,6 +13,7 @@ class AppState:
     logger:          Logger
     request_counter: RequestCounter
     shell_mode:      bool
+    verbose:         bool  = True
     total_in:        int   = 0
     total_out:       int   = 0
     total_elapsed:   float = 0.0
@@ -33,7 +34,7 @@ class AppState:
                 config_loader=config.config_loader,
             ),
             logger          = Logger(config.log_dir),
-            request_counter = RequestCounter(config.log_dir),
+            request_counter = RequestCounter(),
             shell_mode      = bool(
                 config.config_loader.get("shell", "shell_mode", default=False)
             ),

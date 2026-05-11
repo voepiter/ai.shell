@@ -36,6 +36,7 @@ def agentic_loop(
     total_in:      int,
     total_out:     int,
     total_elapsed: float = 0.0,
+    verbose:       bool  = True,
 ) -> tuple[int, int, float]:
     cfg         = config.config_loader
     max_iter    = cfg.get("shell", "max_iterations",    default=5)
@@ -60,11 +61,13 @@ def agentic_loop(
                     results.append(f"$ {cmd}\n{t('agent','skipped')}")
                     continue
 
-            print(f" {_col.dim}{sym.computer} {cmd}{_R}")
+            if verbose:
+                print(f" {_col.dim}{sym.computer} {cmd}{_R}")
             result = run_command(cmd, timeout=cmd_timeout)
             output = result.to_context()
-            for line in output.split("\n")[1:]:
-                print(f"   {line}")
+            if verbose:
+                for line in output.split("\n")[1:]:
+                    print(f"   {line}")
             results.append(output)
 
         if not results:
@@ -111,11 +114,8 @@ def agentic_loop(
         print_stats(token_in, token_out, elapsed, request)
 
         history.append({"role": "assistant", "content": text})
-        logger.log_request(
-            model=model_name, request=request, elapsed=elapsed,
-            token_in=token_in, token_out=token_out,
-            prompt=tool_msg, answer=text,
-        )
+        logger.log_user(tool_msg)
+        logger.log_assistant(text, model_name, token_in, token_out, elapsed)
         request_counter.request += 1
 
     return total_in, total_out, total_elapsed
