@@ -73,6 +73,21 @@ ai -p openrouter -lm
 | `-m` / `--model`          | Model name                   |
 | `-lp`/ `--list-providers` | List available providers     |
 | `-lm`/ `--list-models`    | List available models        |
+| `-v` / `--verbose`        | Show bash commands and output in agent mode (single-turn only; interactive reads from `ai.ini`) |
+
+## Verbose Mode
+
+Controls whether intermediate bash commands and their output are shown during agent execution. The final answer is always displayed.
+
+| Mode          | Default | How to change                          |
+|---------------|---------|----------------------------------------|
+| Interactive   | `true`  | Set `verbose = true/false` in `ai.ini` `[shell]`, or toggle with `/verbose` |
+| Single-turn   | `false` | Pass `-v` / `--verbose` flag           |
+
+```bash
+# Single-turn with verbose output
+ai -v "show disk usage"
+```
 
 ## Session Management
 
