@@ -5,7 +5,7 @@
 # AI.SHELL
 
 
-утилита для работы с различными LLM API из терминала: Openrouter, DeepSeek, OpenAI ChatGpt, Anthropic Claude, Google Gemini, XAI Grok.
+AI-ассистент для терминала с режимом bash-агента — может выполнять команды оболочки, отвечать на вопросы и работать с файлами. Поддерживает несколько LLM API: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
 
 ## Установка
 

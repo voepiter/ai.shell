@@ -4,7 +4,7 @@
 
 # AI.SHELL
 
-A terminal utility for interacting with various LLM APIs: Openrouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
+AI assistant for your terminal with bash agent mode — can run shell commands, answer questions, and work with your files. Supports multiple LLM APIs: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
 
 ## Installation
 
