@@ -22,6 +22,12 @@ Install AI.SHELL:
 uv tool install git+https://github.com/voepiter/ai.shell.git
 ```
 
+### Update
+
+```bash
+uv tool upgrade ai-shell
+```
+
 ## Configuration
 
 The `ai.ini` file is created on first run by a setup wizard. Default settings come from `ai.ini.default`.

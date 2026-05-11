@@ -20,7 +20,12 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ```bash
 uv tool install git+https://github.com/voepiter/ai.shell.git
+```
 
+### Обновление
+
+```bash
+uv tool upgrade ai-shell
 ```
 
 ## Конфигурация
