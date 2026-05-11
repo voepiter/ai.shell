@@ -4,16 +4,14 @@ import argparse
 
 def build() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Multi-model AI terminal interface with a built-in agent. ",
+        description="Multi-model AI terminal assistant with a shell agent. ",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 examples:
-  ai                               interactive chat mode
-  ai "your question"               single request
-  ai -p openai -m gpt-5.3 "..."    use specific provider/model
-  ai --list-models
-  ai -p openai --list-models
-  ai --list-providers
+  ai                                   interactive chat mode
+  ai "prompt"                          single request
+  ai -p openrouter --list-models       list models for provider
+  ai -p openrouter -m gpt-5.3 "prompt" use specific provider/model
         """,
     )
     parser.add_argument("prompt", nargs="?",
@@ -31,5 +29,5 @@ examples:
     parser.add_argument("-lp", "--list-providers", dest="list_providers", action="store_true",
                         help="list all supported providers and exit")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
-                        help="show bash commands and output in agent mode (single-turn default: off)")
+                        help="show bash commands and output in agent mode (default: off)")
     return parser
