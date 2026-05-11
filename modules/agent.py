@@ -109,8 +109,7 @@ def agentic_loop(
         except ValueError:
             break
 
-        print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(text)}")
-        print()
+        print(f" {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(text)}")
         print_stats(token_in, token_out, elapsed, request)
 
         history.append({"role": "assistant", "content": text})
