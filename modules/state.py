@@ -38,4 +38,9 @@ class AppState:
             shell_mode      = bool(
                 config.config_loader.get("shell", "shell_mode", default=False)
             ),
+            verbose = (
+                bool(args.verbose)                                                   # -v flag set
+                if args.prompt                                                       # single-turn: default off, -v enables
+                else bool(config.config_loader.get("shell", "verbose", default=True))  # interactive: from ini
+            ),
         )

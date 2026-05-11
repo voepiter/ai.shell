@@ -24,7 +24,7 @@ def run(state: AppState):
             logo_gradient=cfg.get("ui", "logo_gradient", default=0.25)
             )
 
-    ui.print_banner(state.config.provider, state.api_client.model, state.shell_mode)
+    ui.print_banner(state.config.provider, state.api_client.model, state.shell_mode, state.verbose)
 
     history = []
 

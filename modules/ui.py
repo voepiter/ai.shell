@@ -16,14 +16,16 @@ def fmt_num(n: int | None) -> str:
     return f"{n / 1000:.1f}k" if n >= 1000 else str(n)
 
 
-def print_banner(provider: str, model: str, shell_mode: bool):
-    sh = f"{_col.model}on{_R}" if shell_mode else f"{_col.dim}off{_R}"
+def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True):
+    sh  = f"{_col.model}on{_R}"  if shell_mode else f"{_col.dim}off{_R}"
+    vrb = f"{_col.model}on{_R}"  if verbose    else f"{_col.dim}off{_R}"
 
     print(f" {_col.marker}{sym.ai_marker}{_R} {t('ui','interactive_chat')}")
     print(
         f"    {_col.dim}{t('ui','provider_label')}{_R}{_col.provider}{provider}{_R}  "
         f"{_col.dim}{t('ui','model_label')}{_R}{_col.model}{model}{_R}  "
-        f"{_col.dim}{t('ui','shell_label')}{_R}{sh}"
+        f"{_col.dim}{t('ui','shell_label')}{_R}{sh}  "
+        f"{_col.dim}verbose:{_R} {vrb}"
     )
     print(f"    {_col.command}/help{_R}{_col.dim} {t('ui','help_for_cmds')}  {sym.middle_dot}  {t('ui','ctrl_c_exit')}{_R}")
 

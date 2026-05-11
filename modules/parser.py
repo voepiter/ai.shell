@@ -30,4 +30,6 @@ examples:
                         help="list available models for selected provider and exit")
     parser.add_argument("-lp", "--list-providers", dest="list_providers", action="store_true",
                         help="list all supported providers and exit")
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
+                        help="show bash commands and output in agent mode (single-turn default: off)")
     return parser
