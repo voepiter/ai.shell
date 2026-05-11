@@ -69,7 +69,7 @@ def handle(raw: str, history: list, state) -> str | None:
         return None
 
     if cmd == "/shell":
-        state.shell_mode = (arg == "on") if arg in ("on", "off") else not state.shell_mode
+        state.shell_mode = not state.shell_mode
         status = f"{_col.model}on{_R}" if state.shell_mode else f"{_col.dim}off{_R}"
         print(f" {_col.dim}{t('commands','shell_agent')} {sym.arrow}{_R} {status}")
         return None

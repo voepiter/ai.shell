@@ -40,15 +40,18 @@ def print_current_status(provider: str, model: str):
 def print_chat_help():
     print()
     print(f" {_col.dim}{t('ui','commands_header')}{_R}")
-    print(f"  {_col.command}/model{_R} {_col.dim}<name>{_R}         {t('ui','help_model')}")
-    print(f"  {_col.command}/provider{_R} {_col.dim}<name>{_R}      {t('ui','help_provider')}  {_col.dim}{t('ui','resets_history')}{_R}")
-    print(f"  {_col.command}/shell{_R} {_col.dim}[on|off]{_R}       {t('ui','help_shell')}")
-    print(f"  {_col.command}/list-models, /lm{_R}     {t('ui','help_list_models')}")
-    print(f"  {_col.command}/list-providers, /lp{_R}  {t('ui','help_list_providers')}")
-    print(f"  {_col.command}/language{_R} {_col.dim}<code>{_R}      {t('ui','help_language')}")
-    print(f"  {_col.command}/usage{_R}                {t('ui','help_usage')}")
-    print(f"  {_col.command}/clear{_R}                {t('ui','help_clear')}")
-    print(f"  {_col.command}/quit{_R}                 {t('ui','help_quit')}")
+    print(f"  {_col.command}/model{_R} {_col.dim}<name>{_R}          {t('ui','help_model')}")
+    print(f"  {_col.command}/provider{_R} {_col.dim}<name>{_R}       {t('ui','help_provider')}  {_col.dim}{t('ui','resets_history')}{_R}")
+    print(f"  {_col.command}/shell{_R}                 {t('ui','help_shell')}")
+    print(f"  {_col.command}/verbose{_R}               toggle bash output in agent mode")
+    print(f"  {_col.command}/sessions{_R}              list recent sessions")
+    print(f"  {_col.command}/resume{_R} {_col.dim}<id>{_R}           load and continue a previous session")
+    print(f"  {_col.command}/list-models, /lm{_R}      {t('ui','help_list_models')}")
+    print(f"  {_col.command}/list-providers, /lp{_R}   {t('ui','help_list_providers')}")
+    print(f"  {_col.command}/language{_R} {_col.dim}<code>{_R}       {t('ui','help_language')}")
+    print(f"  {_col.command}/usage{_R}                 {t('ui','help_usage')}")
+    print(f"  {_col.command}/clear{_R}                 {t('ui','help_clear')}")
+    print(f"  {_col.command}/quit{_R}                  {t('ui','help_quit')}")
 
 
 def print_stats(
