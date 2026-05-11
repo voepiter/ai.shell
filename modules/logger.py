@@ -13,6 +13,9 @@ class Logger:
     def log_user(self, content: str) -> None:
         self._write({"role": "user", "content": content, "ts": self._ts()})
 
+    def log_tool(self, content: str) -> None:
+        self._write({"role": "user", "tool": True, "content": content, "ts": self._ts()})
+
     def log_assistant(
         self,
         content:    str,

@@ -112,7 +112,7 @@ def agentic_loop(
         print_stats(token_in, token_out, elapsed, request)
 
         history.append({"role": "assistant", "content": text})
-        logger.log_user(tool_msg)
+        logger.log_tool(tool_msg)
         logger.log_assistant(text, model_name, token_in, token_out, elapsed)
         request_counter.request += 1
 

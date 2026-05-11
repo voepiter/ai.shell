@@ -115,28 +115,25 @@ def _cmd_sessions(log_dir: Path) -> None:
     if not files:
         print(f" {_col.dim}no sessions found{_R}")
         return
-    print(f"\n {_col.dim}{'ID':<20} {'Date':<17} {'Model':<22} Last prompt{_R}")
-    print(f" {_col.dim}{'-'*20} {'-'*17} {'-'*22} {'-'*30}{_R}")
+    print(f"\n {_col.dim}{'ID':<20} {'Model':<22} Last prompt{_R}")
+    print(f" {_col.dim}{'-'*20} {'-'*22} {'-'*40}{_R}")
     for f in files:
         session_id = f.stem
         last_user  = ""
         model      = ""
-        ts         = ""
         try:
             with f.open(encoding="utf-8") as fh:
                 for raw in fh:
                     rec = json.loads(raw)
-                    if rec.get("role") == "user":
+                    if rec.get("role") == "user" and not rec.get("tool"):
                         last_user = rec.get("content", "")
-                        ts        = rec.get("ts", "")
                     elif rec.get("role") == "assistant" and not model:
                         model = rec.get("model", "")
         except Exception:
             continue
-        short = (last_user[:45] + "…") if len(last_user) > 46 else last_user
+        short = (last_user[:50] + "…") if len(last_user) > 51 else last_user
         short = short.replace("\n", " ")
-        date  = ts[:16] if ts else session_id[:13].replace("_", " ")
-        print(f" {_col.model}{session_id:<20}{_R} {_col.dim}{date:<17}{_R} {_col.dim}{model:<22}{_R} {short}")
+        print(f" {_col.model}{session_id:<20}{_R} {_col.dim}{model:<22}{_R} {short}")
     print()
 
 
