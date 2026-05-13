@@ -2,8 +2,6 @@
 
 All notable changes to ai.shell are documented here.
 
-<!-- Entries are added by /changelog skill. Run: /changelog [v1.2.0] -->
-
 ## v0.1.5 — 2026-05-13
 
 ### New
