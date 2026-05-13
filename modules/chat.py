@@ -18,6 +18,8 @@ _R = ct.resetcolor
 def run(state: AppState):
     """Run interactive chat loop — handles input, slash commands, and agent dispatch."""
     cfg = state.config.config_loader
+
+    # Show logo if enabled in config
     if cfg.get("ui", "logo", default=True):
         print_logo(
             state.config.base_dir / "logo.ascii",
@@ -41,6 +43,7 @@ def run(state: AppState):
         if not raw:
             continue
 
+        # Route slash commands to handler before sending to LLM
         if raw.startswith("/"):
             result = commands.handle(raw, history, state)
             if result == "quit":
@@ -53,6 +56,7 @@ def run(state: AppState):
 
         history.append({"role": "user", "content": raw})
 
+        # Send user message to LLM
         request    = state.request_counter.request
         model_name = state.api_client.model
         spinner    = Spinner(state.config.provider, model_name, request)
@@ -76,6 +80,7 @@ def run(state: AppState):
         finally:
             spinner.stop()
 
+        # Accumulate session token totals
         token_in, token_out = state.api_client.extract_usage(data)
         if token_in:  state.total_in  += token_in
         if token_out: state.total_out += token_out
@@ -97,6 +102,7 @@ def run(state: AppState):
         state.logger.log_assistant(text, model_name, token_in, token_out, elapsed)
         state.request_counter.request += 1
 
+        # Run agent loop if shell commands were detected in the response
         if state.shell_mode:
             state.total_in, state.total_out, state.total_elapsed = agentic_loop(
                 history, text, state.api_client, state.config, state.logger,

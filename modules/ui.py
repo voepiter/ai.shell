@@ -11,6 +11,7 @@ from .version import get_version
 _R = ct.resetcolor
 
 
+# Format token count as "1.2k" for large values, plain number otherwise
 def fmt_num(n: int | None) -> str:
     if n is None:
         return "?"
@@ -32,6 +33,7 @@ def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = Tr
     print(f"    {_col.command}/help{_R}{_col.dim} {t('ui','help_for_cmds')}  {sym.middle_dot}  {t('ui','ctrl_c_exit')}{_R}")
 
 
+# Print current provider and model after a /provider or /model switch
 def print_current_status(provider: str, model: str):
     print(
         f" {_col.dim}provider {sym.arrow}{_R} {_col.provider}{provider}{_R}  "
@@ -77,6 +79,7 @@ def print_stats(
     print(s)
 
 
+# Print cumulative token usage for the session
 def print_usage(total_in: int, total_out: int, total_elapsed: float):
     if not total_in and not total_out:
         print(f" {_col.dim}—{_R}")
@@ -89,6 +92,7 @@ def print_usage(total_in: int, total_out: int, total_elapsed: float):
     )
 
 
+# Print session totals on exit with surrounding blank lines
 def print_chat_totals(total_in: int, total_out: int, total_elapsed: float = 0.0):
     print()
     print_usage(total_in, total_out, total_elapsed)
@@ -121,7 +125,9 @@ def print_models(provider: str, api_client, config_loader):
     except requests.exceptions.RequestException as e:
         print(f" {_col.error}error: {e}{_R}", file=sys.stderr)
         sys.exit(1)
+
     for entry in models:
+        # Models may be plain strings or (id, price) tuples
         if isinstance(entry, tuple):
             mid, price = entry
             suffix = f"  {_col.dim}{price}{_R}" if price else ""

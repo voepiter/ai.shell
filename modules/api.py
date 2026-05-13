@@ -13,7 +13,9 @@ from providers import (
 )
 
 
+# Maps provider names to client classes and their API key env vars
 class APIFactory:
+    # Provider name → client class
     PROVIDERS = {
         "google":     GoogleClient,
         "openai":     OpenAIClient,
@@ -23,6 +25,7 @@ class APIFactory:
         "openrouter": OpenRouterClient,
     }
 
+    # Provider name → expected API key environment variable
     API_KEY_ENV_VARS = {
         "google":     "GOOGLE_API_KEY",
         "openai":     "OPENAI_API_KEY",
@@ -46,6 +49,8 @@ class APIFactory:
         if provider not in cls.PROVIDERS:
             supported = ", ".join(cls.PROVIDERS.keys())
             raise ValueError(f"Unsupported provider: '{provider}'. Supported: {supported}")
+
+        # Resolve API key: argument → env var → ai.ini [api_keys]
         if not api_key:
             env_var = cls.API_KEY_ENV_VARS[provider]
             api_key = os.getenv(env_var)
@@ -53,6 +58,7 @@ class APIFactory:
                 api_key = config_loader.get_api_key(env_var)
             if not api_key:
                 raise ValueError(f"{env_var} is not set (env var or [api_keys] in ai.ini)")
+
         if not model:
             raise ValueError(
                 f"No model configured for '{provider}'. "
@@ -60,6 +66,7 @@ class APIFactory:
             )
         return cls.PROVIDERS[provider](api_key=api_key, model=model, timeout=timeout)
 
+    # Return list of supported provider names
     @classmethod
     def list_providers(cls) -> list:
         return list(cls.PROVIDERS.keys())

@@ -1,4 +1,4 @@
-# First-run setup wizard — creates ai.ini from ai.ini.default
+"""First-run setup wizard — creates ai.ini from ai.ini.default."""
 import locale
 import os
 import sys
@@ -16,6 +16,7 @@ _installed = "site-packages" in str(_BASE)
 _CONFIG   = (Path.home() / ".config" / "ai-shell" / "ai.ini"
              if _installed else _BASE / "ai.ini")
 
+# Provider name → (env var name, api key url)
 _PROVIDERS = {
     "google":     ("GOOGLE_API_KEY",     "https://aistudio.google.com/apikey"),
     "openai":     ("OPENAI_API_KEY",     "https://platform.openai.com/api-keys"),
@@ -26,6 +27,7 @@ _PROVIDERS = {
 }
 
 
+# Detect system language from env vars, fall back to "en"
 def _detect_lang() -> str:
     for var in ("LANGUAGE", "LANG", "LC_ALL", "LC_MESSAGES"):
         val = os.environ.get(var, "")
@@ -42,6 +44,7 @@ def _detect_lang() -> str:
     return "en"
 
 
+# Load locale TOML file; fall back to "en" if requested lang is missing
 def _load_strings(lang: str) -> dict:
     for code in (lang, "en"):
         path = _LOCALES / f"{code}.toml"
@@ -51,6 +54,7 @@ def _load_strings(lang: str) -> dict:
     return {}
 
 
+# Look up a translated string by nested key path and format with kwargs
 def _s(strings: dict, *keys: str, **fmt) -> str:
     val = strings
     for k in keys:
@@ -61,10 +65,12 @@ def _s(strings: dict, *keys: str, **fmt) -> str:
     return s.format(**fmt) if fmt else s
 
 
+# Print a horizontal rule
 def _hr() -> str:
     return "─" * 52
 
 
+# Prompt for text input; return default on empty or interrupt
 def _ask(prompt: str, default: str = "") -> str:
     hint = f" [{default}]" if default else ""
     try:
@@ -74,6 +80,7 @@ def _ask(prompt: str, default: str = "") -> str:
         sys.exit(0)
 
 
+# Prompt for yes/no; return default on empty or interrupt
 def _yn(prompt: str, default: bool = True) -> bool:
     hint = "Y/n" if default else "y/N"
     try:
@@ -84,6 +91,7 @@ def _yn(prompt: str, default: bool = True) -> bool:
     return default if not ans else ans.startswith("y")
 
 
+# Step 1: ask whether the terminal supports unicode symbols
 def _step_unicode(s: dict) -> bool:
     print(f"\n{_s(s, 'unicode', 'title')}")
     print(_hr())
@@ -99,6 +107,7 @@ def _step_unicode(s: dict) -> bool:
     return ok
 
 
+# Step 2: collect API keys for each provider; skip those already in env
 def _step_keys(s: dict) -> dict:
     print(f"\n{_s(s, 'keys', 'title')}")
     print(_hr())
@@ -116,6 +125,7 @@ def _step_keys(s: dict) -> dict:
     return collected
 
 
+# Step 3: choose the default provider from those that have a key configured
 def _step_settings(s: dict, keys: dict) -> str:
     print(f"\n{_s(s, 'settings', 'title')}")
     print(_hr())
@@ -135,6 +145,7 @@ def _step_settings(s: dict, keys: dict) -> str:
     return chosen
 
 
+# Write ai.ini by patching the default template line-by-line
 def _write_config(keys: dict, provider: str, unicode_ok: bool):
     if not _EXAMPLE.exists():
         raise FileNotFoundError(f"Template not found: {_EXAMPLE}")
@@ -149,24 +160,25 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
     for line in lines:
         stripped = line.strip()
 
+        # Track which section we're in
         if stripped.startswith("["):
             section = stripped.strip("[]")
             in_api_keys  = section == "api_keys"
             in_providers = section == "providers"
 
-        # rewrite [api_keys] values
+        # Rewrite [api_keys] values with collected keys
         if in_api_keys and "=" in stripped and not stripped.startswith("#"):
             env_var = stripped.split("=")[0].strip()
             val = keys.get(env_var, "")
             out.append(f'{env_var:<19}= "{val}"\n')
             continue
 
-        # rewrite default provider
+        # Rewrite default provider
         if in_providers and stripped.startswith("default") and "=" in stripped and not stripped.startswith("#"):
             out.append(f'default = "{provider}"\n')
             continue
 
-        # rewrite unicode flag, preserve inline comment if present
+        # Rewrite unicode flag, preserve inline comment if present
         if "unicode" in line and "=" in line and not stripped.startswith("#"):
             flag = "true" if unicode_ok else "false"
             eq = line.index("=")
@@ -185,6 +197,7 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
     _CONFIG.chmod(0o600)
 
 
+# Entry point for the setup wizard — called by main() on first run
 def run(lang: str | None = None):
     lang = lang or _detect_lang()
     s    = _load_strings(lang)

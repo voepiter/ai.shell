@@ -12,6 +12,7 @@ except ImportError:
         raise ImportError("tomli is required for Python < 3.11. Install: pip install tomli")
 
 
+# Default paths for user-level config and logs when installed as a package
 _USER_CFG = Path.home() / ".config" / "ai-shell" / "ai.ini"
 _USER_LOG = Path.home() / ".local" / "share" / "ai-shell" / "log"
 
@@ -19,6 +20,7 @@ _USER_LOG = Path.home() / ".local" / "share" / "ai-shell" / "log"
 class ConfigLoader:
     """Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai-shell/."""
 
+    # Search order: cwd → script dir → user home config
     def __init__(self, config_path: Optional[Path] = None):
         if config_path is None:
             current_dir = Path.cwd()
@@ -31,6 +33,7 @@ class ConfigLoader:
         self.config_path = config_path
         self.config = self._load()
 
+    # Return empty dict on any parse error to allow graceful fallback
     def _load(self) -> Dict:
         if not self.config_path.exists():
             return {}
@@ -52,6 +55,7 @@ class ConfigLoader:
                 return default
         return value if value is not None else default
 
+    # Convenience accessors for commonly used config values
     def get_connection_timeout(self, default: int = 30) -> int:
         return int(self.get("connection", "timeout", default=default))
 
@@ -69,6 +73,7 @@ class ConfigLoader:
         return self.get("system", "instruction", default=None)
 
 
+# Runtime configuration assembled from args and ai.ini
 class Config:
     def __init__(
         self,
@@ -77,6 +82,7 @@ class Config:
         system_instruction: Optional[str] = None,
     ):
         self.base_dir = Path(__file__).parent.parent.absolute()
+        # Use user home log dir when running from an installed package
         _installed    = "site-packages" in str(self.base_dir)
         self.log_dir  = _USER_LOG if _installed else self.base_dir / "log"
         self.config_loader = ConfigLoader()

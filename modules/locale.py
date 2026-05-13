@@ -11,6 +11,7 @@ except ImportError:
 _LOCALES = Path(__file__).parent.parent / "locales"
 
 
+# Detect system language from env vars, fall back to "en"
 def _detect_lang() -> str:
     for var in ("LANGUAGE", "LANG", "LC_ALL", "LC_MESSAGES"):
         val = os.environ.get(var, "")
@@ -27,6 +28,7 @@ def _detect_lang() -> str:
     return "en"
 
 
+# Load locale TOML file; fall back to "en" if requested lang is missing
 def _load(lang: str) -> dict:
     for code in (lang, "en"):
         path = _LOCALES / f"{code}.toml"
@@ -36,6 +38,7 @@ def _load(lang: str) -> dict:
     return {}
 
 
+# Strings are loaded once at import time using the detected system language
 _strings = _load(_detect_lang())
 
 

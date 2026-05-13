@@ -4,6 +4,7 @@ from .config import ConfigLoader
 _cfg = ConfigLoader()
 _unicode = bool(_cfg.get("ui", "unicode", default=True))
 
+# Return unicode symbol if unicode is enabled, otherwise ASCII fallback
 def _u(uni: str, asc: str) -> str:
     return uni if _unicode else asc
 

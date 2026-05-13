@@ -40,14 +40,19 @@ def run(state: AppState, prompt: str):
 
     try:
         text = state.api_client.extract_response(data)
+
+        # Suppress output if the agent loop will print its own response
         agent_will_run = state.shell_mode and extract_commands(text)
         if not agent_will_run:
             print(ct.highlight(text))
             ui.print_stats(token_in, token_out, elapsed)
+
         state.logger.log_user(prompt)
         state.logger.log_assistant(text, model_name, token_in, token_out, elapsed)
         state.request_counter.request += 1
+
         if agent_will_run:
+            # Build minimal history so the agent loop has conversation context
             history = [
                 {"role": "user",      "content": prompt},
                 {"role": "assistant", "content": text},

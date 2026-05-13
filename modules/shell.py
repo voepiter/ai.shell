@@ -4,10 +4,12 @@ import subprocess
 from dataclasses import dataclass
 from typing import List
 
+# Regex patterns to extract commands from LLM output
 BASH_RE     = re.compile(r"<bash>(.*?)</bash>", re.DOTALL | re.IGNORECASE)
 MARKDOWN_RE = re.compile(r"```(?:bash|sh)\s*\n?(.*?)```", re.DOTALL)
 
 
+# Holds the result of a single shell command execution
 @dataclass
 class CommandResult:
     command:   str
@@ -33,6 +35,7 @@ class CommandResult:
 
 def extract_commands(text: str) -> List[str]:
     """Extract bash commands from <bash>…</bash> tags or markdown code blocks."""
+    # Prefer explicit <bash> tags; fall back to markdown fences
     cmds = [m.strip() for m in BASH_RE.findall(text) if m.strip()]
     if not cmds:
         cmds = [m.strip() for m in MARKDOWN_RE.findall(text) if m.strip()]

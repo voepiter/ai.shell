@@ -1,7 +1,10 @@
 # Named color palette — loaded from ai.ini [color] section
 from .config import ConfigLoader
 
+# Build ANSI 256-color foreground escape sequence
 def _fg(n: int) -> str: return f"\033[38;5;{n}m"
+
+# Build ANSI 256-color background escape sequence
 def _bg(n: int) -> str: return f"\033[48;5;{n}m"
 
 _cfg = ConfigLoader()

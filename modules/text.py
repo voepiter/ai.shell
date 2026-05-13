@@ -3,17 +3,21 @@ import re
 from . import colors as _col
 from . import symbols as sym
 
+# ANSI reset to default terminal color
 resetcolor = "\033[0m"
 
 
+# Build ANSI 256-color foreground escape sequence
 def forecolor(color: int) -> str:
     return f"\033[38;5;{color}m"
 
 
+# Build ANSI 256-color background escape sequence
 def backcolor(color: int) -> str:
     return f"\033[48;5;{color}m"
 
 
+# Apply ANSI color formatting to markdown-style syntax in LLM output
 def highlight(text: str) -> str:
     # **bold**
     text = re.sub(
@@ -22,6 +26,7 @@ def highlight(text: str) -> str:
         text,
     )
 
+    # Format bash code block or tag as colored command lines
     def _fmt_bash(code: str) -> str:
         lines = [l for l in code.strip().splitlines() if l.strip()]
         return "\n".join(f"{_col.bash}{sym.bash_prefix} {l}{resetcolor}" for l in lines) if lines else ""
@@ -42,7 +47,7 @@ def highlight(text: str) -> str:
         flags=re.S,
     )
 
-    # other code blocks
+    # Other fenced code blocks with language label
     text = re.sub(
         r"```([a-zA-Z0-9_-]+)\s*\n?(.*?)```",
         lambda m: (
@@ -60,7 +65,7 @@ def highlight(text: str) -> str:
         text,
     )
 
-    # убираем * в начале строки
+    # Strip leading asterisks used as markdown list bullets
     text = re.sub(r"^\*+", "", text, flags=re.M)
 
     return text

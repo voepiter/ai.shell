@@ -6,6 +6,7 @@ from .logger import Logger
 from .counter import RequestCounter
 
 
+# Central state object passed to chat, single_turn, and agent modules
 @dataclass
 class AppState:
     config:          Config

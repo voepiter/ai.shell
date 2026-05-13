@@ -56,6 +56,7 @@ def handle(raw: str, history: list, state) -> str | None:
             print(f" {_col.error}{t('commands','usage_provider')}{_R}", file=sys.stderr)
             return None
         try:
+            # Switch provider and reset to its default model
             state.config.provider = arg.lower()
             state.config.model    = state.config.config_loader.get_default_model(state.config.provider)
             state.api_client = APIFactory.create_client(
@@ -91,6 +92,7 @@ def handle(raw: str, history: list, state) -> str | None:
         return "reset"
 
     if cmd == "/verbose":
+        # Accept explicit true/false or toggle if no arg given
         state.verbose = (arg == "true") if arg in ("true", "false") else not state.verbose
         status = f"{_col.model}on{_R}" if state.verbose else f"{_col.dim}off{_R}"
         print(f" {_col.dim}verbose {sym.arrow}{_R} {status}")
@@ -117,11 +119,14 @@ def _cmd_sessions(log_dir: Path) -> None:
     if not files:
         print(f" {_col.dim}{t('commands','no_sessions')}{_R}")
         return
+
     col_id     = t('commands', 'sessions_col_id')
     col_model  = t('commands', 'sessions_col_model')
     col_prompt = t('commands', 'sessions_col_prompt')
     print(f"\n {_col.dim}{col_id:<20} {col_model:<22} {col_prompt}{_R}")
     print(f" {_col.dim}{'-'*20} {'-'*22} {'-'*50}{_R}")
+
+    # Tool messages start with these prefixes — skip them when finding last user prompt
     _TOOL_PREFIXES = ("Command output:", "Вывод команды:")
     for f in files:
         session_id = f.stem
@@ -152,6 +157,8 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
     if not logfile.exists():
         print(f" {_col.error}{t('commands','session_not_found',id=session_id)}{_R}", file=sys.stderr)
         return
+
+    # Parse all JSONL records from the session file
     records = []
     try:
         with logfile.open(encoding="utf-8") as f:
@@ -167,6 +174,7 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
         print(f" {_col.dim}{t('commands','session_empty')}{_R}")
         return
 
+    # Display transcript
     print(f"\n {_col.dim}{t('commands','resumed_session',id=session_id,n=len(conv))}{_R}\n")
     for rec in conv:
         role    = rec["role"]
@@ -178,6 +186,7 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
             print(f" {_col.dim}{ts}  {sym.ai_marker}{_R}  {ct.highlight(content)}")
         print()
 
+    # Replace active history with loaded session
     history.clear()
     history.extend({"role": r["role"], "content": r["content"]} for r in conv)
     print(f" {_col.dim}{t('commands','history_loaded')}{_R}\n")

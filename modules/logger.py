@@ -7,6 +7,7 @@ from pathlib import Path
 class Logger:
     """Writes one JSONL file per session to log_dir/YYYYMMDD_HHMMSS.jsonl."""
 
+    # Create log directory and open a new session file named by current timestamp
     def __init__(self, log_dir: Path):
         log_dir.mkdir(parents=True, exist_ok=True)
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -39,10 +40,12 @@ class Logger:
             "elapsed":    elapsed,
         })
 
+    # Append one record as a JSON line to the session file
     def _write(self, record: dict) -> None:
         with self._logfile.open("a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
+    # Return current time as a human-readable timestamp string
     @staticmethod
     def _ts() -> str:
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")

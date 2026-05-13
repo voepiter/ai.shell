@@ -10,6 +10,7 @@ from providers import APIError
 
 _R = ct.resetcolor
 
+# System prompt appended when shell mode is active
 _SHELL_HINT = (
     "You have shell access on this machine. "
     "To answer questions that require running commands, execute them — do not just suggest. "
@@ -40,6 +41,7 @@ def agentic_loop(
     verbose:       bool  = True,
 ) -> tuple[int, int, float]:
     """Run bash commands from LLM response, feed output back, repeat until no commands remain."""
+    # Read shell execution limits from config
     cfg         = config.config_loader
     max_iter    = cfg.get("shell", "max_iterations",    default=5)
     cmd_timeout = cfg.get("shell", "command_timeout",   default=30)
@@ -52,6 +54,7 @@ def agentic_loop(
 
         results = []
         for cmd in commands:
+            # Prompt user before running anything matching dangerous patterns
             if is_dangerous(cmd, danger_pat):
                 print(f"\n {_col.error}{t('agent','dangerous')}{_R} {cmd}")
                 print(f" {_col.dim}{t('agent','execute_prompt')}{_R} ", end="", flush=True)
@@ -74,6 +77,7 @@ def agentic_loop(
         if not results:
             break
 
+        # Feed all command output back to the LLM as a user message
         tool_msg = f"{t('agent','cmd_output')}\n" + "\n\n".join(results)
         history.append({"role": "user", "content": tool_msg})
 
@@ -100,6 +104,7 @@ def agentic_loop(
         finally:
             spinner.stop()
 
+        # Accumulate token usage across iterations
         token_in, token_out = api_client.extract_usage(data)
         if token_in:  total_in  += token_in
         if token_out: total_out += token_out
