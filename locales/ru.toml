@@ -37,6 +37,9 @@ help_model          = "сменить модель"
 help_provider       = "сменить провайдер"
 resets_history      = "(сбрасывает историю)"
 help_shell          = "режим shell агента"
+help_verbose        = "переключить вывод bash в агент-режиме"
+help_sessions       = "список недавних сессий"
+help_resume         = "загрузить и продолжить предыдущую сессию"
 help_list_models    = "список моделей провайдера"
 help_list_providers = "список провайдеров"
 help_usage          = "итоги сессии"
@@ -59,12 +62,40 @@ interrupted     = "прервано"
 history_cleared = "история очищена"
 
 [commands]
-usage_model    = "использование: /model <имя>"
-usage_provider = "использование: /provider <имя>"
-shell_agent    = "shell агент"
-unknown_cmd    = "неизвестная команда: {cmd}  (введите /help)"
-usage_language = "использование: /language <код>"
-language_set   = "язык → {lang}"
+usage_model         = "использование: /model <имя>"
+usage_provider      = "использование: /provider <имя>"
+shell_agent         = "shell агент"
+unknown_cmd         = "неизвестная команда: {cmd}  (введите /help)"
+usage_language      = "использование: /language <код>"
+language_set        = "язык → {lang}"
+usage_resume        = "использование: /resume <session_id>"
+no_sessions         = "сессии не найдены"
+sessions_col_id     = "ID"
+sessions_col_model  = "Модель"
+sessions_col_prompt = "Последний запрос"
+resumed_session     = "── возобновлена сессия {id} ({n} сообщений) ──"
+history_loaded      = "история загружена — продолжаем диалог"
+session_not_found   = "сессия не найдена: {id}"
+session_read_error  = "ошибка чтения сессии: {e}"
+session_empty       = "сессия пуста"
+
+[parser]
+description         = "Многомодельный AI-ассистент для терминала с bash агентом."
+prompt_help         = "текст запроса (без аргумента — интерактивный режим)"
+provider_help       = "провайдер (google, openai, xai, deepseek, anthropic, openrouter)"
+model_help          = "имя модели (по умолчанию из ai.ini [models])"
+instruction_help    = "системная инструкция (переопределяет ai.ini [system])"
+language_help       = "код языка: en, ru (переопределяет системную локаль)"
+list_models_help    = "список доступных моделей провайдера и выход"
+list_providers_help = "список всех провайдеров и выход"
+verbose_help        = "показывать команды bash и вывод в режиме агента (умолч.: выкл.)"
+examples            = """
+примеры:
+  ai                                   интерактивный режим
+  ai "запрос"                          одиночный запрос
+  ai -p openrouter --list-models       список моделей провайдера
+  ai -p openrouter -m gpt-5.3 "запрос" конкретный провайдер/модель
+        """
 
 [agent]
 dangerous      = "опасная команда:"

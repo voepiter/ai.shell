@@ -18,7 +18,22 @@ from modules.locale import set_lang
 from modules.state import AppState
 
 
+def _early_lang() -> str | None:
+    """Detect language from -l/--language argv or ai.ini, before parser is built."""
+    argv = sys.argv[1:]
+    for flag in ("-l", "--language"):
+        if flag in argv:
+            idx = argv.index(flag)
+            if idx + 1 < len(argv):
+                return argv[idx + 1]
+    from modules.config import ConfigLoader
+    return ConfigLoader().get("ui", "language", default=None)
+
+
 def main():
+    lang = _early_lang()
+    if lang:
+        set_lang(lang)
     args = parser.build().parse_args()
 
     from pathlib import Path

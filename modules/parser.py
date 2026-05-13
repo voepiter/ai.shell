@@ -1,35 +1,30 @@
 # CLI argument parser
 import argparse
 from .version import get_version
+from .locale import t
 
 
 def build() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description=f"Multi-model AI terminal assistant with a shell agent. v{get_version()}",
+        description=f"{t('parser','description')} v{get_version()}",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-examples:
-  ai                                   interactive chat mode
-  ai "prompt"                          single request
-  ai -p openrouter --list-models       list models for provider
-  ai -p openrouter -m gpt-5.3 "prompt" use specific provider/model
-        """,
+        epilog=t('parser', 'examples'),
     )
     parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {get_version()}")
     parser.add_argument("prompt", nargs="?",
-                        help="prompt text (omit to enter chat mode)")
+                        help=t('parser', 'prompt_help'))
     parser.add_argument("-p", "--provider", dest="provider", metavar="NAME",
-                        help="provider (google, openai, xai, deepseek, anthropic, openrouter)")
+                        help=t('parser', 'provider_help'))
     parser.add_argument("-m", "--model", dest="model", metavar="NAME",
-                        help="model name (default: from ai.ini [models])")
+                        help=t('parser', 'model_help'))
     parser.add_argument("-i", "--instruction", dest="instruction", metavar="TEXT",
-                        help="system instruction (overrides ai.ini [system] instruction)")
+                        help=t('parser', 'instruction_help'))
     parser.add_argument("-l", "--language", dest="language", metavar="CODE",
-                        help="language code: en, ru (overrides system locale)")
+                        help=t('parser', 'language_help'))
     parser.add_argument("-lm", "--list-models", dest="list_models", action="store_true",
-                        help="list available models for selected provider and exit")
+                        help=t('parser', 'list_models_help'))
     parser.add_argument("-lp", "--list-providers", dest="list_providers", action="store_true",
-                        help="list all supported providers and exit")
+                        help=t('parser', 'list_providers_help'))
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
-                        help="show bash commands and output in agent mode (default: off)")
+                        help=t('parser', 'verbose_help'))
     return parser

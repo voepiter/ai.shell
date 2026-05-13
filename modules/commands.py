@@ -101,7 +101,7 @@ def handle(raw: str, history: list, state) -> str | None:
 
     if cmd == "/resume":
         if not arg:
-            print(f" {_col.error}usage: /resume <session_id>{_R}", file=sys.stderr)
+            print(f" {_col.error}{t('commands','usage_resume')}{_R}", file=sys.stderr)
             return None
         _cmd_resume(arg, history, state.config.log_dir)
         return None
@@ -113,9 +113,12 @@ def handle(raw: str, history: list, state) -> str | None:
 def _cmd_sessions(log_dir: Path) -> None:
     files = sorted(log_dir.glob("*.jsonl"), reverse=True)[:10]
     if not files:
-        print(f" {_col.dim}no sessions found{_R}")
+        print(f" {_col.dim}{t('commands','no_sessions')}{_R}")
         return
-    print(f"\n {_col.dim}{'ID':<20} {'Model':<22} Last prompt{_R}")
+    col_id     = t('commands', 'sessions_col_id')
+    col_model  = t('commands', 'sessions_col_model')
+    col_prompt = t('commands', 'sessions_col_prompt')
+    print(f"\n {_col.dim}{col_id:<20} {col_model:<22} {col_prompt}{_R}")
     print(f" {_col.dim}{'-'*20} {'-'*22} {'-'*50}{_R}")
     _TOOL_PREFIXES = ("Command output:", "Вывод команды:")
     for f in files:
@@ -144,7 +147,7 @@ def _cmd_sessions(log_dir: Path) -> None:
 def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
     logfile = log_dir / f"{session_id}.jsonl"
     if not logfile.exists():
-        print(f" {_col.error}session not found: {session_id}{_R}", file=sys.stderr)
+        print(f" {_col.error}{t('commands','session_not_found',id=session_id)}{_R}", file=sys.stderr)
         return
     records = []
     try:
@@ -152,16 +155,16 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
             for raw in f:
                 records.append(json.loads(raw.strip()))
     except Exception as e:
-        print(f" {_col.error}failed to read session: {e}{_R}", file=sys.stderr)
+        print(f" {_col.error}{t('commands','session_read_error',e=e)}{_R}", file=sys.stderr)
         return
 
     # Filter to conversation messages only (skip agent tool_msg noise)
     conv = [r for r in records if r.get("role") in ("user", "assistant")]
     if not conv:
-        print(f" {_col.dim}session is empty{_R}")
+        print(f" {_col.dim}{t('commands','session_empty')}{_R}")
         return
 
-    print(f"\n {_col.dim}── resumed session {session_id} ({len(conv)} messages) ──{_R}\n")
+    print(f"\n {_col.dim}{t('commands','resumed_session',id=session_id,n=len(conv))}{_R}\n")
     for rec in conv:
         role    = rec["role"]
         content = rec.get("content", "")
@@ -174,4 +177,4 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
 
     history.clear()
     history.extend({"role": r["role"], "content": r["content"]} for r in conv)
-    print(f" {_col.dim}history loaded — continuing conversation{_R}\n")
+    print(f" {_col.dim}{t('commands','history_loaded')}{_R}\n")
