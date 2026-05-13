@@ -47,8 +47,7 @@ logger.py  51  Per-session JSONL logger.
 	Logger.log_tool(content)  Append agent tool-call result to session log.
 	Logger.log_assistant(content, model, tokens_in, tokens_out, elapsed)  Append assistant response with model and token metadata.
 
-logo.py  59  ASCII logo display with lolcat-style rainbow gradient.
-	print_logo(path, delay, logo_gradient)  Print ASCII logo with animated rainbow gradient; skip silently if file missing.
+logo.py  61  ASCII logo display with lolcat-style rainbow gradient.
 
 parser.py  37  CLI argument parser.
 	build  Build and return the argparse parser with localised help strings.
