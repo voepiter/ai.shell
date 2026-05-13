@@ -17,6 +17,8 @@ def _hue_to_rgb(hue: float):
     h = (hue % 1.0) * 6
     i = int(h)
     f = h - i
+
+    # HSV-to-RGB conversion: each segment (i) maps to a primary/secondary color blend
     if   i == 0: return 1,   f,   0
     elif i == 1: return 1-f, 1,   0
     elif i == 2: return 0,   1,   f
@@ -35,7 +37,7 @@ def _colorize(line: str, hue_start: float, col_freq: float) -> str:
     return "".join(parts)
 
 
-def print_logo(path: Path | str, delay: float = 0.05, logo_gradient: float = 0.08):
+def print_logo(path: Path | str, delay: float = 0.05, logo_gradient: float = 0.25):
     """Print ASCII logo with animated rainbow gradient; skip silently if file missing."""
     p = Path(path)
     if not p.exists():

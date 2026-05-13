@@ -6,7 +6,7 @@ Multi-model LLM CLI client + bash agent.
 
 ## Entry Point
 
-ai.py  67  Entry point — parses args, routes to setup / single-turn / interactive chat.
+ai.py  72  Entry point — parses args, routes to setup / single-turn / interactive chat.
 	_early_lang  Read language from -l argv or ai.ini [ui] language before parser is built.
 	main  Parse args, set locale early, dispatch to setup / single_turn / chat.
 
@@ -31,9 +31,12 @@ commands.py  192  Slash-command dispatcher for interactive chat (/help, /model, 
 	_cmd_sessions(log_dir)  Print table of 10 most recent sessions from JSONL logs.
 	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
 
-config.py  94  Configuration — TOML file loader and typed runtime config.
+config.py  159  Configuration — TOML file loader, typed runtime config, and config migration.
 	ConfigLoader  Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai-shell/.
 	ConfigLoader.get(*keys)  Look up a nested key path in config; return default if any key is missing.
+	_raw_lines(path)  Parse a config file and return {section: {key: raw_line}} for migration.
+	_insert_into_section(content, section, lines)  Append lines at the end of a named section in config file text.
+	migrate_config(config_loader)  Add keys from ai.ini.default that are missing from the user's ai.ini.
 
 counter.py  6  Per-session request counter, starts at 1.
 
@@ -48,6 +51,7 @@ logger.py  51  Per-session JSONL logger.
 	Logger.log_assistant(content, model, tokens_in, tokens_out, elapsed)  Append assistant response with model and token metadata.
 
 logo.py  61  ASCII logo display with lolcat-style rainbow gradient.
+	print_logo(path, delay, logo_gradient)  Print ASCII logo with animated rainbow gradient; skip silently if file missing.
 
 parser.py  37  CLI argument parser.
 	build  Build and return the argparse parser with localised help strings.
@@ -78,6 +82,15 @@ ui.py  137  Terminal rendering — banners, stats, model/provider lists.
 	print_stats(token_in, token_out, elapsed, request_num)  Print token usage and elapsed time for one request.
 	print_providers(config_loader)  Print all providers with default model and env var name.
 	print_models(provider, api_client, config_loader)  Fetch and print available models for provider; mark default.
+
+updates.py  105  Auto-update — once per day checks GitHub for a newer release and runs uv tool update.
+	_check_path(config_loader)  Return path to the last-check date file, stored next to ai.ini.
+	_checked_today(path)  Return True if the check file contains today's date.
+	_mark_checked(path)  Write today's date to the check file.
+	_newer(latest, current)  Return True if latest version tuple is greater than current.
+	_fetch_latest(timeout)  Fetch latest release tag from GitHub; return version string or None.
+	_changelog_section(version, timeout)  Fetch CHANGELOG.md from GitHub and return the section for version.
+	check_and_update(config_loader)  Check once per day for a newer release; update and show changelog if found.
 
 version.py  19  Version resolution — installed package metadata or pyproject.toml fallback.
 	get_version  Return version from installed package metadata or pyproject.toml fallback.

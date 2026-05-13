@@ -53,6 +53,11 @@ def main():
     if lang:
         set_lang(lang)
 
+    from modules.config import migrate_config
+    from modules.updates import check_and_update
+    migrate_config(state.config.config_loader)
+    check_and_update(state.config.config_loader)
+
     if args.list_providers:
         ui.print_providers(state.config.config_loader)
     elif args.list_models:

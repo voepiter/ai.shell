@@ -1,5 +1,6 @@
-"""Configuration — TOML file loader and typed runtime config."""
+"""Configuration — TOML file loader, typed runtime config, and config migration."""
 import os
+import re
 from pathlib import Path
 from typing import Dict, Optional
 
@@ -13,8 +14,9 @@ except ImportError:
 
 
 # Default paths for user-level config and logs when installed as a package
-_USER_CFG = Path.home() / ".config" / "ai-shell" / "ai.ini"
-_USER_LOG = Path.home() / ".local" / "share" / "ai-shell" / "log"
+_USER_CFG    = Path.home() / ".config" / "ai-shell" / "ai.ini"
+_USER_LOG    = Path.home() / ".local" / "share" / "ai-shell" / "log"
+_DEFAULT_CFG = Path(__file__).parent.parent / "ai.ini.default"
 
 
 class ConfigLoader:
@@ -92,3 +94,66 @@ class Config:
         self.timeout  = self.config_loader.get_connection_timeout()
 
         self.system_instruction = system_instruction or self.config_loader.get_system_instruction() or ""
+
+
+def _raw_lines(path: Path) -> Dict[str, Dict[str, str]]:
+    """Parse a config file and return {section: {key: raw_line}} for migration."""
+    result: Dict[str, Dict[str, str]] = {}
+    section = None
+    for line in path.read_text().splitlines():
+        stripped = line.strip()
+        if stripped.startswith("[") and stripped.endswith("]"):
+            section = stripped[1:-1]
+            result.setdefault(section, {})
+        elif section and "=" in stripped and not stripped.startswith("#"):
+            key = stripped.split("=")[0].strip()
+            result[section][key] = line
+    return result
+
+
+def _insert_into_section(content: str, section: str, lines: list) -> str:
+    """Append lines at the end of a named section in config file text."""
+    added = "\n".join(lines)
+    m = re.search(rf"^\[{re.escape(section)}\]", content, re.M)
+    if not m:
+        # Section absent — append at end of file
+        return content.rstrip() + f"\n\n[{section}]\n{added}\n"
+    rest = content[m.end():]
+    next_m = re.search(r"^\[", rest, re.M)
+    if next_m:
+        insert_at = m.end() + next_m.start()
+        return content[:insert_at].rstrip() + f"\n{added}\n\n" + content[insert_at:]
+    return content.rstrip() + f"\n{added}\n"
+
+
+def migrate_config(config_loader) -> None:
+    """Add keys from ai.ini.default that are missing from the user's ai.ini."""
+    user_path = config_loader.config_path
+    if not user_path.exists() or not _DEFAULT_CFG.exists():
+        return
+
+    with open(user_path, "rb") as f:
+        user_cfg = tomllib.load(f)
+    with open(_DEFAULT_CFG, "rb") as f:
+        default_cfg = tomllib.load(f)
+
+    default_raw = _raw_lines(_DEFAULT_CFG)
+
+    # Collect raw lines for keys present in default but absent in user config
+    missing: Dict[str, list] = {}
+    for section, values in default_cfg.items():
+        if not isinstance(values, dict):
+            continue
+        for key in values:
+            if key not in (user_cfg.get(section) or {}):
+                raw = default_raw.get(section, {}).get(key)
+                if raw:
+                    missing.setdefault(section, []).append(raw)
+
+    if not missing:
+        return
+
+    content = user_path.read_text()
+    for section, lines in missing.items():
+        content = _insert_into_section(content, section, lines)
+    user_path.write_text(content)

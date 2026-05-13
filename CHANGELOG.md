@@ -2,6 +2,16 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.1.6 — 2026-05-13
+
+### New
+- Auto-update: once per day on startup, checks GitHub for a new release and runs `uv tool update ai.shell` if one is found; shows the relevant changelog section after updating
+- Config migration: missing keys from `ai.ini.default` are automatically added to the user's `ai.ini` on startup — no manual edits needed after upgrades
+- `autoupdate = true` key in `[ui]` section of `ai.ini`; set to `false` to disable
+
+### Changed
+- `pyproject.toml` now includes `[project.urls]` with the repository link
+
 ## v0.1.5 — 2026-05-13
 
 ### New

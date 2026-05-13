@@ -123,3 +123,6 @@ Each interactive session is saved as a JSONL file in `~/.local/share/ai-shell/lo
 
 OpenRouter provides access to many models through a single API key.
 Free models have the `free` suffix. Full list: `ai -p openrouter -lm`
+
+---
+[Changelog](CHANGELOG.md)

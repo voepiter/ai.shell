@@ -126,3 +126,6 @@ OpenRouter даёт доступ к множеству моделей через
 Бесплатные модели имеют суффикс `free`. Полный список: `ai -p openrouter -lm`
 
 
+
+---
+[Changelog](CHANGELOG.md)

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ai.shell"
-version = "0.1.5"
+version = "0.1.6"
 description = "Multi-model LLM CLI client + bash agent"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -12,6 +12,9 @@ dependencies = [
     "requests>=2.28.0",
     "tomli>=2.0.0; python_version < '3.11'",
 ]
+
+[project.urls]
+Repository = "https://github.com/voepiter/ai.shell"
 
 [project.scripts]
 ai = "ai:main"
