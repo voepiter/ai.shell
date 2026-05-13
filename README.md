@@ -1,31 +1,16 @@
-[English](README.md) | [Русский](README.ru.md)
-
 ![AI.SHELL](ai.shell.jpg)
 
 # AI.SHELL
 
 AI terminal interface with a built-in agent. can run shell commands. Supports APIs: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
+[Changelog](CHANGELOG.md)
 
 ## Installation
 
-Recommended via the UV package manager.
-
-If not installed:
-
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-Install AI.SHELL:
+Recommended via the [UV package manager](https://github.com/astral-sh/uv)
 
 ```bash
 uv tool install git+https://github.com/voepiter/ai.shell.git
-```
-
-### Update
-
-```bash
-uv tool upgrade ai.shell
 ```
 
 ## Configuration
@@ -125,4 +110,3 @@ OpenRouter provides access to many models through a single API key.
 Free models have the `free` suffix. Full list: `ai -p openrouter -lm`
 
 ---
-[Changelog](CHANGELOG.md)
