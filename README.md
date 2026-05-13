@@ -58,9 +58,6 @@ ai "your question"
 # Select provider and model
 ai -p openai -m gpt-5.3-mini "your question"
 
-# System instruction
-ai -i "You are a Python expert" "write a sorting function"
-
 # List providers
 ai -lp
 # List models
