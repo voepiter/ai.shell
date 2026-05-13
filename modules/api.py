@@ -1,4 +1,4 @@
-# Factory for creating API provider clients
+"""Factory for creating API provider clients."""
 import os
 from typing import Optional
 
@@ -41,6 +41,7 @@ class APIFactory:
         timeout:       int = 30,
         config_loader=None,
     ) -> BaseAPIClient:
+        """Instantiate the right provider client; resolves api_key from env or ai.ini."""
         provider = (provider or os.getenv("AI_PROVIDER", "google")).lower()
         if provider not in cls.PROVIDERS:
             supported = ", ".join(cls.PROVIDERS.keys())

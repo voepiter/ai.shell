@@ -1,4 +1,4 @@
-# Shell agent loop — command execution and multi-step LLM iteration
+"""Shell agent loop — iterative bash command execution and LLM interaction."""
 from . import text as ct
 from . import colors as _col
 from .shell import extract_commands, is_dangerous, run_command
@@ -20,6 +20,7 @@ _SHELL_HINT = (
 
 
 def build_system_instruction(base: str, shell_mode: bool) -> str:
+    """Append shell hint to system instruction when shell mode is active."""
     if not shell_mode:
         return base
     return f"{base}\n\n{_SHELL_HINT}" if base else _SHELL_HINT
@@ -38,6 +39,7 @@ def agentic_loop(
     total_elapsed: float = 0.0,
     verbose:       bool  = True,
 ) -> tuple[int, int, float]:
+    """Run bash commands from LLM response, feed output back, repeat until no commands remain."""
     cfg         = config.config_loader
     max_iter    = cfg.get("shell", "max_iterations",    default=5)
     cmd_timeout = cfg.get("shell", "command_timeout",   default=30)

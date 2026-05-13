@@ -1,4 +1,4 @@
-# Configuration — file loader (ConfigLoader) and app config (Config)
+"""Configuration — TOML file loader and typed runtime config."""
 import os
 from pathlib import Path
 from typing import Dict, Optional
@@ -17,6 +17,8 @@ _USER_LOG = Path.home() / ".local" / "share" / "ai-shell" / "log"
 
 
 class ConfigLoader:
+    """Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai-shell/."""
+
     def __init__(self, config_path: Optional[Path] = None):
         if config_path is None:
             current_dir = Path.cwd()
@@ -39,6 +41,7 @@ class ConfigLoader:
             return {}
 
     def get(self, *keys, default=None):
+        """Look up a nested key path in config; return default if any key is missing."""
         value = self.config
         for key in keys:
             if isinstance(value, dict):

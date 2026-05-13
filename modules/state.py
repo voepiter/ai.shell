@@ -1,4 +1,4 @@
-# AppState — shared runtime state passed across all modules
+"""Shared runtime state passed across all modules."""
 from dataclasses import dataclass
 from .config import Config
 from .api import APIFactory
@@ -20,6 +20,7 @@ class AppState:
 
     @classmethod
     def from_args(cls, args) -> "AppState":
+        """Build AppState from parsed CLI args and ai.ini config."""
         config = Config(
             provider=args.provider,
             model=args.model,

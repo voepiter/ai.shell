@@ -1,4 +1,4 @@
-# Terminal rendering — stats, banners, model/provider lists
+"""Terminal rendering — banners, stats, model/provider lists."""
 import sys
 import requests
 from . import text as ct
@@ -18,6 +18,7 @@ def fmt_num(n: int | None) -> str:
 
 
 def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True):
+    """Print interactive mode header with provider, model, shell/verbose status."""
     sh  = f"{_col.model}on{_R}"  if shell_mode else f"{_col.dim}off{_R}"
     vrb = f"{_col.model}on{_R}"  if verbose    else f"{_col.dim}off{_R}"
 
@@ -39,6 +40,7 @@ def print_current_status(provider: str, model: str):
 
 
 def print_chat_help():
+    """Print available slash commands."""
     print()
     print(f" {_col.dim}{t('ui','commands_header')}{_R}")
     print(f"  {_col.command}/model{_R} {_col.dim}<name>{_R}          {t('ui','help_model')}")
@@ -61,6 +63,7 @@ def print_stats(
     elapsed:     float,
     request_num: int | None = None,
 ):
+    """Print token usage and elapsed time for one request."""
     if token_in is None and token_out is None:
         return
     req = f"{_col.dim}#{request_num} " if request_num is not None else ""
@@ -93,6 +96,7 @@ def print_chat_totals(total_in: int, total_out: int, total_elapsed: float = 0.0)
 
 
 def print_providers(config_loader):
+    """Print all providers with default model and env var name."""
     print()
     print(f" {_col.dim}{t('ui','providers_header')}{_R}")
     for name in APIFactory.list_providers():
@@ -106,6 +110,7 @@ def print_providers(config_loader):
 
 
 def print_models(provider: str, api_client, config_loader):
+    """Fetch and print available models for provider; mark default."""
     default_model = config_loader.get_default_model(provider) or ""
     print(f"\n {_col.dim}{t('ui','provider_label')}{_R} {_col.provider}{provider}{_R}")
     try:

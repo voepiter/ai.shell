@@ -1,4 +1,4 @@
-# ASCII logo display with lolcat-style rainbow animation
+"""ASCII logo display with lolcat-style rainbow gradient."""
 import random
 import time
 from pathlib import Path
@@ -32,6 +32,7 @@ def _colorize(line: str, hue_start: float, col_freq: float) -> str:
 
 
 def print_logo(path: Path | str, delay: float = 0.05, logo_gradient: float = 0.08):
+    """Print ASCII logo with animated rainbow gradient; skip silently if file missing."""
     p = Path(path)
     if not p.exists():
         return

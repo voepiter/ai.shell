@@ -1,4 +1,4 @@
-# Animated status spinner shown while waiting for LLM response
+"""Animated status spinner shown while waiting for LLM response."""
 import time
 import threading
 from . import text as ct

@@ -1,4 +1,4 @@
-# Terminal symbols — unicode or ASCII based on [ui] unicode setting
+"""Terminal symbols — unicode or ASCII depending on ai.ini [ui] unicode setting."""
 from .config import ConfigLoader
 
 _cfg = ConfigLoader()

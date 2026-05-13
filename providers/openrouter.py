@@ -1,4 +1,4 @@
-# OpenRouter API client — unified gateway to multiple LLM providers
+"""OpenRouter API client — unified gateway to multiple LLM providers (openrouter.ai/api/v1)."""
 from typing import Dict, List, Optional, Tuple
 import requests
 

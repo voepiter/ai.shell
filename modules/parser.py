@@ -1,10 +1,11 @@
-# CLI argument parser
+"""CLI argument parser."""
 import argparse
 from .version import get_version
 from .locale import t
 
 
 def build() -> argparse.ArgumentParser:
+    """Build and return the argparse parser with localised help strings."""
     parser = argparse.ArgumentParser(
         description=f"{t('parser','description')} v{get_version()}",
         formatter_class=argparse.RawDescriptionHelpFormatter,

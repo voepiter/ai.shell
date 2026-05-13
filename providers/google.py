@@ -1,4 +1,4 @@
-# Google Gemini API client
+"""Google Gemini API client (generativelanguage.googleapis.com)."""
 from typing import Dict, List, Optional, Tuple
 import requests
 

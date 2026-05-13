@@ -1,4 +1,4 @@
-# xAI Grok API client
+"""xAI Grok API client (api.x.ai/v1/chat/completions)."""
 from typing import Dict, List, Optional, Tuple
 import requests
 

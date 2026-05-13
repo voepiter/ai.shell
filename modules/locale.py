@@ -1,4 +1,4 @@
-# Language detection and string lookup — used by all modules except setup.py
+"""Language detection and translated string lookup."""
 import os
 import locale as _locale
 from pathlib import Path
@@ -40,7 +40,7 @@ _strings = _load(_detect_lang())
 
 
 def set_lang(lang: str) -> str:
-    """Load strings for *lang* (falls back to 'en'). Returns the resolved language code."""
+    """Load strings for lang code (falls back to en); return resolved code."""
     global _strings
     for code in (lang, "en"):
         path = _LOCALES / f"{code}.toml"
@@ -52,7 +52,7 @@ def set_lang(lang: str) -> str:
 
 
 def t(*keys: str, **fmt) -> str:
-    """Look up a translated string by section + key. Falls back to the last key name."""
+    """Look up translated string by section + key; format with kwargs."""
     val = _strings
     for k in keys:
         if not isinstance(val, dict):

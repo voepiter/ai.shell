@@ -1,4 +1,4 @@
-# OpenAI API client
+"""OpenAI API client (api.openai.com/v1/chat/completions)."""
 from typing import Dict, List, Optional, Tuple
 import requests
 

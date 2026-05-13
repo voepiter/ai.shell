@@ -2,95 +2,110 @@
 
 Multi-model LLM CLI client + bash agent.
 
+---
+
 ## Entry Point
 
-| File | Lines | Role |
-|------|-------|------|
-| `ai.py` | 68 | Entry point — parses args, routes to setup / single-turn / chat |
-
-`_early_lang()` — reads `-l` argv or `ai.ini [ui] language` before `parser.build()` so `-h` output is already localised  
-`main()` — dispatches: setup wizard → `modules/setup`, single-turn → `modules/single_turn`, interactive chat → `modules/chat`
+ai.py  67  Entry point — parses args, routes to setup / single-turn / interactive chat.
+	_early_lang  Read language from -l argv or ai.ini [ui] language before parser is built.
+	main  Parse args, set locale early, dispatch to setup / single_turn / chat.
 
 ---
 
 ## modules/
 
-### Core flow
+agent.py  121  Shell agent loop — iterative bash command execution and LLM interaction.
+	build_system_instruction(base, shell_mode)  Append shell hint to system instruction when shell mode is active.
+	agentic_loop(history, text, api_client, config, logger, request_counter, shell_mode, total_in, total_out, total_elapsed, verbose)  Run bash commands from LLM response, feed output back, repeat until no commands remain.
 
-| File | Lines | Key symbols |
-|------|-------|-------------|
-| `state.py` | 37 | `AppState` — shared runtime state (provider, model, history, flags) |
-| `parser.py` | 30 | `build()` → `argparse.ArgumentParser`; all help strings via `t('parser',...)` |
-| `config.py` | 78 | `ConfigLoader` — reads ai.ini; `Config` — typed config object |
-| `api.py` | 64 | `APIFactory` — instantiates the right provider client from config |
-| `chat.py` | 107 | `run(state)` — interactive REPL loop |
-| `single_turn.py` | 61 | `run(state, prompt)` — one-shot prompt then exit |
-| `agent.py` | 123 | `agentic_loop(..., verbose)` — bash agent loop; `build_system_instruction(...)` |
-| `commands.py` | 180 | `handle(raw, history, state)` — slash-command dispatcher (`/help`, `/clear`, `/model`, `/verbose`, `/sessions`, `/resume`, …); `_cmd_sessions(log_dir)`, `_cmd_resume(session_id, history, log_dir)` |
-| `shell.py` | 63 | `CommandResult`; `extract_commands(text)`, `is_dangerous(cmd, patterns)`, `run_command(cmd, timeout)` |
+api.py  65  Factory for creating API provider clients.
+	APIFactory.create_client(provider, api_key, model, timeout, config_loader)  Instantiate the right provider client; resolves api_key from env or ai.ini.
 
-### UI / display
+chat.py  105  Interactive REPL loop.
+	run(state)  Run interactive chat loop — handles input, slash commands, and agent dispatch.
 
-| File | Lines | Key symbols |
-|------|-------|-------------|
-| `ui.py` | 126 | `print_banner`, `print_chat_help`, `print_stats`, `print_chat_totals`, `print_models`, `print_providers`, `print_current_status`, `fmt_num` |
-| `spinner.py` | 51 | `Spinner` — animated terminal spinner (context manager) |
-| `logo.py` | 50 | `print_logo(path, delay, logo_gradient)` — RGB gradient logo renderer |
-| `text.py` | 66 | `forecolor`, `backcolor`, `highlight` — ANSI helpers |
-| `colors.py` | 25 | `_fg(n)`, `_bg(n)` — low-level 256-color ANSI codes |
-| `symbols.py` | 18 | `_u(uni, asc)` — Unicode/ASCII symbol picker |
+colors.py  25
 
-### Utilities
+commands.py  183  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
+	handle(raw, history, state)  Route slash command to handler; return 'quit', 'reset', or None.
+	_cmd_sessions(log_dir)  Print table of 10 most recent sessions from JSONL logs.
+	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
 
-| File | Lines | Key symbols |
-|------|-------|-------------|
-| `logger.py` | 38 | `Logger` — per-session JSONL logger (`log/YYYYMMDD_HHMMSS.jsonl`); `log_user()`, `log_assistant()`, `session_id` |
-| `counter.py` | 3  | `RequestCounter` — in-memory request counter, starts at 1 per session |
-| `locale.py` | 62 | `t(*keys, **fmt)` — translated string lookup; `set_lang(code)` — runtime switch; auto-detects system lang on import |
-| `version.py` | 9  | `get_version()` — reads version from `pyproject.toml` |
-| `setup.py` | 202 | `run()` — first-run interactive setup wizard; helpers: `_detect_lang`, `_ask`, `_yn`, `_step_unicode`, `_step_keys`, `_step_settings`, `_write_config` |
+config.py  88  Configuration — TOML file loader and typed runtime config.
+	ConfigLoader  Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai-shell/.
+	ConfigLoader.get(*keys)  Look up a nested key path in config; return default if any key is missing.
+
+counter.py  4  Per-session request counter, starts at 1.
+
+locale.py  62  Language detection and translated string lookup.
+	set_lang(lang)  Load strings for lang code (falls back to en); return resolved code.
+	t(*keys, **fmt)  Look up translated string by section + key; format with kwargs.
+
+logger.py  48  Per-session JSONL logger.
+	Logger  Writes one JSONL file per session to log_dir/YYYYMMDD_HHMMSS.jsonl.
+	Logger.log_user(content)  Append user message to session log.
+	Logger.log_tool(content)  Append agent tool-call result to session log.
+	Logger.log_assistant(content, model, tokens_in, tokens_out, elapsed)  Append assistant response with model and token metadata.
+
+logo.py  51  ASCII logo display with lolcat-style rainbow gradient.
+	print_logo(path, delay, logo_gradient)  Print ASCII logo with animated rainbow gradient; skip silently if file missing.
+
+parser.py  31  CLI argument parser.
+	build  Build and return the argparse parser with localised help strings.
+
+setup.py  205
+
+shell.py  67  Shell command executor for agent mode.
+	CommandResult.to_context  Format result as context string for LLM (stdout, stderr, exit code).
+	extract_commands(text)  Extract bash commands from <bash>…</bash> tags or markdown code blocks.
+	is_dangerous(command, patterns)  Return True if command matches any dangerous pattern from config.
+	run_command(command, timeout)  Run shell command, capture stdout/stderr; return CommandResult.
+
+single_turn.py  63  Single-turn (non-interactive) request handler.
+	run(state, prompt)  Send one prompt, print response; runs agent loop if shell commands are detected.
+
+spinner.py  50  Animated status spinner shown while waiting for LLM response.
+
+state.py  47  Shared runtime state passed across all modules.
+	AppState.from_args(args)  Build AppState from parsed CLI args and ai.ini config.
+
+symbols.py  18  Terminal symbols — unicode or ASCII depending on ai.ini [ui] unicode setting.
+
+text.py  66  Terminal text rendering — ANSI colors and markdown highlighting.
+
+ui.py  131  Terminal rendering — banners, stats, model/provider lists.
+	print_banner(provider, model, shell_mode, verbose)  Print interactive mode header with provider, model, shell/verbose status.
+	print_chat_help  Print available slash commands.
+	print_stats(token_in, token_out, elapsed, request_num)  Print token usage and elapsed time for one request.
+	print_providers(config_loader)  Print all providers with default model and env var name.
+	print_models(provider, api_client, config_loader)  Fetch and print available models for provider; mark default.
+
+version.py  17  Version resolution — installed package metadata or pyproject.toml fallback.
+	get_version  Return version from installed package metadata or pyproject.toml fallback.
 
 ---
 
 ## providers/
 
-All clients stream responses and return token usage.
+anthropic.py  60  Anthropic Claude API client (api.anthropic.com/v1/messages).
 
-| File | Lines | Class | Backend |
-|------|-------|-------|---------|
-| `base.py` | 99 | `BaseAPIClient` (ABC), `APIError` | — |
-| `anthropic.py` | 60 | `AnthropicClient(BaseAPIClient)` | Anthropic API |
-| `openai.py` | 58 | `OpenAIClient(BaseAPIClient)` | OpenAI API |
-| `openrouter.py` | 55 | `OpenRouterClient(OpenAIClient)` | OpenRouter (OpenAI-compat) |
-| `deepseek.py` | 42 | `DeepSeekClient(BaseAPIClient)` | DeepSeek API |
-| `google.py` | 55 | `GoogleClient(BaseAPIClient)` | Google Gemini |
-| `xai.py` | 42 | `XAIClient(BaseAPIClient)` | xAI Grok |
+base.py  99  Abstract base client and APIError — shared by all provider implementations.
+
+deepseek.py  42  DeepSeek API client (api.deepseek.com/v1/chat/completions).
+
+google.py  55  Google Gemini API client (generativelanguage.googleapis.com).
+
+openai.py  58  OpenAI API client (api.openai.com/v1/chat/completions).
+
+openrouter.py  55  OpenRouter API client — unified gateway to multiple LLM providers (openrouter.ai/api/v1).
+
+xai.py  42  xAI Grok API client (api.x.ai/v1/chat/completions).
 
 ---
 
 ## Config & data files
 
-| File | Purpose |
-|------|---------|
-| `ai.ini` | Active user config (provider, model, keys, flags) |
-| `ai.ini.default` | Template / reference config |
-| `logo.ascii` | ASCII art shown at startup |
-| `locales/en.toml` | English UI strings — sections: `[unicode]` `[keys]` `[settings]` `[ui]` `[common]` `[commands]` `[parser]` `[agent]` |
-| `locales/ru.toml` | Russian UI strings — same sections as en.toml |
-| `requirements.txt` | Python dependencies |
-| `pyproject.toml` | Build config for `uv tool install git+...` |
-
----
-
-## Data flow
-
-```
-ai.py main()
-  ├─ setup wizard ──────────────────────────► modules/setup.py
-  ├─ single-turn: modules/single_turn.run()
-  │     └─ APIFactory → provider.stream() → print
-  └─ chat: modules/chat.run()
-        ├─ commands.handle()   (slash commands)
-        └─ agentic_loop()      (bash agent, when --shell)
-              └─ shell.run_command() → back to API
-```
+locales/en.toml  English UI strings — [unicode][keys][settings][ui][common][commands][parser][agent]
+locales/ru.toml  Russian UI strings — same sections as en.toml
+ai.ini.default   Template / reference config
+pyproject.toml   Package build config (name=ai.shell, entry point: ai=ai:main)

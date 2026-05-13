@@ -1,4 +1,4 @@
-# Terminal text rendering — ANSI colors and markdown highlight
+"""Terminal text rendering — ANSI colors and markdown highlighting."""
 import re
 from . import colors as _col
 from . import symbols as sym

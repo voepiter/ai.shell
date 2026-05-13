@@ -1,4 +1,4 @@
-# Interactive chat loop
+"""Interactive REPL loop."""
 import sys
 import json
 from . import text as ct
@@ -16,6 +16,7 @@ _R = ct.resetcolor
 
 
 def run(state: AppState):
+    """Run interactive chat loop — handles input, slash commands, and agent dispatch."""
     cfg = state.config.config_loader
     if cfg.get("ui", "logo", default=True):
         print_logo(

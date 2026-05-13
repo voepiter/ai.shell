@@ -1,4 +1,4 @@
-# Base class for API clients
+"""Abstract base client and APIError — shared by all provider implementations."""
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple
 import sys

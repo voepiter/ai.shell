@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-# AI shell chat — entry point
-# Usage: ai "your question"  |  ai  (interactive)
-# API keys: GOOGLE_API_KEY, OPENAI_API_KEY, XAI_API_KEY, DEEPSEEK_API_KEY, ANTHROPIC_API_KEY, OPENROUTER_API_KEY
+"""Entry point — parses args, routes to setup / single-turn / interactive chat."""
 
 import sys
 
@@ -19,7 +17,7 @@ from modules.state import AppState
 
 
 def _early_lang() -> str | None:
-    """Detect language from -l/--language argv or ai.ini, before parser is built."""
+    """Read language from -l argv or ai.ini [ui] language before parser is built."""
     argv = sys.argv[1:]
     for flag in ("-l", "--language"):
         if flag in argv:
@@ -31,6 +29,7 @@ def _early_lang() -> str | None:
 
 
 def main():
+    """Parse args, set locale early, dispatch to setup / single_turn / chat."""
     lang = _early_lang()
     if lang:
         set_lang(lang)

@@ -1,4 +1,4 @@
-# Anthropic Claude API client
+"""Anthropic Claude API client (api.anthropic.com/v1/messages)."""
 from typing import Dict, List, Optional, Tuple
 import requests
 

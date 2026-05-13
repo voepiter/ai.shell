@@ -1,4 +1,4 @@
-# Chat slash-command handler (/model, /provider, /agent, /shell, /help, /quit …)
+"""Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …)."""
 import json
 import sys
 from pathlib import Path
@@ -14,6 +14,7 @@ _R = ct.resetcolor
 
 
 def handle(raw: str, history: list, state) -> str | None:
+    """Route slash command to handler; return 'quit', 'reset', or None."""
     # state: AppState — .config, .api_client, .shell_mode
     parts = raw.split(maxsplit=1)
     cmd   = parts[0].lower()
@@ -111,6 +112,7 @@ def handle(raw: str, history: list, state) -> str | None:
 
 
 def _cmd_sessions(log_dir: Path) -> None:
+    """Print table of 10 most recent sessions from JSONL logs."""
     files = sorted(log_dir.glob("*.jsonl"), reverse=True)[:10]
     if not files:
         print(f" {_col.dim}{t('commands','no_sessions')}{_R}")
@@ -145,6 +147,7 @@ def _cmd_sessions(log_dir: Path) -> None:
 
 
 def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
+    """Load session history into active conversation and display transcript."""
     logfile = log_dir / f"{session_id}.jsonl"
     if not logfile.exists():
         print(f" {_col.error}{t('commands','session_not_found',id=session_id)}{_R}", file=sys.stderr)

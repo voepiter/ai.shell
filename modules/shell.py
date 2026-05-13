@@ -1,4 +1,4 @@
-# Shell command executor for agent mode
+"""Shell command executor for agent mode."""
 import re
 import subprocess
 from dataclasses import dataclass
@@ -17,6 +17,7 @@ class CommandResult:
     timed_out: bool = False
 
     def to_context(self) -> str:
+        """Format result as context string for LLM (stdout, stderr, exit code)."""
         parts = [f"$ {self.command}"]
         if self.timed_out:
             parts.append("[timed out]")
@@ -31,6 +32,7 @@ class CommandResult:
 
 
 def extract_commands(text: str) -> List[str]:
+    """Extract bash commands from <bash>…</bash> tags or markdown code blocks."""
     cmds = [m.strip() for m in BASH_RE.findall(text) if m.strip()]
     if not cmds:
         cmds = [m.strip() for m in MARKDOWN_RE.findall(text) if m.strip()]
@@ -38,11 +40,13 @@ def extract_commands(text: str) -> List[str]:
 
 
 def is_dangerous(command: str, patterns: List[str]) -> bool:
+    """Return True if command matches any dangerous pattern from config."""
     lower = command.lower()
     return any(p.lower() in lower for p in patterns)
 
 
 def run_command(command: str, timeout: int = 30) -> CommandResult:
+    """Run shell command, capture stdout/stderr; return CommandResult."""
     try:
         result = subprocess.run(
             command,

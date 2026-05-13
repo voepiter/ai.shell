@@ -1,19 +1,23 @@
-# Session logger — one JSONL file per session
+"""Per-session JSONL logger."""
 import json
 from datetime import datetime
 from pathlib import Path
 
 
 class Logger:
+    """Writes one JSONL file per session to log_dir/YYYYMMDD_HHMMSS.jsonl."""
+
     def __init__(self, log_dir: Path):
         log_dir.mkdir(parents=True, exist_ok=True)
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self._logfile = log_dir / f"{self.session_id}.jsonl"
 
     def log_user(self, content: str) -> None:
+        """Append user message to session log."""
         self._write({"role": "user", "content": content, "ts": self._ts()})
 
     def log_tool(self, content: str) -> None:
+        """Append agent tool-call result to session log."""
         self._write({"role": "user", "tool": True, "content": content, "ts": self._ts()})
 
     def log_assistant(
@@ -24,6 +28,7 @@ class Logger:
         tokens_out: int | None,
         elapsed:    float,
     ) -> None:
+        """Append assistant response with model and token metadata."""
         self._write({
             "role":       "assistant",
             "content":    content,
