@@ -80,27 +80,29 @@ session_read_error  = "failed to read session: {e}"
 session_empty       = "session is empty"
 
 [parser]
-usage_label         = "usage"
-positionals_title   = "arguments"
-options_title       = "options"
-help_help           = "show this help message and exit"
-version_help        = "show version number and exit"
-description         = "Multi-model AI terminal assistant with a shell agent."
-prompt_help         = "prompt text (omit to enter chat mode)"
-provider_help       = "provider (google, openai, xai, deepseek, anthropic, openrouter)"
-model_help          = "model name (default: from ai.ini [models])"
-instruction_help    = "system instruction (overrides ai.ini [system] instruction)"
-language_help       = "language code: en, ru (overrides system locale)"
-list_models_help    = "list available models for selected provider and exit"
-list_providers_help = "list all supported providers and exit"
-verbose_help        = "show bash commands and output in agent mode (default: off)"
-examples            = """
+full_help = """ai.shell v{version} — multi-model AI terminal assistant with a shell agent.
+
+usage: ai [-h] [-V] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [prompt]
+
+arguments:
+  prompt                  prompt text (omit to enter chat mode)
+
+options:
+  -h, --help              show this help and exit
+  -V, --version           show version and exit
+  -p, --provider NAME     provider: google, openai, xai, deepseek, anthropic, openrouter
+  -m, --model NAME        model name (default: from ai.ini [models])
+  -i, --instruction TEXT  system instruction (overrides ai.ini [system])
+  -l, --language CODE     language: en, ru (overrides system locale)
+  -lm, --list-models      list available models for selected provider and exit
+  -lp, --list-providers   list all supported providers and exit
+  -v, --verbose           show bash commands and output in agent mode
+
 examples:
-  ai                                   interactive chat mode
-  ai "prompt"                          single request
-  ai -p openrouter --list-models       list models for provider
-  ai -p openrouter -m gpt-5.3 "prompt" use specific provider/model
-        """
+  ai                                    interactive chat mode
+  ai "prompt"                           single request
+  ai -p openrouter --list-models        list models for provider
+  ai -p openrouter -m gpt-5.3 "prompt"  use specific provider/model"""
 
 [skills]
 header    = "skills:"

@@ -1,51 +1,32 @@
 """CLI argument parser."""
 import argparse
+import sys
 from .version import get_version
 from .locale import t
 
 
-# Formatter that replaces hardcoded English "usage:" prefix with a localised string
-class _LocalizedFormatter(argparse.RawDescriptionHelpFormatter):
-    def _format_usage(self, usage, actions, groups, prefix):
-        if prefix is None:
-            prefix = t('parser', 'usage_label') + ': '
-        return super()._format_usage(usage, actions, groups, prefix)
+# Custom action: print locale help block and exit
+class _HelpAction(argparse.Action):
+    def __init__(self, option_strings, dest=argparse.SUPPRESS, default=argparse.SUPPRESS, help=None):
+        super().__init__(option_strings=option_strings, dest=dest, default=default,
+                         nargs=0, help=help)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        print(t('parser', 'full_help').format(version=get_version()))
+        sys.exit(0)
 
 
 def build() -> argparse.ArgumentParser:
     """Build and return the argparse parser with localised help strings."""
-    parser = argparse.ArgumentParser(
-        description=f"{t('parser','description')} v{get_version()}",
-        formatter_class=_LocalizedFormatter,
-        epilog=t('parser', 'examples'),
-        add_help=False,
-    )
-    parser._positionals.title = t('parser', 'positionals_title')
-    parser._optionals.title   = t('parser', 'options_title')
-    # Help and version flags (added manually to allow localised help strings)
-    parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
-                        help=t('parser', 'help_help'))
-    parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {get_version()}",
-                        help=t('parser', 'version_help'))
-    # Positional prompt — omit to enter interactive mode
-    parser.add_argument("prompt", nargs="?",
-                        help=t('parser', 'prompt_help'))
-    # Provider / model selection
-    parser.add_argument("-p", "--provider", dest="provider", metavar="NAME",
-                        help=t('parser', 'provider_help'))
-    parser.add_argument("-m", "--model", dest="model", metavar="NAME",
-                        help=t('parser', 'model_help'))
-    # Session overrides
-    parser.add_argument("-i", "--instruction", dest="instruction", metavar="TEXT",
-                        help=t('parser', 'instruction_help'))
-    parser.add_argument("-l", "--language", dest="language", metavar="CODE",
-                        help=t('parser', 'language_help'))
-    # Listing flags
-    parser.add_argument("-lm", "--list-models", dest="list_models", action="store_true",
-                        help=t('parser', 'list_models_help'))
-    parser.add_argument("-lp", "--list-providers", dest="list_providers", action="store_true",
-                        help=t('parser', 'list_providers_help'))
-    # Agent mode flag
-    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
-                        help=t('parser', 'verbose_help'))
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("-h", "--help", action=_HelpAction)
+    parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {get_version()}")
+    parser.add_argument("prompt", nargs="?")
+    parser.add_argument("-p", "--provider", dest="provider", metavar="NAME")
+    parser.add_argument("-m", "--model", dest="model", metavar="NAME")
+    parser.add_argument("-i", "--instruction", dest="instruction", metavar="TEXT")
+    parser.add_argument("-l", "--language", dest="language", metavar="CODE")
+    parser.add_argument("-lm", "--list-models", dest="list_models", action="store_true")
+    parser.add_argument("-lp", "--list-providers", dest="list_providers", action="store_true")
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true")
     return parser

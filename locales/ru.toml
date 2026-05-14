@@ -80,27 +80,29 @@ session_read_error  = "ошибка чтения сессии: {e}"
 session_empty       = "сессия пуста"
 
 [parser]
-usage_label         = "использование"
-positionals_title   = "аргументы"
-options_title       = "параметры"
-help_help           = "показать эту справку и выйти"
-version_help        = "показать версию и выйти"
-description         = "Многомодельный AI-ассистент для терминала с bash агентом."
-prompt_help         = "текст запроса (без аргумента — интерактивный режим)"
-provider_help       = "провайдер (google, openai, xai, deepseek, anthropic, openrouter)"
-model_help          = "имя модели (по умолчанию из ai.ini [models])"
-instruction_help    = "системная инструкция (переопределяет ai.ini [system])"
-language_help       = "код языка: en, ru (переопределяет системную локаль)"
-list_models_help    = "список доступных моделей провайдера и выход"
-list_providers_help = "список всех провайдеров и выход"
-verbose_help        = "показывать команды bash и вывод в режиме агента (умолч.: выкл.)"
-examples            = """
+full_help = """ai.shell v{version} — многомодельный AI-ассистент для терминала с bash агентом.
+
+использование: ai [-h] [-V] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [prompt]
+
+аргументы:
+  prompt                  текст запроса (без аргумента — интерактивный режим)
+
+параметры:
+  -h, --help              показать эту справку и выйти
+  -V, --version           показать версию и выйти
+  -p, --provider NAME     провайдер: google, openai, xai, deepseek, anthropic, openrouter
+  -m, --model NAME        имя модели (по умолчанию из ai.ini [models])
+  -i, --instruction TEXT  системная инструкция (переопределяет ai.ini [system])
+  -l, --language CODE     язык: en, ru (переопределяет системную локаль)
+  -lm, --list-models      список доступных моделей провайдера и выход
+  -lp, --list-providers   список всех провайдеров и выход
+  -v, --verbose           показывать команды bash и вывод в режиме агента
+
 примеры:
-  ai                                   интерактивный режим
-  ai "запрос"                          одиночный запрос
-  ai -p openrouter --list-models       список моделей провайдера
-  ai -p openrouter -m gpt-5.3 "запрос" конкретный провайдер/модель
-        """
+  ai                                    интерактивный режим
+  ai "запрос"                           одиночный запрос
+  ai -p openrouter --list-models        список моделей провайдера
+  ai -p openrouter -m gpt-5.3 "запрос"  конкретный провайдер/модель"""
 
 [skills]
 header    = "скилы:"
