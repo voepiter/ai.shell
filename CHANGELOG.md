@@ -4,10 +4,11 @@ All notable changes to ai.shell are documented here.
 
 ## v0.3.61 — 2026-05-14
 
-### Изменено
-- Версия теперь включает счётчик git-коммитов как номер патча (`0.3.61`) — отображается в `-h` и баннере
-- Символ ввода в чате заменён на `❯` светло-зелёного цвета; между ответом и следующим вводом добавлен горизонтальный разделитель
-- Время в статистике теперь отображается в скобках `[1.4s]` без метки `time:`, весь блок одного dim-цвета
+### Changed
+- Version now includes git commit count as the patch number (`0.3.61`) — shown in `-h` and the banner
+- Chat prompt symbol changed to `❯` in light green; a horizontal separator is shown between each response and the next input
+- Elapsed time in stats is now shown as `[1.4s]` without the `time:` label; entire stats line is dim-colored
+- Added `/changelog` command to interactive chat
 
 ## v0.3.8 — 2026-05-14
 
