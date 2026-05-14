@@ -10,6 +10,7 @@ from .agent import agentic_loop, build_system_instruction
 from . import commands, ui
 from . import symbols as sym
 from .locale import t
+from . import completer as _completer
 from providers import APIError
 
 _R = ct.resetcolor
@@ -33,11 +34,10 @@ def run(state: AppState):
 
     while True:
         try:
-            # \001/\002 tell readline the true visible width of the escape codes
             if history:
                 print(f" {_col.dim}{'─' * 48}{_R}")
-            prompt = f" \001{_col.prompt}\002{sym.user_prompt}\001{_R}\002  "
-            raw = input(prompt).strip()
+            prompt = f" {_col.prompt}{sym.user_prompt}{_R}  "
+            raw = _completer.read_input(prompt, cfg).strip()
         except (KeyboardInterrupt, EOFError):
             ui.print_chat_totals(state.total_in, state.total_out, state.total_elapsed)
             break

@@ -33,6 +33,12 @@ commands.py  236  Slash-command dispatcher for interactive chat (/help, /model, 
 	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
 	_cmd_changelog(base_dir)  Print CHANGELOG.md contents.
 
+completer.py  204  Inline /command autocomplete for interactive chat — ghost text + right-arrow accept.
+	_all_commands(config_loader)  Return sorted list of all /commands including skill names.
+	_complete(text, commands)  Return completion suffix if exactly one command starts with text, else ''.
+	_read_escape(fd)  Read rest of an escape sequence after ESC; return ESC alone if nothing follows in 50 ms.
+	read_input(prompt_str, config_loader)  Read one line with inline /command ghost text; right-arrow or Tab accept completion.
+
 config.py  159  Configuration — TOML file loader, typed runtime config, and config migration.
 	ConfigLoader  Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai-shell/.
 	ConfigLoader.get(*keys)  Look up a nested key path in config; return default if any key is missing.
