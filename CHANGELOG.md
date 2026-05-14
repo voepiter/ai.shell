@@ -2,12 +2,14 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.3.61 — 2026-05-14
+
+### Изменено
+- Версия теперь включает счётчик git-коммитов как номер патча (`0.3.61`) — отображается в `-h` и баннере
+- Символ ввода в чате заменён на `❯` светло-зелёного цвета; между ответом и следующим вводом добавлен горизонтальный разделитель
+- Время в статистике теперь отображается в скобках `[1.4s]` без метки `time:`, весь блок одного dim-цвета
+
 ## v0.3.8 — 2026-05-14
-
-### Changed
-- `--help` output is now a single editable block per locale instead of individual per-argument strings — easier to translate and format
-
-## v0.3.7 — 2026-05-14
 
 ### New
 - Skills: define reusable slash-command prompts as Markdown files in `skills/<name>/<name>.md`; invoke with `/<name> [args]` in chat or `ai /<name> [args]` from the terminal
