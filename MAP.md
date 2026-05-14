@@ -21,10 +21,10 @@ agent.py  126  Shell agent loop — iterative bash command execution and LLM int
 api.py  72  Factory for creating API provider clients.
 	APIFactory.create_client(provider, api_key, model, timeout, config_loader)  Instantiate the right provider client; resolves api_key from env or ai.ini.
 
-chat.py  114  Interactive REPL loop.
+chat.py  116  Interactive REPL loop.
 	run(state)  Run interactive chat loop — handles input, slash commands, and agent dispatch.
 
-colors.py  28
+colors.py  29
 
 commands.py  213  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
 	handle(raw, history, state)  Route slash command to handler; return 'quit', 'reset', or None.

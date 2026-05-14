@@ -15,6 +15,7 @@ accent    = _fg(_c("accent",    99))   # purple  — borders / accents
 provider  = _fg(_c("provider",  214))  # orange  — provider name
 model     = _fg(_c("model",     157))  # green   — model / numbers
 command   = _fg(_c("command",   75))   # cyan    — commands / prompt
+prompt    = _fg(_c("prompt",   119))  # green   — chat input symbol ❯
 dim       = _fg(_c("dim",       243))  # grey    — secondary text
 marker    = _fg(_c("marker",    141))  # lavender— AI marker (✨)
 error     = _fg(_c("error",     196))  # red     — errors
