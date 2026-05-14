@@ -32,7 +32,7 @@ instruction = "IT expert: Linux, WSL, DevOps. Short, practical answers."
 
 [shell]
 shell_mode      = true
-verbose         = true
+verbose         = false
 max_iterations  = 5
 command_timeout = 15
 dangerous_patterns = ["rm -r", "dd if=", "mkfs", "| bash", "| sh"]
