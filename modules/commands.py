@@ -9,6 +9,7 @@ from .api import APIFactory
 from . import ui
 from . import locale as _locale
 from .locale import t
+from . import skills as _skills
 
 _R = ct.resetcolor
 
@@ -98,6 +99,10 @@ def handle(raw: str, history: list, state) -> str | None:
         print(f" {_col.dim}verbose {sym.arrow}{_R} {status}")
         return None
 
+    if cmd == "/skill" and not arg:
+        _cmd_skills(state.config.config_loader)
+        return None
+
     if cmd == "/sessions":
         _cmd_sessions(state.config.log_dir)
         return None
@@ -109,8 +114,24 @@ def handle(raw: str, history: list, state) -> str | None:
         _cmd_resume(arg, history, state.config.log_dir)
         return None
 
+    # Try to resolve as a skill before reporting unknown command
+    content = _skills.load(raw, state.config.config_loader)
+    if content is not None:
+        return content
     print(f" {_col.error}{t('commands','unknown_cmd',cmd=cmd)}{_R}", file=sys.stderr)
     return None
+
+
+def _cmd_skills(config_loader) -> None:
+    """Print table of available skills with descriptions."""
+    items = _skills.list_skills(config_loader)
+    if not items:
+        print(f" {_col.dim}{t('skills','no_skills')}{_R}")
+        return
+    print(f"\n {_col.dim}{t('skills','header')}{_R}")
+    for name, desc in items:
+        print(f"  {_col.command}/{name:<18}{_R} {_col.dim}{desc}{_R}")
+    print()
 
 
 def _cmd_sessions(log_dir: Path) -> None:

@@ -52,7 +52,10 @@ def run(state: AppState):
             if result == "reset":
                 history = []
                 print(f" {_col.dim}{t('common','history_cleared')}{_R}")
-            continue
+                continue
+            if result is None:
+                continue
+            raw = result  # skill content — fall through to LLM call
 
         history.append({"role": "user", "content": raw})
 

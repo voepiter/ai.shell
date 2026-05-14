@@ -63,7 +63,13 @@ def main():
     elif args.list_models:
         ui.print_models(state.config.provider, state.api_client, state.config.config_loader)
     elif args.prompt:
-        single_turn.run(state, args.prompt)
+        from modules import skills as _skills
+        prompt = args.prompt
+        if prompt.startswith("/"):
+            resolved = _skills.load(prompt, state.config.config_loader)
+            if resolved is not None:
+                prompt = resolved
+        single_turn.run(state, prompt)
     else:
         chat.run(state)
 

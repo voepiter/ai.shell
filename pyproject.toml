@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ai.shell"
-version = "0.1.6"
+version = "0.1.7"
 description = "Multi-model LLM CLI client + bash agent"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -25,6 +25,7 @@ include = [
     "modules",
     "providers",
     "locales",
+    "skills",
     "logo.ascii",
     "ai.ini.default",
 ]

@@ -57,6 +57,7 @@ def print_chat_help():
     print(f"  {_col.command}/usage{_R}                 {t('ui','help_usage')}")
     print(f"  {_col.command}/clear{_R}                 {t('ui','help_clear')}")
     print(f"  {_col.command}/quit{_R}                  {t('ui','help_quit')}")
+    print(f"  {_col.command}/skill{_R}                 {t('skills','help_run')}")
 
 
 def print_stats(

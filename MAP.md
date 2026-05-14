@@ -6,7 +6,7 @@ Multi-model LLM CLI client + bash agent.
 
 ## Entry Point
 
-ai.py  72  Entry point — parses args, routes to setup / single-turn / interactive chat.
+ai.py  78  Entry point — parses args, routes to setup / single-turn / interactive chat.
 	_early_lang  Read language from -l argv or ai.ini [ui] language before parser is built.
 	main  Parse args, set locale early, dispatch to setup / single_turn / chat.
 
@@ -21,13 +21,14 @@ agent.py  126  Shell agent loop — iterative bash command execution and LLM int
 api.py  72  Factory for creating API provider clients.
 	APIFactory.create_client(provider, api_key, model, timeout, config_loader)  Instantiate the right provider client; resolves api_key from env or ai.ini.
 
-chat.py  111  Interactive REPL loop.
+chat.py  114  Interactive REPL loop.
 	run(state)  Run interactive chat loop — handles input, slash commands, and agent dispatch.
 
 colors.py  28
 
-commands.py  192  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
+commands.py  213  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
 	handle(raw, history, state)  Route slash command to handler; return 'quit', 'reset', or None.
+	_cmd_skills(config_loader)  Print table of available skills with descriptions.
 	_cmd_sessions(log_dir)  Print table of 10 most recent sessions from JSONL logs.
 	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
 
@@ -67,6 +68,13 @@ shell.py  70  Shell command executor for agent mode.
 single_turn.py  68  Single-turn (non-interactive) request handler.
 	run(state, prompt)  Send one prompt, print response; runs agent loop if shell commands are detected.
 
+skills.py  67  Skill loader — discovers and loads .md skill files from skill directories.
+	_dirs(config_loader)  Return skill search paths: user config dir first, then bundled package skills.
+	_find(name, config_loader)  Return path to skills/name/name.md or None if not found.
+	_parse(path, args)  Strip YAML frontmatter, substitute $ARGUMENTS; return (content, description).
+	load(raw_input, config_loader)  Parse /name [args] input; return skill content with $ARGUMENTS substituted, or None.
+	list_skills(config_loader)  Return sorted (name, description) pairs for all available skills.
+
 spinner.py  56  Animated status spinner shown while waiting for LLM response.
 
 state.py  48  Shared runtime state passed across all modules.
@@ -76,7 +84,7 @@ symbols.py  19  Terminal symbols — unicode or ASCII depending on ai.ini [ui] u
 
 text.py  71  Terminal text rendering — ANSI colors and markdown highlighting.
 
-ui.py  137  Terminal rendering — banners, stats, model/provider lists.
+ui.py  138  Terminal rendering — banners, stats, model/provider lists.
 	print_banner(provider, model, shell_mode, verbose)  Print interactive mode header with provider, model, shell/verbose status.
 	print_chat_help  Print available slash commands.
 	print_stats(token_in, token_out, elapsed, request_num)  Print token usage and elapsed time for one request.

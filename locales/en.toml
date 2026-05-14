@@ -102,6 +102,11 @@ examples:
   ai -p openrouter -m gpt-5.3 "prompt" use specific provider/model
         """
 
+[skills]
+header    = "skills:"
+no_skills = "no skills found"
+help_run  = "list skills / /<name> [args] to run"
+
 [agent]
 dangerous      = "dangerous:"
 execute_prompt = "execute? [y/N]"

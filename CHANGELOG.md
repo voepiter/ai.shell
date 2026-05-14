@@ -2,6 +2,17 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.1.7 — 2026-05-14
+
+### New
+- Skills: define reusable slash-command prompts as Markdown files in `skills/<name>/<name>.md`; invoke with `/<name> [args]` in chat or `ai /<name> [args]` from the terminal
+- `/skill` (no args) lists all available skills with descriptions
+- Three built-in skills: `/code-review`, `/code-explain`, `/skill-creator` (interactive wizard that creates new skill files via the shell agent)
+- `$ARGUMENTS` placeholder in skill files is substituted with whatever arguments the user passes
+
+### Changed
+- `--help` output is now fully localised: `usage:`, argument group titles, and `-h`/`-V` descriptions follow the active language
+
 ## v0.1.6 — 2026-05-13
 
 ### New

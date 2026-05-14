@@ -102,6 +102,11 @@ examples            = """
   ai -p openrouter -m gpt-5.3 "запрос" конкретный провайдер/модель
         """
 
+[skills]
+header    = "скилы:"
+no_skills = "скилы не найдены"
+help_run  = "список скилов / /<имя> [арг] для запуска"
+
 [agent]
 dangerous      = "опасная команда:"
 execute_prompt = "выполнить? [y/N]"
