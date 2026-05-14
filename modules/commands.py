@@ -114,6 +114,10 @@ def handle(raw: str, history: list, state) -> str | None:
         _cmd_resume(arg, history, state.config.log_dir)
         return None
 
+    if cmd == "/changelog":
+        _cmd_changelog(state.config.base_dir)
+        return None
+
     # Try to resolve as a skill before reporting unknown command
     content = _skills.load(raw, state.config.config_loader)
     if content is not None:
@@ -211,3 +215,22 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
     history.clear()
     history.extend({"role": r["role"], "content": r["content"]} for r in conv)
     print(f" {_col.dim}{t('commands','history_loaded')}{_R}\n")
+
+
+def _cmd_changelog(base_dir: Path) -> None:
+    """Print CHANGELOG.md contents."""
+    path = base_dir / "CHANGELOG.md"
+    if not path.exists():
+        print(f" {_col.dim}CHANGELOG.md not found{_R}")
+        return
+    print()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("## "):
+            print(f" {_col.provider}{line}{_R}")
+        elif line.startswith("### "):
+            print(f" {_col.dim}{line}{_R}")
+        elif line.startswith("- "):
+            print(f"  {line}")
+        else:
+            print(f" {_col.dim}{line}{_R}" if line else "")
+    print()

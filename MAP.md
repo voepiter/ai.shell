@@ -26,11 +26,12 @@ chat.py  116  Interactive REPL loop.
 
 colors.py  29
 
-commands.py  213  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
+commands.py  236  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
 	handle(raw, history, state)  Route slash command to handler; return 'quit', 'reset', or None.
 	_cmd_skills(config_loader)  Print table of available skills with descriptions.
 	_cmd_sessions(log_dir)  Print table of 10 most recent sessions from JSONL logs.
 	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
+	_cmd_changelog(base_dir)  Print CHANGELOG.md contents.
 
 config.py  159  Configuration — TOML file loader, typed runtime config, and config migration.
 	ConfigLoader  Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai-shell/.
@@ -84,7 +85,7 @@ symbols.py  19  Terminal symbols — unicode or ASCII depending on ai.ini [ui] u
 
 text.py  71  Terminal text rendering — ANSI colors and markdown highlighting.
 
-ui.py  138  Terminal rendering — banners, stats, model/provider lists.
+ui.py  139  Terminal rendering — banners, stats, model/provider lists.
 	print_banner(provider, model, shell_mode, verbose)  Print interactive mode header with provider, model, shell/verbose status.
 	print_chat_help  Print available slash commands.
 	print_stats(token_in, token_out, elapsed, request_num)  Print token usage and elapsed time for one request.

@@ -87,6 +87,7 @@ history_loaded      = "history loaded — continuing conversation"
 session_not_found   = "session not found: {id}"
 session_read_error  = "failed to read session: {e}"
 session_empty       = "session is empty"
+help_changelog      = "show changelog"
 
 [parser]
 full_help = """
