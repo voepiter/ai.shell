@@ -2,7 +2,12 @@
 
 All notable changes to ai.shell are documented here.
 
-## v0.1.7 — 2026-05-14
+## v0.3.8 — 2026-05-14
+
+### Changed
+- `--help` output is now a single editable block per locale instead of individual per-argument strings — easier to translate and format
+
+## v0.3.7 — 2026-05-14
 
 ### New
 - Skills: define reusable slash-command prompts as Markdown files in `skills/<name>/<name>.md`; invoke with `/<name> [args]` in chat or `ai /<name> [args]` from the terminal
@@ -13,7 +18,7 @@ All notable changes to ai.shell are documented here.
 ### Changed
 - `--help` output is now fully localised: `usage:`, argument group titles, and `-h`/`-V` descriptions follow the active language
 
-## v0.1.6 — 2026-05-13
+## v0.2.6 — 2026-05-13
 
 ### New
 - Auto-update: once per day on startup, checks GitHub for a new release and runs `uv tool update ai.shell` if one is found; shows the relevant changelog section after updating
@@ -23,7 +28,7 @@ All notable changes to ai.shell are documented here.
 ### Changed
 - `pyproject.toml` now includes `[project.urls]` with the repository link
 
-## v0.1.5 — 2026-05-13
+## v0.2.5 — 2026-05-13
 
 ### New
 - First-run setup wizard: guides through provider selection, API keys, and UI preferences on first launch
