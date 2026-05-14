@@ -93,7 +93,7 @@ help_changelog      = "show changelog"
 full_help = """
 ai.shell v{version} — multi-model AI CLI terminal agent.
 
-usage: ai [-h] [-V] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [prompt]
+usage: ai [-h] [-V] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-T] [prompt]
 
 arguments:
   prompt                  prompt text (omit to enter chat mode)
@@ -108,6 +108,7 @@ options:
   -lm, --list-models      list available models for selected provider and exit
   -lp, --list-providers   list all supported providers and exit
   -v, --verbose           show bash commands and output in agent mode
+  -T, --telegram          start Telegram bot polling loop (configure token in ai.ini [telegram])
 
 examples:
   ai                          interactive chat mode
