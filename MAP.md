@@ -53,7 +53,7 @@ logger.py  51  Per-session JSONL logger.
 logo.py  61  ASCII logo display with lolcat-style rainbow gradient.
 	print_logo(path, delay, logo_gradient)  Print ASCII logo with animated rainbow gradient; skip silently if file missing.
 
-parser.py  37  CLI argument parser.
+parser.py  51  CLI argument parser.
 	build  Build and return the argparse parser with localised help strings.
 
 setup.py  218  First-run setup wizard — creates ai.ini from ai.ini.default.

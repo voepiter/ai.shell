@@ -4,15 +4,29 @@ from .version import get_version
 from .locale import t
 
 
+# Formatter that replaces hardcoded English "usage:" prefix with a localised string
+class _LocalizedFormatter(argparse.RawDescriptionHelpFormatter):
+    def _format_usage(self, usage, actions, groups, prefix):
+        if prefix is None:
+            prefix = t('parser', 'usage_label') + ': '
+        return super()._format_usage(usage, actions, groups, prefix)
+
+
 def build() -> argparse.ArgumentParser:
     """Build and return the argparse parser with localised help strings."""
     parser = argparse.ArgumentParser(
         description=f"{t('parser','description')} v{get_version()}",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=_LocalizedFormatter,
         epilog=t('parser', 'examples'),
+        add_help=False,
     )
-    # Version flag
-    parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {get_version()}")
+    parser._positionals.title = t('parser', 'positionals_title')
+    parser._optionals.title   = t('parser', 'options_title')
+    # Help and version flags (added manually to allow localised help strings)
+    parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
+                        help=t('parser', 'help_help'))
+    parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {get_version()}",
+                        help=t('parser', 'version_help'))
     # Positional prompt — omit to enter interactive mode
     parser.add_argument("prompt", nargs="?",
                         help=t('parser', 'prompt_help'))

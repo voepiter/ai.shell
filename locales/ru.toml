@@ -80,6 +80,11 @@ session_read_error  = "ошибка чтения сессии: {e}"
 session_empty       = "сессия пуста"
 
 [parser]
+usage_label         = "использование"
+positionals_title   = "аргументы"
+options_title       = "параметры"
+help_help           = "показать эту справку и выйти"
+version_help        = "показать версию и выйти"
 description         = "Многомодельный AI-ассистент для терминала с bash агентом."
 prompt_help         = "текст запроса (без аргумента — интерактивный режим)"
 provider_help       = "провайдер (google, openai, xai, deepseek, anthropic, openrouter)"

@@ -80,6 +80,11 @@ session_read_error  = "failed to read session: {e}"
 session_empty       = "session is empty"
 
 [parser]
+usage_label         = "usage"
+positionals_title   = "arguments"
+options_title       = "options"
+help_help           = "show this help message and exit"
+version_help        = "show version number and exit"
 description         = "Multi-model AI terminal assistant with a shell agent."
 prompt_help         = "prompt text (omit to enter chat mode)"
 provider_help       = "provider (google, openai, xai, deepseek, anthropic, openrouter)"
