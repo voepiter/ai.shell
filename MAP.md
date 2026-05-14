@@ -100,8 +100,8 @@ updates.py  105  Auto-update — once per day checks GitHub for a newer release 
 	_changelog_section(version, timeout)  Fetch CHANGELOG.md from GitHub and return the section for version.
 	check_and_update(config_loader)  Check once per day for a newer release; update and show changelog if found.
 
-version.py  19  Version resolution — installed package metadata or pyproject.toml fallback.
-	get_version  Return version from installed package metadata or pyproject.toml fallback.
+version.py  46  Version resolution — installed package metadata or pyproject.toml fallback.
+	get_version  Return version as major.minor.{git_commit_count}, falling back to package metadata.
 
 ---
 
