@@ -109,7 +109,7 @@ def run(state: AppState):
 
         # Run agent loop if shell commands were detected in the response
         if state.shell_mode:
-            state.total_in, state.total_out, state.total_elapsed = agentic_loop(
+            state.total_in, state.total_out, state.total_elapsed, _ = agentic_loop(
                 history, text, state.api_client, state.config, state.logger,
                 state.request_counter, state.shell_mode, state.total_in, state.total_out, state.total_elapsed,
                 verbose=state.verbose,

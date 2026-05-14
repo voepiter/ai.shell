@@ -39,7 +39,7 @@ def agentic_loop(
     total_out:     int,
     total_elapsed: float = 0.0,
     verbose:       bool  = True,
-) -> tuple[int, int, float]:
+) -> tuple[int, int, float, str]:
     """Run bash commands from LLM response, feed output back, repeat until no commands remain."""
     # Read shell execution limits from config
     cfg         = config.config_loader
@@ -123,4 +123,4 @@ def agentic_loop(
         logger.log_assistant(text, model_name, token_in, token_out, elapsed)
         request_counter.request += 1
 
-    return total_in, total_out, total_elapsed
+    return total_in, total_out, total_elapsed, text

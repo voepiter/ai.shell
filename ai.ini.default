@@ -45,6 +45,10 @@ logo_delay     = 0.02  # seconds between lines (0 = instant)
 logo_gradient  = 0.25  # hue range across logo width
 unicode        = true  # false = replace ✨ ▸ → etc. with ASCII equivalents
 
+[telegram]
+token       = ""   # BotFather token (leave empty to disable)
+allowed_ids = ""   # comma-separated numeric Telegram user IDs
+
 [color]
 accent    = 99    # purple   — borders / accents
 provider  = 99    # purple   — provider name

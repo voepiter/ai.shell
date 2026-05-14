@@ -2,6 +2,13 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.4.0 — 2026-05-14
+
+### New
+- Telegram bot integration: set a bot token and allowed user IDs in `ai.ini [telegram]`, then run `ai --telegram` (standalone loop) or `/telegram` in interactive chat to start receiving prompts via Telegram
+- Shell mode and skills are fully available via Telegram — ask the bot to run commands or call any skill with `/skill-name`
+- LLM responses are sent as Telegram HTML (bold, italic, inline/block code)
+
 ## v0.3.66 — 2026-05-14
 
 ### New

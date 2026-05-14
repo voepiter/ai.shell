@@ -25,6 +25,7 @@ _BUILTIN = [
     "/sessions",
     "/resume",
     "/changelog",
+    "/telegram",
 ]
 
 _ESC   = "\x1b"

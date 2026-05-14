@@ -58,7 +58,10 @@ def main():
     migrate_config(state.config.config_loader)
     check_and_update(state.config.config_loader)
 
-    if args.list_providers:
+    if args.telegram:
+        from modules import telegram as _tg
+        _tg.run(state)
+    elif args.list_providers:
         ui.print_providers(state.config.config_loader)
     elif args.list_models:
         ui.print_models(state.config.provider, state.api_client, state.config.config_loader)

@@ -6,7 +6,7 @@ Multi-model LLM CLI client + bash agent.
 
 ## Entry Point
 
-ai.py  78  Entry point — parses args, routes to setup / single-turn / interactive chat.
+ai.py  81  Entry point — parses args, routes to setup / single-turn / interactive chat.
 	_early_lang  Read language from -l argv or ai.ini [ui] language before parser is built.
 	main  Parse args, set locale early, dispatch to setup / single_turn / chat.
 
@@ -26,14 +26,14 @@ chat.py  116  Interactive REPL loop.
 
 colors.py  29
 
-commands.py  236  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
+commands.py  242  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
 	handle(raw, history, state)  Route slash command to handler; return 'quit', 'reset', or None.
 	_cmd_skills(config_loader)  Print table of available skills with descriptions.
 	_cmd_sessions(log_dir)  Print table of 10 most recent sessions from JSONL logs.
 	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
 	_cmd_changelog(base_dir)  Print CHANGELOG.md contents.
 
-completer.py  204  Inline /command autocomplete for interactive chat — ghost text + right-arrow accept.
+completer.py  205  Inline /command autocomplete for interactive chat — ghost text + right-arrow accept.
 	_all_commands(config_loader)  Return sorted list of all /commands including skill names.
 	_complete(text, commands)  Return completion suffix if exactly one command starts with text, else ''.
 	_read_escape(fd)  Read rest of an escape sequence after ESC; return ESC alone if nothing follows in 50 ms.
@@ -61,7 +61,7 @@ logger.py  51  Per-session JSONL logger.
 logo.py  61  ASCII logo display with lolcat-style rainbow gradient.
 	print_logo(path, delay, logo_gradient)  Print ASCII logo with animated rainbow gradient; skip silently if file missing.
 
-parser.py  32  CLI argument parser.
+parser.py  33  CLI argument parser.
 	build  Build and return the argparse parser with localised help strings.
 
 setup.py  200  First-run setup wizard — creates ai.ini from ai.ini.default.
@@ -88,6 +88,17 @@ state.py  48  Shared runtime state passed across all modules.
 	AppState.from_args(args)  Build AppState from parsed CLI args and ai.ini config.
 
 symbols.py  19  Terminal symbols — unicode or ASCII depending on ai.ini [ui] unicode setting.
+
+telegram.py  202  Telegram bot integration — polling loop and LLM dispatch.
+	_api_post(token, method, **kwargs)  POST to Telegram Bot API; return JSON or None on error.
+	_send(token, chat_id, text)  Send HTML message; fall back to plain text on parse error.
+	_get_updates(token, offset)  Long-poll getUpdates; return list of updates or [] on error.
+	_inline(text)  Escape HTML and apply bold/italic/inline-code to a plain-text segment.
+	format_html(text)  Convert LLM markdown response to Telegram HTML.
+	_process(msg, state, token, allowed)  Handle one incoming Telegram message.
+	_loop(state)  Poll Telegram for updates and dispatch messages until interrupted.
+	run(state)  Run polling loop in main thread (--telegram mode).
+	start_thread(state)  Start polling loop as a background daemon thread (/telegram command).
 
 text.py  71  Terminal text rendering — ANSI colors and markdown highlighting.
 
