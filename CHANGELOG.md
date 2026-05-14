@@ -2,6 +2,11 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.3.66 — 2026-05-14
+
+### New
+- Inline `/command` autocomplete in interactive chat: start typing `/` and a dim-gray ghost text hint appears for the matching command or skill. Press `→` (right arrow) or `Tab` at the end of the line to accept.
+
 ## v0.3.61 — 2026-05-14
 
 ### Changed
