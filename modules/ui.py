@@ -75,7 +75,7 @@ def print_stats(
         f"{req}"
         f"{_col.dim}{t('ui','tok_tokens')} ↑{fmt_num(token_in)}  "
         f"↓{fmt_num(token_out)} "
-        f"{t('ui','tok_time')}{elapsed:.1f}{_R}s"
+        f"[{elapsed:.1f}s]{_R}"
     )
     print(s)
 
@@ -89,7 +89,7 @@ def print_usage(total_in: int, total_out: int, total_elapsed: float):
         f" {_col.dim}{sym.bullet} {t('ui','tok_session')}  "
         f"↑{fmt_num(total_in)} "
         f"↓{fmt_num(total_out)} "
-        f"{t('ui','tok_time')}{total_elapsed:.1f}s{_R}"
+        f"[{total_elapsed:.1f}s]{_R}"
     )
 
 
