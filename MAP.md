@@ -57,7 +57,7 @@ logo.py  61  ASCII logo display with lolcat-style rainbow gradient.
 parser.py  32  CLI argument parser.
 	build  Build and return the argparse parser with localised help strings.
 
-setup.py  218  First-run setup wizard — creates ai.ini from ai.ini.default.
+setup.py  200  First-run setup wizard — creates ai.ini from ai.ini.default.
 
 shell.py  70  Shell command executor for agent mode.
 	CommandResult.to_context  Format result as context string for LLM (stdout, stderr, exit code).

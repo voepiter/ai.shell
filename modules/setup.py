@@ -9,12 +9,12 @@ try:
 except ImportError:
     import tomli as tomllib  # type: ignore
 
-_BASE     = Path(__file__).parent.parent
-_EXAMPLE  = _BASE / "ai.ini.default"
-_LOCALES  = _BASE / "locales"
+_BASE      = Path(__file__).parent.parent
+_EXAMPLE   = _BASE / "ai.ini.default"
+_LOCALES   = _BASE / "locales"
 _installed = "site-packages" in str(_BASE)
-_CONFIG   = (Path.home() / ".config" / "ai-shell" / "ai.ini"
-             if _installed else _BASE / "ai.ini")
+_CONFIG    = (Path.home() / ".config" / "ai-shell" / "ai.ini"
+              if _installed else _BASE / "ai.ini")
 
 # Provider name → (env var name, api key url)
 _PROVIDERS = {
@@ -65,11 +65,6 @@ def _s(strings: dict, *keys: str, **fmt) -> str:
     return s.format(**fmt) if fmt else s
 
 
-# Print a horizontal rule
-def _hr() -> str:
-    return "─" * 52
-
-
 # Prompt for text input; return default on empty or interrupt
 def _ask(prompt: str, default: str = "") -> str:
     hint = f" [{default}]" if default else ""
@@ -93,30 +88,22 @@ def _yn(prompt: str, default: bool = True) -> bool:
 
 # Step 1: ask whether the terminal supports unicode symbols
 def _step_unicode(s: dict) -> bool:
-    print(f"\n{_s(s, 'unicode', 'title')}")
-    print(_hr())
-    print(_s(s, "unicode", "preview"))
+    print(_s(s, "wizard", "step1"))
     print()
-    ok = _yn(_s(s, "unicode", "question"), default=True)
+    ok = _yn(_s(s, "wizard", "step1_question"), default=True)
     if not ok:
-        print()
-        print(_s(s, "unicode", "font_tip"))
-        print(_s(s, "unicode", "font_url"))
-        print()
-        print(_s(s, "unicode", "ascii_note"))
+        print(_s(s, "wizard", "step1_no"))
     return ok
 
 
 # Step 2: collect API keys for each provider; skip those already in env
 def _step_keys(s: dict) -> dict:
-    print(f"\n{_s(s, 'keys', 'title')}")
-    print(_hr())
-    print(_s(s, "keys", "intro"))
+    print(_s(s, "wizard", "step2"))
     collected = {}
     for provider, (env_var, url) in _PROVIDERS.items():
         print()
         if os.environ.get(env_var):
-            print(f"  {env_var}: {_s(s, 'keys', 'from_env')}")
+            print(f"  {env_var}: {_s(s, 'wizard', 'step2_from_env')}")
             continue
         print(f"  [ {provider} ]  {url}")
         val = _ask(f"  {env_var}", default="")
@@ -127,19 +114,18 @@ def _step_keys(s: dict) -> dict:
 
 # Step 3: choose the default provider from those that have a key configured
 def _step_settings(s: dict, keys: dict) -> str:
-    print(f"\n{_s(s, 'settings', 'title')}")
-    print(_hr())
+    print(_s(s, "wizard", "step3"))
     available = [
         p for p, (env_var, _) in _PROVIDERS.items()
         if os.environ.get(env_var) or env_var in keys
     ]
     if available:
-        print(_s(s, "settings", "available", providers=", ".join(available)))
+        print(_s(s, "wizard", "step3_available", providers=", ".join(available)))
     else:
-        print(_s(s, "settings", "none_configured"))
+        print(_s(s, "wizard", "step3_none"))
     default = available[0] if available else "google"
     print()
-    chosen = _ask(_s(s, "settings", "provider_question"), default=default)
+    chosen = _ask(_s(s, "wizard", "step3_question"), default=default)
     if chosen not in _PROVIDERS:
         chosen = default
     return chosen
@@ -154,7 +140,7 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
         lines = f.readlines()
 
     out = []
-    in_api_keys = False
+    in_api_keys  = False
     in_providers = False
 
     for line in lines:
@@ -162,7 +148,7 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
 
         # Track which section we're in
         if stripped.startswith("["):
-            section = stripped.strip("[]")
+            section     = stripped.strip("[]")
             in_api_keys  = section == "api_keys"
             in_providers = section == "providers"
 
@@ -180,10 +166,10 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
 
         # Rewrite unicode flag, preserve inline comment if present
         if "unicode" in line and "=" in line and not stripped.startswith("#"):
-            flag = "true" if unicode_ok else "false"
-            eq = line.index("=")
+            flag    = "true" if unicode_ok else "false"
+            eq      = line.index("=")
             comment = ""
-            rest = line[eq + 1:]
+            rest    = line[eq + 1:]
             if "#" in rest:
                 comment = "  " + rest[rest.index("#"):].rstrip()
             out.append(line[:eq + 1] + f" {flag}{comment}\n")
@@ -202,10 +188,6 @@ def run(lang: str | None = None):
     lang = lang or _detect_lang()
     s    = _load_strings(lang)
 
-    print(f"\n{'─' * 52}")
-    print(f"  {_s(s, 'title')}")
-    print(f"{'─' * 52}")
-
     unicode_ok = _step_unicode(s)
     keys       = _step_keys(s)
     provider   = _step_settings(s, keys)
@@ -213,6 +195,6 @@ def run(lang: str | None = None):
     _write_config(keys, provider, unicode_ok)
 
     print()
-    print(_s(s, "done", path=str(_CONFIG)))
-    print(_s(s, "restart"))
+    print(_s(s, "wizard", "done", path=str(_CONFIG)))
+    print(_s(s, "wizard", "restart"))
     print()

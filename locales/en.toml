@@ -1,29 +1,39 @@
-title = "ai.shell — first-run setup"
+[wizard]
+step1 = """
+────────────────────────────────────────────────────
+  ai.shell — first-run setup
+────────────────────────────────────────────────────
 
-[unicode]
-title    = "Step 1/3 — Terminal symbols"
-preview  = """
+Step 1/3 — Terminal symbols
+────────────────────────────────────────────────────
   ✨  AI marker          ▸  shell command prefix
   🗨️  your input         🖥️  computer output
   →  arrows             —  em dash
   ·  middle dot         •  bullet
   ⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏  spinner (animated)"""
-question  = "Do these symbols display correctly?"
-font_tip  = "For best experience, install Roboto Mono Nerd Font:"
-font_url  = "  https://www.nerdfonts.com/font-downloads"
-ascii_note = "Unicode disabled — ASCII fallback will be used."
 
-[keys]
-title    = "Step 2/3 — API keys"
-intro    = "Enter your API keys. Press Enter to skip a provider."
-from_env = "(already set in environment)"
-skip     = "(skipped)"
+step1_question = "Do these symbols display correctly?"
 
-[settings]
-title             = "Step 3/3 — Default settings"
-available         = "Providers configured: {providers}"
-none_configured   = "No keys configured — you can add them to ai.ini later."
-provider_question = "Default provider"
+step1_no = """
+For best experience, install Roboto Mono Nerd Font:
+  https://www.nerdfonts.com/font-downloads
+
+Unicode disabled — ASCII fallback will be used."""
+
+step2 = """
+Step 2/3 — API keys
+────────────────────────────────────────────────────
+Enter your API keys. Press Enter to skip a provider."""
+
+step2_from_env = "(already set in environment)"
+
+step3 = """
+Step 3/3 — Default settings
+────────────────────────────────────────────────────"""
+
+step3_available = "Providers configured: {providers}"
+step3_none      = "No keys configured — you can add them to ai.ini later."
+step3_question  = "Default provider"
 
 done    = "Config saved → {path}"
 restart = "Restart ai to begin."
@@ -80,7 +90,8 @@ session_read_error  = "failed to read session: {e}"
 session_empty       = "session is empty"
 
 [parser]
-full_help = """ai.shell v{version} — multi-model AI terminal assistant with a shell agent.
+full_help = """
+ai.shell v{version} — multi-model AI CLI terminal agent.
 
 usage: ai [-h] [-V] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [prompt]
 
@@ -90,18 +101,18 @@ arguments:
 options:
   -h, --help              show this help and exit
   -V, --version           show version and exit
-  -p, --provider NAME     provider: google, openai, xai, deepseek, anthropic, openrouter
-  -m, --model NAME        model name (default: from ai.ini [models])
-  -i, --instruction TEXT  system instruction (overrides ai.ini [system])
-  -l, --language CODE     language: en, ru (overrides system locale)
+  -p, --provider          provider: openrouter, deepseek, anthropic, openai, google, xai
+  -m, --model             model name (default: from ai.ini [models])
+  -i, --instruction       system instruction (overrides ai.ini [system])
+  -l, --language          language: en, ru (overrides system locale)
   -lm, --list-models      list available models for selected provider and exit
   -lp, --list-providers   list all supported providers and exit
   -v, --verbose           show bash commands and output in agent mode
 
 examples:
-  ai                                    interactive chat mode
-  ai "prompt"                           single request
-  ai -p openrouter --list-models        list models for provider
+  ai                          interactive chat mode
+  ai "prompt"                 single request
+  ai -p openrouter -lm        list models for provider
   ai -p openrouter -m gpt-5.3 "prompt"  use specific provider/model"""
 
 [skills]
