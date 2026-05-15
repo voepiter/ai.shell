@@ -6,7 +6,7 @@ Multi-model LLM CLI client + bash agent.
 
 ## Entry Point
 
-ai.py  81  Entry point — parses args, routes to setup / single-turn / interactive chat.
+ai.py  85  Entry point — parses args, routes to setup / single-turn / interactive chat.
 	_early_lang  Read language from -l argv or ai.ini [ui] language before parser is built.
 	main  Parse args, set locale early, dispatch to setup / single_turn / chat.
 
@@ -21,20 +21,22 @@ agent.py  126  Shell agent loop — iterative bash command execution and LLM int
 api.py  72  Factory for creating API provider clients.
 	APIFactory.create_client(provider, api_key, model, timeout, config_loader)  Instantiate the right provider client; resolves api_key from env or ai.ini.
 
-chat.py  116  Interactive REPL loop.
+chat.py  117  Interactive REPL loop.
 	run(state)  Run interactive chat loop — handles input, slash commands, and agent dispatch.
 
-colors.py  29
+colors.py  30
 
-commands.py  242  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
+commands.py  243  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
 	handle(raw, history, state)  Route slash command to handler; return 'quit', 'reset', or None.
 	_cmd_skills(config_loader)  Print table of available skills with descriptions.
 	_cmd_sessions(log_dir)  Print table of 10 most recent sessions from JSONL logs.
 	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
 	_cmd_changelog(base_dir)  Print CHANGELOG.md contents.
 
-completer.py  213  Inline /command autocomplete for interactive chat — ghost text + right-arrow accept.
+completer.py  234  Inline /command autocomplete for interactive chat — ghost text + right-arrow accept.
 	_all_commands(config_loader)  Return sorted list of all /commands including skill names.
+	erase_prompt  Clear the readline prompt line before background thread output.
+	redraw_prompt  Redraw the readline prompt after background thread output.
 	_complete(text, commands)  Return completion suffix if exactly one command starts with text, else ''.
 	_read_escape(fd)  Read rest of an escape sequence after ESC; return ESC alone if nothing follows in 50 ms.
 	read_input(prompt_str, config_loader)  Read one line with inline /command ghost text; right-arrow or Tab accept completion.
@@ -84,12 +86,13 @@ skills.py  67  Skill loader — discovers and loads .md skill files from skill d
 
 spinner.py  56  Animated status spinner shown while waiting for LLM response.
 
-state.py  48  Shared runtime state passed across all modules.
+state.py  49  Shared runtime state passed across all modules.
 	AppState.from_args(args)  Build AppState from parsed CLI args and ai.ini config.
 
 symbols.py  19  Terminal symbols — unicode or ASCII depending on ai.ini [ui] unicode setting.
 
-telegram.py  207  Telegram bot integration — polling loop and LLM dispatch.
+telegram.py  233  Telegram bot integration — polling loop and LLM dispatch.
+	_CRLFStdout  Wraps sys.stdout to convert \n → \r\n for raw-mode terminal output from background thread.
 	_api_post(token, method, **kwargs)  POST to Telegram Bot API; return JSON or None on error.
 	_send(token, chat_id, text)  Send HTML message; fall back to plain text on parse error.
 	_get_updates(token, offset)  Long-poll getUpdates; return list of updates or [] on error.
@@ -102,8 +105,8 @@ telegram.py  207  Telegram bot integration — polling loop and LLM dispatch.
 
 text.py  71  Terminal text rendering — ANSI colors and markdown highlighting.
 
-ui.py  139  Terminal rendering — banners, stats, model/provider lists.
-	print_banner(provider, model, shell_mode, verbose)  Print interactive mode header with provider, model, shell/verbose status.
+ui.py  142  Terminal rendering — banners, stats, model/provider lists.
+	print_banner(provider, model, shell_mode, verbose, telegram)  Print interactive mode header with provider, model, shell/verbose/telegram status.
 	print_chat_help  Print available slash commands.
 	print_stats(token_in, token_out, elapsed, request_num)  Print token usage and elapsed time for one request.
 	print_providers(config_loader)  Print all providers with default model and env var name.

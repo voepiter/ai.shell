@@ -7,6 +7,7 @@ from .state import AppState
 from .spinner import Spinner
 from .logo import print_logo
 from .agent import agentic_loop, build_system_instruction
+from .shell import extract_commands
 from . import commands, ui
 from . import symbols as sym
 from .locale import t
@@ -28,15 +29,13 @@ def run(state: AppState):
             logo_gradient=cfg.get("ui", "logo_gradient", default=0.25)
             )
 
-    ui.print_banner(state.config.provider, state.api_client.model, state.shell_mode, state.verbose)
+    ui.print_banner(state.config.provider, state.api_client.model, state.shell_mode, state.verbose, state.telegram)
 
     history = []
 
     while True:
         try:
-            if history:
-                print(f" {_col.dim}{'─' * 48}{_R}")
-            prompt = f" {_col.prompt}{sym.user_prompt}{_R}  "
+            prompt = f"{_col.input_bg} {_col.prompt}{sym.user_prompt}\033[39m  "
             raw = _completer.read_input(prompt, cfg).strip()
         except (KeyboardInterrupt, EOFError):
             ui.print_chat_totals(state.total_in, state.total_out, state.total_elapsed)
@@ -98,9 +97,11 @@ def run(state: AppState):
             history.pop()
             continue
 
-        print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(text)}")
-        print()
-        ui.print_stats(token_in, token_out, elapsed, request)
+        has_cmds = state.shell_mode and bool(extract_commands(text))
+        if not has_cmds:
+            print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(text)}")
+            print()
+            ui.print_stats(token_in, token_out, elapsed, request)
 
         history.append({"role": "assistant", "content": text})
         state.logger.log_user(raw)

@@ -27,3 +27,4 @@ code_bg   = _bg(_c("code_bg",   233))  # code block background
 code_lang = _fg(_c("code_lang", 243))  # code block language label
 code_body = _fg(_c("code_body", 215))  # code block content
 inline    = _fg(_c("inline",    222))  # `inline code`
+input_bg  = _bg(_c("input_bg",  235))  # user input / telegram message line background

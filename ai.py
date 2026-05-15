@@ -74,6 +74,10 @@ def main():
                 prompt = resolved
         single_turn.run(state, prompt)
     else:
+        if state.config.config_loader.get("telegram", "autostart", default=False):
+            from modules import telegram as _tg
+            _tg.start_thread(state)
+            state.telegram = True
         chat.run(state)
 
 

@@ -29,5 +29,5 @@ def build() -> argparse.ArgumentParser:
     parser.add_argument("-lm", "--list-models", dest="list_models", action="store_true")
     parser.add_argument("-lp", "--list-providers", dest="list_providers", action="store_true")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true")
-    parser.add_argument("-T", "--telegram", dest="telegram", action="store_true")
+    parser.add_argument("-t", "--telegram", dest="telegram", action="store_true")
     return parser

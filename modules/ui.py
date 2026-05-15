@@ -18,17 +18,19 @@ def fmt_num(n: int | None) -> str:
     return f"{n / 1000:.1f}k" if n >= 1000 else str(n)
 
 
-def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True):
-    """Print interactive mode header with provider, model, shell/verbose status."""
+def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True, telegram: bool = False):
+    """Print interactive mode header with provider, model, shell/verbose/telegram status."""
     sh  = f"{_col.model}on{_R}"  if shell_mode else f"{_col.dim}off{_R}"
     vrb = f"{_col.model}on{_R}"  if verbose    else f"{_col.dim}off{_R}"
+    tg  = f"{_col.model}on{_R}"  if telegram   else f"{_col.dim}off{_R}"
 
-    print(f" {_col.marker}{sym.ai_marker}{_R} {t('ui','interactive_chat')}  {_col.dim}v{get_version()}{_R}")
+    print(f" {_col.marker}{sym.bullet}{_R} {t('ui','interactive_chat')}  {_col.dim}v{get_version()}{_R}")
     print(
         f"    {_col.dim}{t('ui','provider_label')}{_R}{_col.provider}{provider}{_R}  "
         f"{_col.dim}{t('ui','model_label')}{_R}{_col.model}{model}{_R}  "
         f"{_col.dim}{t('ui','shell_label')}{_R}{sh}  "
-        f"{_col.dim}verbose:{_R} {vrb}"
+        f"{_col.dim}verbose:{_R} {vrb}  "
+        f"{_col.dim}telegram:{_R} {tg}"
     )
     print(f"    {_col.command}/help{_R}{_col.dim} {t('ui','help_for_cmds')}  {sym.middle_dot}  {t('ui','ctrl_c_exit')}{_R}")
 
@@ -58,6 +60,7 @@ def print_chat_help():
     print(f"  {_col.command}/clear{_R}                 {t('ui','help_clear')}")
     print(f"  {_col.command}/quit{_R}                  {t('ui','help_quit')}")
     print(f"  {_col.command}/skill{_R}                 {t('skills','help_run')}")
+    print(f"  {_col.command}/telegram{_R}              {t('commands','help_telegram')}")
     print(f"  {_col.command}/changelog{_R}             {t('commands','help_changelog')}")
 
 

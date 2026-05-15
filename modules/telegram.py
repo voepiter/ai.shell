@@ -7,7 +7,10 @@ import requests
 from . import colors as _col
 from . import text as ct
 from . import symbols as sym
+from . import ui
+from . import completer as _completer
 from .agent import agentic_loop, build_system_instruction
+from .shell import extract_commands
 from .spinner import Spinner
 from . import skills as _skills
 from providers import APIError
@@ -17,6 +20,14 @@ _BASE = "https://api.telegram.org/bot{token}/{method}"
 _lock = threading.Lock()  # serialise LLM calls
 
 _histories: dict[int, list] = {}  # per chat_id conversation history
+
+
+class _CRLFStdout:
+    """Wraps sys.stdout to convert \\n → \\r\\n for raw-mode terminal output from background thread."""
+    def __init__(self, w):        self._w = w
+    def write(self, s: str) -> int: return self._w.write(s.replace("\n", "\r\n"))
+    def flush(self):              self._w.flush()
+    def __getattr__(self, name):  return getattr(self._w, name)
 
 
 # ── Telegram API helpers ──────────────────────────────────────────────────
@@ -96,19 +107,21 @@ def format_html(text: str) -> str:
 
 def _process(msg: dict, state, token: str, allowed: set) -> None:
     """Handle one incoming Telegram message."""
-    chat_id = msg["chat"]["id"]
-    user_id = msg.get("from", {}).get("id", 0)
-    raw     = (msg.get("text") or "").strip()
+    chat_id  = msg["chat"]["id"]
+    username = (msg.get("from", {}).get("username") or "").lower()
+    raw      = (msg.get("text") or "").strip()
 
     if not raw:
         return
-    if allowed and user_id not in allowed:
+    if allowed and username not in allowed:
         return
 
-    sender = msg.get("from", {})
-    name   = sender.get("username") or sender.get("first_name") or str(user_id)
-    print(f"\n {_col.dim}{'─' * 48}{_R}")
-    print(f" {_col.dim}✉  @{name}:{_R}  {raw}")
+    sender  = msg.get("from", {})
+    user_id = sender.get("id", 0)
+    name    = sender.get("username") or sender.get("first_name") or str(user_id)
+    _completer.erase_prompt()  # clear ❯ line before writing
+    sys.stdout.write(f"{_col.input_bg} {_col.dim}✉  @{name}:\033[39m  {raw}\x1b[K\x1b[0m\r\n")
+    sys.stdout.flush()
 
     # Resolve skill if message starts with /
     prompt = raw
@@ -155,15 +168,28 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
         state.logger.log_assistant(reply, model_name, token_in, token_out, elapsed)
         state.request_counter.request += 1
 
-        if state.shell_mode:
-            state.total_in, state.total_out, state.total_elapsed, reply = agentic_loop(
-                history, reply, state.api_client, state.config, state.logger,
-                state.request_counter, state.shell_mode,
-                state.total_in, state.total_out, state.total_elapsed,
-                verbose=state.verbose,
-            )
+        # Skip printing initial reply when shell commands present — agentic_loop prints them
+        has_cmds = state.shell_mode and bool(extract_commands(reply))
+        if not has_cmds:
+            highlighted = ct.highlight(reply).replace("\n", "\r\n")
+            sys.stdout.write(f"\r\n {_col.marker}{sym.ai_marker}{_R}  {highlighted}\r\n\r\n")
+            sys.stdout.flush()
+            ui.print_stats(token_in, token_out, elapsed, request)
 
-    print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(reply)}\n")
+        if state.shell_mode:
+            _orig = sys.stdout
+            sys.stdout = _CRLFStdout(_orig)
+            try:
+                state.total_in, state.total_out, state.total_elapsed, reply = agentic_loop(
+                    history, reply, state.api_client, state.config, state.logger,
+                    state.request_counter, state.shell_mode,
+                    state.total_in, state.total_out, state.total_elapsed,
+                    verbose=state.verbose,
+                )
+            finally:
+                sys.stdout = _orig
+
+    _completer.redraw_prompt()  # restore ❯ after all output
     _send(token, chat_id, format_html(reply))
 
 
@@ -177,7 +203,7 @@ def _loop(state) -> None:
     if not token:
         print(f" {_col.error}telegram: token not set in [telegram] ai.ini{_R}", file=sys.stderr)
         return
-    allowed = {int(x.strip()) for x in str(raw_ids).split(",") if x.strip().lstrip("-").isdigit()}
+    allowed = {x.strip().lstrip("@").lower() for x in str(raw_ids).split(",") if x.strip().lstrip("@")}
 
     offset = 0
     while True:

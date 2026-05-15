@@ -121,6 +121,7 @@ def handle(raw: str, history: list, state) -> str | None:
     if cmd == "/telegram":
         from . import telegram as _tg
         _tg.start_thread(state)
+        state.telegram = True
         print(f" {_col.dim}telegram {sym.arrow}{_R} {_col.model}on{_R}")
         return None
 

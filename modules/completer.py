@@ -28,6 +28,8 @@ _BUILTIN = [
     "/telegram",
 ]
 
+_active_prompt: str = ""  # current prompt string while read_input is active
+
 _ESC   = "\x1b"
 _RIGHT = "\x1b[C"
 _LEFT  = "\x1b[D"
@@ -42,6 +44,22 @@ def _all_commands(config_loader) -> list[str]:
     for name, _ in _skills.list_skills(config_loader):
         cmds.append(f"/{name}")
     return sorted(set(cmds))
+
+
+def erase_prompt() -> None:
+    """Clear the readline prompt line before background thread output."""
+    if not _active_prompt:
+        return
+    sys.stdout.write("\r\x1b[2K")
+    sys.stdout.flush()
+
+
+def redraw_prompt() -> None:
+    """Redraw the readline prompt after background thread output."""
+    if not _active_prompt:
+        return
+    sys.stdout.write(f"\r{_active_prompt}\x1b[K\x1b[0m")
+    sys.stdout.flush()
 
 
 def _complete(text: str, commands: list[str]) -> str:
@@ -77,6 +95,8 @@ def _read_escape(fd: int) -> str:
 
 def read_input(prompt_str: str, config_loader) -> str:
     """Read one line with inline /command ghost text; right-arrow or Tab accept completion."""
+    global _active_prompt
+    _active_prompt = prompt_str
     commands = _all_commands(config_loader)
 
     fd  = sys.stdin.fileno()
@@ -95,12 +115,12 @@ def read_input(prompt_str: str, config_loader) -> str:
         ghost_str = f"\x1b[2m{ghost}\x1b[0m" if ghost else ""
         tail_len  = len(buf) - pos
         back_cols = len(ghost) + tail_len
-        sys.stdout.write(f"\r{prompt_str}{text}{ghost_str}\x1b[K")
+        sys.stdout.write(f"\r{prompt_str}{text}\x1b[K\x1b[0m{ghost_str}")
         if back_cols:
             sys.stdout.write(f"\x1b[{back_cols}D")
         sys.stdout.flush()
 
-    sys.stdout.write(prompt_str)
+    sys.stdout.write(f"{prompt_str}\x1b[K\x1b[0m")
     sys.stdout.flush()
 
     try:
@@ -209,5 +229,6 @@ def read_input(prompt_str: str, config_loader) -> str:
 
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
+        _active_prompt = ""
 
     return "".join(buf)

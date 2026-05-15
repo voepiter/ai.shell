@@ -88,12 +88,13 @@ session_not_found   = "session not found: {id}"
 session_read_error  = "failed to read session: {e}"
 session_empty       = "session is empty"
 help_changelog      = "show changelog"
+help_telegram       = "start telegram bot in background"
 
 [parser]
 full_help = """
 ai.shell v{version} — multi-model AI CLI terminal agent.
 
-usage: ai [-h] [-V] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-T] [prompt]
+usage: ai [-h] [-V] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [prompt]
 
 arguments:
   prompt                  prompt text (omit to enter chat mode)
@@ -108,7 +109,7 @@ options:
   -lm, --list-models      list available models for selected provider and exit
   -lp, --list-providers   list all supported providers and exit
   -v, --verbose           show bash commands and output in agent mode
-  -T, --telegram          start Telegram bot polling loop (configure token in ai.ini [telegram])
+  -t, --telegram          start Telegram bot polling loop (configure token in ai.ini [telegram])
 
 examples:
   ai                          interactive chat mode

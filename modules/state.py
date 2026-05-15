@@ -15,6 +15,7 @@ class AppState:
     request_counter: RequestCounter
     shell_mode:      bool
     verbose:         bool  = True
+    telegram:        bool  = False
     total_in:        int   = 0
     total_out:       int   = 0
     total_elapsed:   float = 0.0

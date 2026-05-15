@@ -62,6 +62,7 @@ ai -p openrouter -lm
 | `-lp`/ `--list-providers` | List available providers     |
 | `-lm`/ `--list-models`    | List available models        |
 | `-v` / `--verbose`        | Show bash commands and output in agent mode (single-turn only; interactive reads from `ai.ini`) |
+| `-t` / `--telegram`       | Start Telegram bot polling loop                                                                 |
 
 ## Verbose Mode
 
@@ -94,6 +95,75 @@ Each interactive session is saved as a JSONL file in `~/.local/share/ai-shell/lo
 # Resume a previous session
 /resume 20260511_143022
 ```
+
+## Skills
+
+Skills are reusable prompt templates stored as Markdown files. Invoke them with a slash command in chat or from the terminal.
+
+```
+skills/
+  code-review/code-review.md
+  code-explain/code-explain.md
+  my-skill/my-skill.md        ← your custom skill
+```
+
+Each skill file starts with a frontmatter block:
+
+```markdown
+---
+description: One-line description shown in /skill list
+---
+
+Your prompt text here. Use $ARGUMENTS for user-supplied arguments.
+```
+
+**Built-in skills:**
+
+| Command         | Description                                      |
+|-----------------|--------------------------------------------------|
+| `/code-review`  | Review code for style, bugs, and improvements   |
+| `/code-explain` | Explain what a piece of code does               |
+| `/skill-creator`| Interactive wizard that creates new skill files |
+
+```bash
+# List all available skills
+/skill
+
+# Use a skill with arguments
+/code-review src/main.py
+
+# From terminal (single-turn)
+ai /code-explain "$(cat utils.py)"
+```
+
+## Telegram
+
+Connect the bot to your Telegram account to send prompts and receive answers without opening the terminal.
+
+**Setup:**
+
+1. Create a bot via [@BotFather](https://t.me/BotFather) and copy the token
+2. Add to `ai.ini`:
+
+```ini
+[telegram]
+token       = "123456:ABC-your-token"
+allowed_ids = "@username1, @username2"  # leave empty to allow all
+autostart   = false                     # true = start bot on chat launch
+```
+
+**Usage:**
+
+```bash
+# Start bot in standalone mode (Ctrl+C to stop)
+ai -t
+
+# Or start alongside interactive chat
+ai
+/telegram
+```
+
+Once running, send any message to your bot in Telegram. Shell agent and all skills are available — e.g. `/code-review` or any bash-capable prompt.
 
 ## Supported Providers
 

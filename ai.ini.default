@@ -5,9 +5,14 @@
 [connection]
 timeout = 30
 
+[telegram]
+token       = ""    # BotFather token (leave empty to disable)
+allowed_ids = ""    # comma-separated Telegram usernames: user1, user2 (empty = allow all)
+autostart   = false # true = start bot automatically on chat launch
+
 [providers]
-# default provider: google, openai, xai, deepseek, anthropic, openrouter
-default = "deepseek"
+# default provider: openrouter,deepseek, anthropic,openai, google, xai 
+default = "openrouter"
 
 [models]
 # default model per provider — change here, no code edits needed
@@ -45,9 +50,6 @@ logo_delay     = 0.02  # seconds between lines (0 = instant)
 logo_gradient  = 0.25  # hue range across logo width
 unicode        = true  # false = replace ✨ ▸ → etc. with ASCII equivalents
 
-[telegram]
-token       = ""   # BotFather token (leave empty to disable)
-allowed_ids = ""   # comma-separated numeric Telegram user IDs (empty = allow all)
 
 [color]
 accent    = 99    # purple   — borders / accents
@@ -63,3 +65,4 @@ code_bg   = 233   # code block background
 code_lang = 243   # code block language label
 code_body = 215   # code block content
 inline    = 222   # `inline code`
+input_bg  = 235   # dark gray — user input line / telegram message background
