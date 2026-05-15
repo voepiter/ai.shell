@@ -6,6 +6,7 @@ import time
 import requests
 from . import colors as _col
 from . import text as ct
+from . import symbols as sym
 from .agent import agentic_loop, build_system_instruction
 from .spinner import Spinner
 from . import skills as _skills
@@ -104,7 +105,10 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
     if allowed and user_id not in allowed:
         return
 
-    print(f" {_col.dim}tg [{user_id}]: {raw[:70]}{_R}")
+    sender = msg.get("from", {})
+    name   = sender.get("username") or sender.get("first_name") or str(user_id)
+    print(f"\n {_col.dim}{'─' * 48}{_R}")
+    print(f" {_col.dim}✉  @{name}:{_R}  {raw}")
 
     # Resolve skill if message starts with /
     prompt = raw
@@ -159,6 +163,7 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
                 verbose=state.verbose,
             )
 
+    print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(reply)}\n")
     _send(token, chat_id, format_html(reply))
 
 
@@ -174,7 +179,6 @@ def _loop(state) -> None:
         return
     allowed = {int(x.strip()) for x in str(raw_ids).split(",") if x.strip().lstrip("-").isdigit()}
 
-    print(f" {_col.dim}telegram bot started (ctrl+c to stop){_R}")
     offset = 0
     while True:
         updates = _get_updates(token, offset)
@@ -189,6 +193,7 @@ def _loop(state) -> None:
 
 def run(state) -> None:
     """Run polling loop in main thread (--telegram mode)."""
+    print(f" {_col.dim}telegram bot started (ctrl+c to stop){_R}")
     try:
         _loop(state)
     except KeyboardInterrupt:
