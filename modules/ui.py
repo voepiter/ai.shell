@@ -70,6 +70,7 @@ def print_chat_help():
     print(f"  {_col.command}/<name>{_R} {_col.dim}[args]{_R}          {t('skills','help_invoke')}")
     print(f"  {_col.command}/telegram{_R}              {t('commands','help_telegram')}")
     print(f"  {_col.command}/changelog{_R}             {t('commands','help_changelog')}")
+    print(f"  {_col.command}/update{_R}                {t('commands','help_update')}")
 
 
 def print_stats(

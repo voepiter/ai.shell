@@ -6,7 +6,7 @@ Multi-model LLM CLI client + bash agent.
 
 ## Entry Point
 
-ai.py  89  Entry point — parses args, routes to setup / single-turn / interactive chat.
+ai.py  92  Entry point — parses args, routes to setup / single-turn / interactive chat.
 	_early_lang  Read language from -l argv or ai.ini [ui] language before parser is built.
 	main  Parse args, set locale early, dispatch to setup / single_turn / chat.
 
@@ -26,7 +26,7 @@ chat.py  119  Interactive REPL loop.
 
 colors.py  30
 
-commands.py  243  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
+commands.py  248  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
 	handle(raw, history, state)  Route slash command to handler; return 'quit', 'reset', or None.
 	cmd_skills(config_loader)  Print table of available skills with descriptions.
 	_cmd_sessions(log_dir)  Print table of 10 most recent sessions from JSONL logs.
@@ -63,7 +63,7 @@ logger.py  51  Per-session JSONL logger.
 logo.py  61  ASCII logo display with lolcat-style rainbow gradient.
 	print_logo(path, delay, logo_gradient)  Print ASCII logo with animated rainbow gradient; skip silently if file missing.
 
-parser.py  35  CLI argument parser.
+parser.py  36  CLI argument parser.
 	build  Build and return the argparse parser with localised help strings.
 
 setup.py  200  First-run setup wizard — creates ai.ini from ai.ini.default.
@@ -105,7 +105,7 @@ telegram.py  233  Telegram bot integration — polling loop and LLM dispatch.
 
 text.py  71  Terminal text rendering — ANSI colors and markdown highlighting.
 
-ui.py  150  Terminal rendering — banners, stats, model/provider lists.
+ui.py  151  Terminal rendering — banners, stats, model/provider lists.
 	print_startup_line  Print name, version, and description — shown first in both single and interactive modes.
 	print_banner(provider, model, shell_mode, verbose, telegram)  Print interactive mode header with provider, model, shell/verbose/telegram status.
 	print_chat_help  Print available slash commands.
@@ -113,14 +113,16 @@ ui.py  150  Terminal rendering — banners, stats, model/provider lists.
 	print_providers(config_loader)  Print all providers with default model and env var name.
 	print_models(provider, api_client, config_loader)  Fetch and print available models for provider; mark default.
 
-updates.py  105  Auto-update — once per day checks GitHub for a newer release and runs uv tool update.
+updates.py  122  Auto-update — once per day checks GitHub for a newer release and runs uv tool update.
 	_check_path(config_loader)  Return path to the last-check date file, stored next to ai.ini.
 	_checked_today(path)  Return True if the check file contains today's date.
 	_mark_checked(path)  Write today's date to the check file.
 	_newer(latest, current)  Return True if latest version tuple is greater than current.
 	_fetch_latest(timeout)  Fetch latest release tag from GitHub; return version string or None.
 	_changelog_section(version, timeout)  Fetch CHANGELOG.md from GitHub and return the section for version.
+	_run_update(latest, timeout)  Download and install latest release; print changelog if available.
 	check_and_update(config_loader)  Check once per day for a newer release; update and show changelog if found.
+	force_update(config_loader)  Check for updates immediately, regardless of last-check date.
 
 version.py  57  Version resolution — installed package metadata or pyproject.toml fallback.
 	get_project_meta  Return (name, description) from pyproject.toml, with hardcoded fallbacks.

@@ -118,6 +118,11 @@ def handle(raw: str, history: list, state) -> str | None:
         _cmd_changelog(state.config.base_dir)
         return None
 
+    if cmd == "/update":
+        from .updates import force_update
+        force_update(state.config.config_loader)
+        return None
+
     if cmd == "/telegram":
         from . import telegram as _tg
         _tg.start_thread(state)

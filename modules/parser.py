@@ -32,4 +32,5 @@ def build() -> argparse.ArgumentParser:
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true")
     parser.add_argument("-t", "--telegram", dest="telegram", action="store_true")
     parser.add_argument("-s", "--skills", dest="skills", action="store_true")
+    parser.add_argument("-u", "--update", dest="update", action="store_true")
     return parser

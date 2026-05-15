@@ -89,10 +89,11 @@ session_read_error  = "failed to read session: {e}"
 session_empty       = "session is empty"
 help_changelog      = "show changelog"
 help_telegram       = "start telegram bot in background"
+help_update         = "check for updates"
 
 [parser]
 full_help = """
-usage: ai [-h] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [prompt]
+usage: ai [-h] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [-s] [-u] [prompt]
 
 arguments:
   prompt                  prompt text (omit to enter chat mode)
@@ -108,6 +109,7 @@ options:
   -v, --verbose           show bash commands and output in agent mode
   -t, --telegram          start Telegram bot polling loop (configure in ai.ini [telegram])
   -s, --skills            list available skills and exit
+  -u, --update            check for updates and exit
 
   in chat: /<name> [args]     run a skill
 
@@ -116,7 +118,8 @@ examples:
   ai "prompt"                 single request
   ai -p openrouter -lm        list models for provider
   ai -p openrouter -m gpt-5.3 "prompt"  use specific provider/model
-  ai -s                       list available skills"""
+  ai -s                       list available skills
+  ai -u                       check for updates"""
 
 [skills]
 header       = "skills:"

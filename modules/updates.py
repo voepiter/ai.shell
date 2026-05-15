@@ -67,6 +67,23 @@ def _changelog_section(version: str, timeout: int) -> str:
     return m.group(1).strip() if m else ""
 
 
+def _run_update(latest: str, timeout: int) -> None:
+    """Download and install latest release; print changelog if available."""
+    current = get_version()
+    print(f" update available: v{current} → v{latest}")
+    print(" updating...", flush=True)
+    result = subprocess.run(["uv", "tool", "update", "ai.shell"], capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f" update failed: {result.stderr.strip()}")
+        return
+    print(f" updated to v{latest}")
+    section = _changelog_section(latest, timeout)
+    if section:
+        print()
+        print(section)
+        print()
+
+
 def check_and_update(config_loader) -> None:
     """Check once per day for a newer release; update and show changelog if found."""
     if not config_loader.get("ui", "autoupdate", default=True):
@@ -85,21 +102,21 @@ def check_and_update(config_loader) -> None:
     if not latest:
         return
 
-    current = get_version()
-    if not _newer(latest, current):
+    if not _newer(latest, get_version()):
         return
 
-    print(f" update available: v{current} → v{latest}")
-    print(" updating...", flush=True)
+    _run_update(latest, timeout)
 
-    result = subprocess.run(["uv", "tool", "update", "ai.shell"], capture_output=True, text=True)
-    if result.returncode != 0:
-        print(f" update failed: {result.stderr.strip()}")
+
+def force_update(config_loader) -> None:
+    """Check for updates immediately, regardless of last-check date."""
+    timeout = config_loader.get_connection_timeout()
+    print(" checking for updates...", flush=True)
+    latest = _fetch_latest(timeout)
+    if not latest:
+        print(" could not reach update server")
         return
-
-    print(f" updated to v{latest}")
-    section = _changelog_section(latest, timeout)
-    if section:
-        print()
-        print(section)
-        print()
+    if not _newer(latest, get_version()):
+        print(f" already up to date (v{get_version()})")
+        return
+    _run_update(latest, timeout)

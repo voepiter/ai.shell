@@ -89,18 +89,19 @@ session_read_error  = "ошибка чтения сессии: {e}"
 session_empty       = "сессия пуста"
 help_changelog      = "показать историю изменений"
 help_telegram       = "запустить Telegram бот в фоне"
+help_update         = "проверить обновления"
 
 [parser]
 full_help = """
 
-использование: ai [-h] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [prompt]
+использование: ai [-h] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [-s] [-u] [prompt]
 
 аргументы:
   промпт                  текст запроса (без аргумента — интерактивный режим)
 
 параметры:
   -h, --help              показать эту справку и выйти
-  -p, --provider          провайдер: openrouter, deepseek, anthropic, openai, xai,google
+  -p, --provider          провайдер: openrouter, deepseek, anthropic, openai, xai, google
   -m, --model             имя модели (по умолчанию из ai.ini [models])
   -i, --instruction       системная инструкция (переопределяет ai.ini [system])
   -l, --language          язык: en, ru (переопределяет системную локаль)
@@ -109,6 +110,7 @@ full_help = """
   -v, --verbose           показывать команды bash и вывод в режиме агента
   -t, --telegram          запустить Telegram бота (настройки в ai.ini [telegram])
   -s, --skills            показать список скилов и выйти
+  -u, --update            проверить обновления и выйти
 
   в чате: /<имя> [арг]        запустить скил
 
@@ -117,7 +119,8 @@ full_help = """
   ai "промпт"                 одиночный запрос
   ai -p openrouter -lm        список моделей провайдера
   ai -p openrouter -m gpt-5.3 "промпт"  конкретный провайдер/модель
-  ai -s                       список скилов"""
+  ai -s                       список скилов
+  ai -u                       проверить обновления"""
 
 [skills]
 header       = "скилы:"

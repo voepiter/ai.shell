@@ -61,6 +61,9 @@ def main():
     if args.skills:
         from modules.commands import cmd_skills
         cmd_skills(state.config.config_loader)
+    elif args.update:
+        from modules.updates import force_update
+        force_update(state.config.config_loader)
     elif args.telegram:
         from modules import telegram as _tg
         ui.print_startup_line()
