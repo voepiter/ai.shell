@@ -17,6 +17,7 @@ _R = ct.resetcolor
 
 def run(state: AppState, prompt: str):
     """Send one prompt, print response; runs agent loop if shell commands are detected."""
+    ui.print_startup_line()
     request    = state.request_counter.request
     model_name = state.api_client.model
     spinner    = Spinner(state.config.provider, model_name, request)

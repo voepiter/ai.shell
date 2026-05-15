@@ -24,6 +24,17 @@ def _git_count() -> str | None:
         return None
 
 
+def get_project_meta() -> tuple[str, str]:
+    """Return (name, description) from pyproject.toml, with hardcoded fallbacks."""
+    try:
+        pyproject = Path(__file__).parent.parent / "pyproject.toml"
+        with pyproject.open("rb") as f:
+            proj = tomllib.load(f)["project"]
+            return proj.get("name", "ai.shell"), proj.get("description", "")
+    except Exception:
+        return "ai.shell", ""
+
+
 def get_version() -> str:
     """Return version as major.minor.{git_commit_count}, falling back to package metadata."""
     # Resolve base version from installed metadata or pyproject.toml

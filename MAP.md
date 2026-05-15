@@ -21,7 +21,7 @@ agent.py  126  Shell agent loop — iterative bash command execution and LLM int
 api.py  72  Factory for creating API provider clients.
 	APIFactory.create_client(provider, api_key, model, timeout, config_loader)  Instantiate the right provider client; resolves api_key from env or ai.ini.
 
-chat.py  117  Interactive REPL loop.
+chat.py  119  Interactive REPL loop.
 	run(state)  Run interactive chat loop — handles input, slash commands, and agent dispatch.
 
 colors.py  30
@@ -74,7 +74,7 @@ shell.py  70  Shell command executor for agent mode.
 	is_dangerous(command, patterns)  Return True if command matches any dangerous pattern from config.
 	run_command(command, timeout)  Run shell command, capture stdout/stderr; return CommandResult.
 
-single_turn.py  68  Single-turn (non-interactive) request handler.
+single_turn.py  69  Single-turn (non-interactive) request handler.
 	run(state, prompt)  Send one prompt, print response; runs agent loop if shell commands are detected.
 
 skills.py  67  Skill loader — discovers and loads .md skill files from skill directories.
@@ -105,7 +105,8 @@ telegram.py  233  Telegram bot integration — polling loop and LLM dispatch.
 
 text.py  71  Terminal text rendering — ANSI colors and markdown highlighting.
 
-ui.py  142  Terminal rendering — banners, stats, model/provider lists.
+ui.py  149  Terminal rendering — banners, stats, model/provider lists.
+	print_startup_line  Print name, version, and description — shown first in both single and interactive modes.
 	print_banner(provider, model, shell_mode, verbose, telegram)  Print interactive mode header with provider, model, shell/verbose/telegram status.
 	print_chat_help  Print available slash commands.
 	print_stats(token_in, token_out, elapsed, request_num)  Print token usage and elapsed time for one request.
@@ -121,7 +122,8 @@ updates.py  105  Auto-update — once per day checks GitHub for a newer release 
 	_changelog_section(version, timeout)  Fetch CHANGELOG.md from GitHub and return the section for version.
 	check_and_update(config_loader)  Check once per day for a newer release; update and show changelog if found.
 
-version.py  46  Version resolution — installed package metadata or pyproject.toml fallback.
+version.py  57  Version resolution — installed package metadata or pyproject.toml fallback.
+	get_project_meta  Return (name, description) from pyproject.toml, with hardcoded fallbacks.
 	get_version  Return version as major.minor.{git_commit_count}, falling back to package metadata.
 
 ---

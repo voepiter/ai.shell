@@ -6,7 +6,7 @@ from . import colors as _col
 from . import symbols as sym
 from .api import APIFactory
 from .locale import t
-from .version import get_version
+from .version import get_version, get_project_meta
 
 _R = ct.resetcolor
 
@@ -18,13 +18,20 @@ def fmt_num(n: int | None) -> str:
     return f"{n / 1000:.1f}k" if n >= 1000 else str(n)
 
 
+def print_startup_line() -> None:
+    """Print name, version, and description — shown first in both single and interactive modes."""
+    name, desc = get_project_meta()
+    ver = get_version()
+    print(f" {_col.provider}{name}{_R}  {_col.model}v{ver}{_R}  {_col.dim}{desc}{_R}")
+
+
 def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True, telegram: bool = False):
     """Print interactive mode header with provider, model, shell/verbose/telegram status."""
     sh  = f"{_col.model}on{_R}"  if shell_mode else f"{_col.dim}off{_R}"
     vrb = f"{_col.model}on{_R}"  if verbose    else f"{_col.dim}off{_R}"
     tg  = f"{_col.model}on{_R}"  if telegram   else f"{_col.dim}off{_R}"
 
-    print(f" {_col.marker}{sym.bullet}{_R} {t('ui','interactive_chat')}  {_col.dim}v{get_version()}{_R}")
+    print(f" {_col.marker}{sym.bullet}{_R} {t('ui','interactive_chat')}")
     print(
         f"    {_col.dim}{t('ui','provider_label')}{_R}{_col.provider}{provider}{_R}  "
         f"{_col.dim}{t('ui','model_label')}{_R}{_col.model}{model}{_R}  "

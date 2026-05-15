@@ -21,6 +21,8 @@ def run(state: AppState):
     """Run interactive chat loop — handles input, slash commands, and agent dispatch."""
     cfg = state.config.config_loader
 
+    ui.print_startup_line()
+
     # Show logo if enabled in config
     if cfg.get("ui", "logo", default=True):
         print_logo(
