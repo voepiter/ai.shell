@@ -109,7 +109,15 @@ def read_input(prompt_str: str, config_loader) -> str:
             raw_byte = os.read(fd, 1)
             if not raw_byte:
                 break
-            ch = chr(raw_byte[0])
+            b0 = raw_byte[0]
+            # Read remaining bytes of a multi-byte UTF-8 sequence
+            if b0 >= 0xF0:
+                raw_byte += os.read(fd, 3)
+            elif b0 >= 0xE0:
+                raw_byte += os.read(fd, 2)
+            elif b0 >= 0xC0:
+                raw_byte += os.read(fd, 1)
+            ch = raw_byte.decode("utf-8", errors="replace")
 
             if ch in ("\r", "\n"):  # Enter
                 ghost = _ghost()
