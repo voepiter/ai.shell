@@ -2,6 +2,20 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.4.81 — 2026-05-15
+
+### New
+- `/update` slash command and `ai -u` / `ai --update` CLI flag: check for a newer release on demand, install it, and show the changelog section — without waiting for the daily auto-update
+- Startup line (name · version · description) is now shown in all modes: interactive chat, single-turn, `-t` Telegram, and `-h` help
+
+### Changed
+- `/skill` renamed to `/skills` (plural, matches what it does — lists all skills)
+- `-s/--skills` CLI flag added to list available skills and exit (mirrors the in-chat `/skills` command)
+
+### Fixed
+- Text alignment in terminal responses
+- Bash command output color in agent mode
+
 ## v0.4.0 — 2026-05-14
 
 ### New
