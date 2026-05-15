@@ -6,7 +6,7 @@ Multi-model LLM CLI client + bash agent.
 
 ## Entry Point
 
-ai.py  85  Entry point — parses args, routes to setup / single-turn / interactive chat.
+ai.py  86  Entry point — parses args, routes to setup / single-turn / interactive chat.
 	_early_lang  Read language from -l argv or ai.ini [ui] language before parser is built.
 	main  Parse args, set locale early, dispatch to setup / single_turn / chat.
 
@@ -63,7 +63,7 @@ logger.py  51  Per-session JSONL logger.
 logo.py  61  ASCII logo display with lolcat-style rainbow gradient.
 	print_logo(path, delay, logo_gradient)  Print ASCII logo with animated rainbow gradient; skip silently if file missing.
 
-parser.py  33  CLI argument parser.
+parser.py  34  CLI argument parser.
 	build  Build and return the argparse parser with localised help strings.
 
 setup.py  200  First-run setup wizard — creates ai.ini from ai.ini.default.

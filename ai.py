@@ -60,6 +60,7 @@ def main():
 
     if args.telegram:
         from modules import telegram as _tg
+        ui.print_startup_line()
         _tg.run(state)
     elif args.list_providers:
         ui.print_providers(state.config.config_loader)

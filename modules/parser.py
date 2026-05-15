@@ -12,6 +12,8 @@ class _HelpAction(argparse.Action):
                          nargs=0, help=help)
 
     def __call__(self, parser, namespace, values, option_string=None):
+        from . import ui
+        ui.print_startup_line()
         print(t('parser', 'full_help').format(version=get_version()))
         sys.exit(0)
 
@@ -20,7 +22,6 @@ def build() -> argparse.ArgumentParser:
     """Build and return the argparse parser with localised help strings."""
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("-h", "--help", action=_HelpAction)
-    parser.add_argument("-V", "--version", action="version", version=f"%(prog)s {get_version()}")
     parser.add_argument("prompt", nargs="?")
     parser.add_argument("-p", "--provider", dest="provider", metavar="NAME")
     parser.add_argument("-m", "--model", dest="model", metavar="NAME")

@@ -92,16 +92,13 @@ help_telegram       = "start telegram bot in background"
 
 [parser]
 full_help = """
-ai.shell v{version} — multi-model AI CLI terminal agent.
-
-usage: ai [-h] [-V] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [prompt]
+usage: ai [-h] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [prompt]
 
 arguments:
   prompt                  prompt text (omit to enter chat mode)
 
 options:
   -h, --help              show this help and exit
-  -V, --version           show version and exit
   -p, --provider          provider: openrouter, deepseek, anthropic, openai, google, xai
   -m, --model             model name (default: from ai.ini [models])
   -i, --instruction       system instruction (overrides ai.ini [system])
@@ -109,7 +106,7 @@ options:
   -lm, --list-models      list available models for selected provider and exit
   -lp, --list-providers   list all supported providers and exit
   -v, --verbose           show bash commands and output in agent mode
-  -t, --telegram          start Telegram bot polling loop (configure token in ai.ini [telegram])
+  -t, --telegram          start Telegram bot polling loop (configure in ai.ini [telegram])
 
 examples:
   ai                          interactive chat mode
