@@ -65,4 +65,4 @@ code_bg   = 233   # code block background
 code_lang = 243   # code block language label
 code_body = 215   # code block content
 inline    = 222   # `inline code`
-input_bg  = 235   # dark gray — user input line / telegram message background
+input_bg  = 233   # dark gray — input line

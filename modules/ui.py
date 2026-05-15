@@ -22,7 +22,7 @@ def print_startup_line() -> None:
     """Print name, version, and description — shown first in both single and interactive modes."""
     name, desc = get_project_meta()
     ver = get_version()
-    print(f" {_col.provider}{name}{_R}  {_col.model}v{ver}{_R}  {_col.dim}{desc}{_R}")
+    print(f"{_col.provider}{name}{_R}  {_col.model}v{ver}{_R}  {_col.dim}{desc}{_R}")
 
 
 def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True, telegram: bool = False):
@@ -33,13 +33,13 @@ def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = Tr
 
     print(f" {_col.marker}{sym.bullet}{_R} {t('ui','interactive_chat')}")
     print(
-        f"    {_col.dim}{t('ui','provider_label')}{_R}{_col.provider}{provider}{_R}  "
+        f"   {_col.dim}{t('ui','provider_label')}{_R}{_col.provider}{provider}{_R}  "
         f"{_col.dim}{t('ui','model_label')}{_R}{_col.model}{model}{_R}  "
         f"{_col.dim}{t('ui','shell_label')}{_R}{sh}  "
         f"{_col.dim}verbose:{_R} {vrb}  "
         f"{_col.dim}telegram:{_R} {tg}"
     )
-    print(f"    {_col.command}/help{_R}{_col.dim} {t('ui','help_for_cmds')}  {sym.middle_dot}  {t('ui','ctrl_c_exit')}{_R}")
+    print(f"   {_col.command}/help{_R}{_col.dim} {t('ui','help_for_cmds')}  {sym.middle_dot}  {t('ui','ctrl_c_exit')}{_R}")
 
 
 # Print current provider and model after a /provider or /model switch
@@ -82,7 +82,7 @@ def print_stats(
         return
     req = f"{_col.dim}#{request_num} " if request_num is not None else ""
     s = (
-        f" {_col.dim}{sym.bullet}{_R} "
+        f" {_col.dim}{sym.bullet}{_R}  "
         f"{req}"
         f"{_col.dim}{t('ui','tok_tokens')} ↑{fmt_num(token_in)}  "
         f"↓{fmt_num(token_out)} "
@@ -97,7 +97,7 @@ def print_usage(total_in: int, total_out: int, total_elapsed: float):
         print(f" {_col.dim}—{_R}")
         return
     print(
-        f" {_col.dim}{sym.bullet} {t('ui','tok_session')}  "
+        f" {_col.dim}{sym.bullet}  {t('ui','tok_session')}  "
         f"↑{fmt_num(total_in)} "
         f"↓{fmt_num(total_out)} "
         f"[{total_elapsed:.1f}s]{_R}"
