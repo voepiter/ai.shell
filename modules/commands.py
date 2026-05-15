@@ -99,8 +99,8 @@ def handle(raw: str, history: list, state) -> str | None:
         print(f" {_col.dim}verbose {sym.arrow}{_R} {status}")
         return None
 
-    if cmd == "/skill" and not arg:
-        _cmd_skills(state.config.config_loader)
+    if cmd == "/skills":
+        cmd_skills(state.config.config_loader)
         return None
 
     if cmd == "/sessions":
@@ -133,7 +133,7 @@ def handle(raw: str, history: list, state) -> str | None:
     return None
 
 
-def _cmd_skills(config_loader) -> None:
+def cmd_skills(config_loader) -> None:
     """Print table of available skills with descriptions."""
     items = _skills.list_skills(config_loader)
     if not items:

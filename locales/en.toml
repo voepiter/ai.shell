@@ -107,17 +107,22 @@ options:
   -lp, --list-providers   list all supported providers and exit
   -v, --verbose           show bash commands and output in agent mode
   -t, --telegram          start Telegram bot polling loop (configure in ai.ini [telegram])
+  -s, --skills            list available skills and exit
+
+  in chat: /<name> [args]     run a skill
 
 examples:
   ai                          interactive chat mode
   ai "prompt"                 single request
   ai -p openrouter -lm        list models for provider
-  ai -p openrouter -m gpt-5.3 "prompt"  use specific provider/model"""
+  ai -p openrouter -m gpt-5.3 "prompt"  use specific provider/model
+  ai -s                       list available skills"""
 
 [skills]
-header    = "skills:"
-no_skills = "no skills found"
-help_run  = "list skills / /<name> [args] to run"
+header       = "skills:"
+no_skills    = "no skills found"
+help_run     = "list available skills"
+help_invoke  = "run a skill with optional args"
 
 [agent]
 dangerous      = "dangerous:"

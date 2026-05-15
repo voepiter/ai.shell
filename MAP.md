@@ -6,7 +6,7 @@ Multi-model LLM CLI client + bash agent.
 
 ## Entry Point
 
-ai.py  86  Entry point — parses args, routes to setup / single-turn / interactive chat.
+ai.py  89  Entry point — parses args, routes to setup / single-turn / interactive chat.
 	_early_lang  Read language from -l argv or ai.ini [ui] language before parser is built.
 	main  Parse args, set locale early, dispatch to setup / single_turn / chat.
 
@@ -28,7 +28,7 @@ colors.py  30
 
 commands.py  243  Slash-command dispatcher for interactive chat (/help, /model, /provider, /shell, /verbose, /sessions, /resume …).
 	handle(raw, history, state)  Route slash command to handler; return 'quit', 'reset', or None.
-	_cmd_skills(config_loader)  Print table of available skills with descriptions.
+	cmd_skills(config_loader)  Print table of available skills with descriptions.
 	_cmd_sessions(log_dir)  Print table of 10 most recent sessions from JSONL logs.
 	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
 	_cmd_changelog(base_dir)  Print CHANGELOG.md contents.
@@ -63,7 +63,7 @@ logger.py  51  Per-session JSONL logger.
 logo.py  61  ASCII logo display with lolcat-style rainbow gradient.
 	print_logo(path, delay, logo_gradient)  Print ASCII logo with animated rainbow gradient; skip silently if file missing.
 
-parser.py  34  CLI argument parser.
+parser.py  35  CLI argument parser.
 	build  Build and return the argparse parser with localised help strings.
 
 setup.py  200  First-run setup wizard — creates ai.ini from ai.ini.default.
@@ -105,7 +105,7 @@ telegram.py  233  Telegram bot integration — polling loop and LLM dispatch.
 
 text.py  71  Terminal text rendering — ANSI colors and markdown highlighting.
 
-ui.py  149  Terminal rendering — banners, stats, model/provider lists.
+ui.py  150  Terminal rendering — banners, stats, model/provider lists.
 	print_startup_line  Print name, version, and description — shown first in both single and interactive modes.
 	print_banner(provider, model, shell_mode, verbose, telegram)  Print interactive mode header with provider, model, shell/verbose/telegram status.
 	print_chat_help  Print available slash commands.

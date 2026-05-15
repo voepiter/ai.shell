@@ -58,7 +58,10 @@ def main():
     migrate_config(state.config.config_loader)
     check_and_update(state.config.config_loader)
 
-    if args.telegram:
+    if args.skills:
+        from modules.commands import cmd_skills
+        cmd_skills(state.config.config_loader)
+    elif args.telegram:
         from modules import telegram as _tg
         ui.print_startup_line()
         _tg.run(state)
