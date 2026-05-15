@@ -47,7 +47,7 @@ unicode        = true  # false = replace ✨ ▸ → etc. with ASCII equivalents
 
 [telegram]
 token       = ""   # BotFather token (leave empty to disable)
-allowed_ids = ""   # comma-separated numeric Telegram user IDs
+allowed_ids = ""   # comma-separated numeric Telegram user IDs (empty = allow all)
 
 [color]
 accent    = 99    # purple   — borders / accents

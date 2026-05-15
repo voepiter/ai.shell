@@ -99,7 +99,9 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
     user_id = msg.get("from", {}).get("id", 0)
     raw     = (msg.get("text") or "").strip()
 
-    if not raw or user_id not in allowed:
+    if not raw:
+        return
+    if allowed and user_id not in allowed:
         return
 
     print(f" {_col.dim}tg [{user_id}]: {raw[:70]}{_R}")
@@ -171,8 +173,6 @@ def _loop(state) -> None:
         print(f" {_col.error}telegram: token not set in [telegram] ai.ini{_R}", file=sys.stderr)
         return
     allowed = {int(x.strip()) for x in str(raw_ids).split(",") if x.strip().lstrip("-").isdigit()}
-    if not allowed:
-        print(f" {_col.error}telegram: allowed_ids not set — all messages ignored{_R}", file=sys.stderr)
 
     print(f" {_col.dim}telegram bot started (ctrl+c to stop){_R}")
     offset = 0
