@@ -1,4 +1,4 @@
-"""Auto-update — once per day checks GitHub for a newer release and runs uv tool update."""
+"""Auto-update — once per day checks PyPI for a newer release and runs uv tool upgrade."""
 import re
 import subprocess
 from datetime import date
@@ -9,7 +9,7 @@ import requests
 from .version import get_version
 
 _REPO          = "voepiter/ai.shell"
-_API_URL       = f"https://api.github.com/repos/{_REPO}/releases/latest"
+_PYPI_URL      = "https://pypi.org/pypi/ai.shell/json"
 _CHANGELOG_URL = f"https://raw.githubusercontent.com/{_REPO}/main/CHANGELOG.md"
 _CHECK_FILE    = ".update_check"
 
@@ -46,11 +46,11 @@ def _newer(latest: str, current: str) -> bool:
 
 
 def _fetch_latest(timeout: int) -> str | None:
-    """Fetch latest release tag from GitHub; return version string or None."""
+    """Fetch latest version from PyPI; return version string or None."""
     try:
-        r = requests.get(_API_URL, timeout=timeout)
+        r = requests.get(_PYPI_URL, timeout=timeout)
         r.raise_for_status()
-        return r.json().get("tag_name", "").lstrip("v") or None
+        return r.json()["info"]["version"] or None
     except Exception:
         return None
 
@@ -72,7 +72,7 @@ def _run_update(latest: str, timeout: int) -> None:
     current = get_version()
     print(f" update available: v{current} → v{latest}")
     print(" updating...", flush=True)
-    result = subprocess.run(["uv", "tool", "update", "ai.shell"], capture_output=True, text=True)
+    result = subprocess.run(["uv", "tool", "upgrade", "ai.shell"], capture_output=True, text=True)
     if result.returncode != 0:
         print(f" update failed: {result.stderr.strip()}")
         return

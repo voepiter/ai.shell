@@ -33,7 +33,7 @@ commands.py  248  Slash-command dispatcher for interactive chat (/help, /model, 
 	_cmd_resume(session_id, history, log_dir)  Load session history into active conversation and display transcript.
 	_cmd_changelog(base_dir)  Print CHANGELOG.md contents.
 
-completer.py  234  Inline /command autocomplete for interactive chat — ghost text + right-arrow accept.
+completer.py  235  Inline /command autocomplete for interactive chat — ghost text + right-arrow accept.
 	_all_commands(config_loader)  Return sorted list of all /commands including skill names.
 	erase_prompt  Clear the readline prompt line before background thread output.
 	redraw_prompt  Redraw the readline prompt after background thread output.
@@ -113,12 +113,12 @@ ui.py  151  Terminal rendering — banners, stats, model/provider lists.
 	print_providers(config_loader)  Print all providers with default model and env var name.
 	print_models(provider, api_client, config_loader)  Fetch and print available models for provider; mark default.
 
-updates.py  122  Auto-update — once per day checks GitHub for a newer release and runs uv tool update.
+updates.py  122  Auto-update — once per day checks PyPI for a newer release and runs uv tool upgrade.
 	_check_path(config_loader)  Return path to the last-check date file, stored next to ai.ini.
 	_checked_today(path)  Return True if the check file contains today's date.
 	_mark_checked(path)  Write today's date to the check file.
 	_newer(latest, current)  Return True if latest version tuple is greater than current.
-	_fetch_latest(timeout)  Fetch latest release tag from GitHub; return version string or None.
+	_fetch_latest(timeout)  Fetch latest version from PyPI; return version string or None.
 	_changelog_section(version, timeout)  Fetch CHANGELOG.md from GitHub and return the section for version.
 	_run_update(latest, timeout)  Download and install latest release; print changelog if available.
 	check_and_update(config_loader)  Check once per day for a newer release; update and show changelog if found.

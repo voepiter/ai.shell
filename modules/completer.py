@@ -26,6 +26,7 @@ _BUILTIN = [
     "/resume",
     "/changelog",
     "/telegram",
+    "/update",
 ]
 
 _active_prompt: str = ""  # current prompt string while read_input is active
