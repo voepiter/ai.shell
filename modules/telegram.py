@@ -172,7 +172,7 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
         has_cmds = state.shell_mode and bool(extract_commands(reply))
         if not has_cmds:
             highlighted = ct.highlight(reply).replace("\n", "\r\n")
-            sys.stdout.write(f"\r\n {_col.marker}{sym.ai_marker}{_R}  {highlighted}\r\n\r\n")
+            sys.stdout.write(f"\r\n {_col.marker}{sym.ai_marker}{_R} {highlighted}\r\n\r\n")
             sys.stdout.flush()
             ui.print_stats(token_in, token_out, elapsed, request)
 

@@ -215,7 +215,7 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
         if role == "user":
             print(f" {_col.dim}{ts}  {sym.user_prompt}{_R}  {content}")
         else:
-            print(f" {_col.dim}{ts}  {sym.ai_marker}{_R}  {ct.highlight(content)}")
+            print(f" {_col.dim}{ts}  {sym.ai_marker}{_R} {ct.highlight(content)}")
         print()
 
     # Replace active history with loaded session

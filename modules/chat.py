@@ -101,7 +101,7 @@ def run(state: AppState):
 
         has_cmds = state.shell_mode and bool(extract_commands(text))
         if not has_cmds:
-            print(f"\n {_col.marker}{sym.ai_marker}{_R}  {ct.highlight(text)}")
+            print(f"\n {_col.marker}{sym.ai_marker}{_R} {ct.highlight(text)}")
             print()
             ui.print_stats(token_in, token_out, elapsed, request)
 
