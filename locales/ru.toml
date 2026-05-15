@@ -67,8 +67,11 @@ default_marker      = "(умолч.)"
 tok_request         = "запрос:"
 
 [common]
-interrupted     = "прервано"
-history_cleared = "история очищена"
+interrupted       = "прервано"
+history_cleared   = "история очищена"
+bye               = "пока"
+tg_started        = "telegram бот запущен (ctrl+c для остановки)"
+tg_stopped        = "telegram бот остановлен"
 
 [commands]
 usage_model         = "использование: /model <имя>"
@@ -93,8 +96,6 @@ help_update         = "проверить обновления"
 
 [parser]
 full_help = """
-
-использование: ai [-h] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [-s] [-u] [prompt]
 
 аргументы:
   промпт                  текст запроса (без аргумента — интерактивный режим)

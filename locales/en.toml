@@ -67,8 +67,11 @@ default_marker     = "(default)"
 tok_request        = "request:"
 
 [common]
-interrupted     = "interrupted"
-history_cleared = "history cleared"
+interrupted       = "interrupted"
+history_cleared   = "history cleared"
+bye               = "bye"
+tg_started        = "telegram bot started (ctrl+c to stop)"
+tg_stopped        = "telegram bot stopped"
 
 [commands]
 usage_model         = "usage: /model <name>"
@@ -93,7 +96,6 @@ help_update         = "check for updates"
 
 [parser]
 full_help = """
-usage: ai [-h] [-p NAME] [-m NAME] [-i TEXT] [-l CODE] [-lm] [-lp] [-v] [-t] [-s] [-u] [prompt]
 
 arguments:
   prompt                  prompt text (omit to enter chat mode)

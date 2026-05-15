@@ -13,6 +13,7 @@ from .agent import agentic_loop, build_system_instruction
 from .shell import extract_commands
 from .spinner import Spinner
 from . import skills as _skills
+from .locale import t
 from providers import APIError
 
 _R    = ct.resetcolor
@@ -219,11 +220,11 @@ def _loop(state) -> None:
 
 def run(state) -> None:
     """Run polling loop in main thread (--telegram mode)."""
-    print(f" {_col.dim}telegram bot started (ctrl+c to stop){_R}")
+    print(f" {_col.dim}{t('common','tg_started')}{_R}")
     try:
         _loop(state)
     except KeyboardInterrupt:
-        print(f"\n {_col.dim}telegram bot stopped{_R}")
+        print(f"\n {_col.dim}{t('common','tg_stopped')}{_R}")
 
 
 def start_thread(state) -> threading.Thread:

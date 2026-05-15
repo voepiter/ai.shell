@@ -21,7 +21,7 @@ agent.py  126  Shell agent loop — iterative bash command execution and LLM int
 api.py  72  Factory for creating API provider clients.
 	APIFactory.create_client(provider, api_key, model, timeout, config_loader)  Instantiate the right provider client; resolves api_key from env or ai.ini.
 
-chat.py  119  Interactive REPL loop.
+chat.py  120  Interactive REPL loop.
 	run(state)  Run interactive chat loop — handles input, slash commands, and agent dispatch.
 
 colors.py  30
@@ -91,7 +91,7 @@ state.py  49  Shared runtime state passed across all modules.
 
 symbols.py  19  Terminal symbols — unicode or ASCII depending on ai.ini [ui] unicode setting.
 
-telegram.py  233  Telegram bot integration — polling loop and LLM dispatch.
+telegram.py  234  Telegram bot integration — polling loop and LLM dispatch.
 	_CRLFStdout  Wraps sys.stdout to convert \n → \r\n for raw-mode terminal output from background thread.
 	_api_post(token, method, **kwargs)  POST to Telegram Bot API; return JSON or None on error.
 	_send(token, chat_id, text)  Send HTML message; fall back to plain text on parse error.

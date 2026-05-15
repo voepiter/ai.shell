@@ -40,6 +40,7 @@ def run(state: AppState):
             prompt = f"{_col.input_bg} {_col.prompt}{sym.user_prompt}\033[39m  "
             raw = _completer.read_input(prompt, cfg).strip()
         except (KeyboardInterrupt, EOFError):
+            print(f"\n {_col.dim}{t('common','bye')}{_R}")
             ui.print_chat_totals(state.total_in, state.total_out, state.total_elapsed)
             break
 
