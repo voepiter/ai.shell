@@ -66,7 +66,7 @@ def agentic_loop(
                     results.append(f"$ {cmd}\n{t('agent','skipped')}")
                     continue
 
-            print(f" {_col.dim}{sym.computer} {cmd}{_R}")
+            print(f" {_col.command}{sym.computer} {cmd}{_R}")
             result = run_command(cmd, timeout=cmd_timeout)
             output = result.to_context()
             if verbose:
