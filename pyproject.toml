@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "ai.shell"
 version = "0.4.0"
-description = "Multi-model LLM CLI client + bash agent"
+description = "Multi-model AI terminal agent"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
