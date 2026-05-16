@@ -72,7 +72,7 @@ def _run_update(latest: str, timeout: int) -> None:
     current = get_version()
     print(f" update available: v{current} → v{latest}")
     print(" updating...", flush=True)
-    result = subprocess.run(["uv", "tool", "upgrade", "ai.shell"], capture_output=True, text=True)
+    result = subprocess.run(["uv", "tool", "install", "ai.shell", "--force"], capture_output=True, text=True)
     if result.returncode != 0:
         print(f" update failed: {result.stderr.strip()}")
         return

@@ -32,24 +32,19 @@ def get_project_meta() -> tuple[str, str]:
 
 def get_version() -> str:
     """Return version as major.minor.{git_commit_count}, falling back to package metadata."""
-    # Use full installed version if it already has a patch component
-    raw = None
+    # Installed package: use exact version from metadata
     try:
-        raw = version("ai.shell")
+        return version("ai.shell")
     except PackageNotFoundError:
         pass
-    if raw is None:
-        try:
-            pyproject = Path(__file__).parent.parent / "pyproject.toml"
-            with pyproject.open("rb") as f:
-                raw = tomllib.load(f)["project"]["version"]
-        except Exception:
-            pass
-    if raw is None:
+    # Dev/source build: read base from pyproject.toml, replace patch with git commit count
+    try:
+        pyproject = Path(__file__).parent.parent / "pyproject.toml"
+        with pyproject.open("rb") as f:
+            raw = tomllib.load(f)["project"]["version"]
+        parts = raw.split(".")
+        base = ".".join(parts[:2]) if len(parts) >= 2 else raw
+        count = _git_count()
+        return f"{base}.{count}" if count else base
+    except Exception:
         return "unknown"
-    # If version already has 3+ parts (real release), use as-is
-    if len(raw.split(".")) >= 3:
-        return raw
-    # Dev build: append git commit count as patch
-    count = _git_count()
-    return f"{raw}.{count}" if count else raw
