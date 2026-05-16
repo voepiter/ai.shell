@@ -2,7 +2,7 @@
 
 AI terminal interface agent. can run shell commands, Telegram bot.
 Supports multiple LLM: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
-Requires [API keys](##api-keys)
+Requires [API keys](#api-keys)
 
 ## Installation
 
