@@ -26,7 +26,7 @@ They can be set via environment variables or in `ai.ini` under the `[api_keys]` 
 | Anthropic Claude | `ANTHROPIC_API_KEY`  |
 | OpenAI ChatGPT   | `OPENAI_API_KEY`     |
 | XAI Grok         | `XAI_API_KEY`        |
-| Google Gemini    | `GOOGLE_API_KEY`     |
+| Google Gemini    | `GEMINI_API_KEY`     |
 | OpenRouter       | `OPENROUTER_API_KEY` |
 
 ## Usage

@@ -25,7 +25,7 @@ openrouter = "openrouter/free"
 
 [api_keys]
 # Leave empty to rely on environment variables instead
-GOOGLE_API_KEY     = ""
+GEMINI_API_KEY     = ""
 OPENAI_API_KEY     = ""
 XAI_API_KEY        = ""
 DEEPSEEK_API_KEY   = ""
@@ -48,7 +48,7 @@ autoupdate     = true  # check for updates once per day on startup
 logo           = true  # false = skip logo on startup
 logo_delay     = 0.02  # seconds between lines (0 = instant)
 logo_gradient  = 0.25  # hue range across logo width
-unicode        = true  # false = replace ✨ ▸ → etc. with ASCII equivalents
+unicode        = true  # false = replace ✨ → * etc. with ASCII equivalents
 
 
 [color]

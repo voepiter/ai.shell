@@ -27,7 +27,7 @@ class APIFactory:
 
     # Provider name → expected API key environment variable
     API_KEY_ENV_VARS = {
-        "google":     "GOOGLE_API_KEY",
+        "google":     "GEMINI_API_KEY",
         "openai":     "OPENAI_API_KEY",
         "xai":        "XAI_API_KEY",
         "deepseek":   "DEEPSEEK_API_KEY",

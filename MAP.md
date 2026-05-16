@@ -180,7 +180,7 @@ xai.py  42  xAI Grok API client (api.x.ai/v1/chat/completions).
 | OPENROUTER_API_KEY | openrouter |
 | DEEPSEEK_API_KEY | deepseek |
 | XAI_API_KEY | xai |
-| GOOGLE_API_KEY | google |
+| GEMINI_API_KEY | google |
 
 ## Config & data files
 

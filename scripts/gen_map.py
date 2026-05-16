@@ -41,7 +41,7 @@ _STATIC = """\
 | OPENROUTER_API_KEY | openrouter |
 | DEEPSEEK_API_KEY | deepseek |
 | XAI_API_KEY | xai |
-| GOOGLE_API_KEY | google |
+| GEMINI_API_KEY | google |
 
 ## Config & data files
 

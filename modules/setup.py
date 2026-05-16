@@ -18,7 +18,7 @@ _CONFIG    = (Path.home() / ".config" / "ai-shell" / "ai.ini"
 
 # Provider name → (env var name, api key url)
 _PROVIDERS = {
-    "google":     ("GOOGLE_API_KEY",     "https://aistudio.google.com/apikey"),
+    "google":     ("GEMINI_API_KEY",     "https://aistudio.google.com/apikey"),
     "openai":     ("OPENAI_API_KEY",     "https://platform.openai.com/api-keys"),
     "xai":        ("XAI_API_KEY",        "https://console.x.ai"),
     "deepseek":   ("DEEPSEEK_API_KEY",   "https://platform.deepseek.com"),
