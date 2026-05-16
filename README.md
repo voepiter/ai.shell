@@ -1,6 +1,9 @@
 ![AI.SHELL](ai.shell.jpg)
 
-AI terminal interface agent. can run shell commands, telegram bot. Supports multiple LLM APIs: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
+AI terminal interface agent. can run shell commands, telegram bot.
+Supports multiple LLM: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
+Requires [API keys](### api-keys)
+
 [Changelog](CHANGELOG.md)
 
 ## Installation
@@ -14,20 +17,6 @@ uv tool install git+https://github.com/voepiter/ai.shell.git
 ## Configuration
 
 The `ai.ini` file is created on first run by a setup wizard. Default settings come from `ai.ini.default`.
-
-### API Keys
-
-Access to LLM models requires API keys.
-They can be set via environment variables or in `ai.ini` under the `[api_keys]` section:
-
-| Provider         | Environment variable |
-|------------------|----------------------|
-| DeepSeek         | `DEEPSEEK_API_KEY`   |
-| Anthropic Claude | `ANTHROPIC_API_KEY`  |
-| OpenAI ChatGPT   | `OPENAI_API_KEY`     |
-| XAI Grok         | `XAI_API_KEY`        |
-| Google Gemini    | `GEMINI_API_KEY`     |
-| OpenRouter       | `OPENROUTER_API_KEY` |
 
 ## Usage
 
@@ -59,12 +48,12 @@ ai -p openrouter -lm
 | `-m` / `--model`          | Model name                   |
 | `-lp`/ `--list-providers` | List available providers     |
 | `-lm`/ `--list-models`    | List available models        |
-| `-v` / `--verbose`        | Show bash commands and output in agent mode (single-turn only; interactive reads from `ai.ini`) |
-| `-t` / `--telegram`       | Start Telegram bot polling loop                                                                 |
+| `-v` / `--verbose`        | Show bash commands output in agent mode |
+| `-t` / `--telegram`       | Start Telegram bot polling loop |                                                       |
 
 ## Verbose Mode
 
-Controls whether intermediate bash commands and their output are shown during agent execution. The final answer is always displayed.
+Controls whether intermediate bash commands output are shown during agent execution. The final answer is always displayed.
 
 | Mode          | Default | How to change                          |
 |---------------|---------|----------------------------------------|
@@ -163,9 +152,9 @@ ai
 
 Once running, send any message to your bot in Telegram. Shell agent and all skills are available — e.g. `/code-review` or any bash-capable prompt.
 
-## Supported Providers
+## Supported LLM Providers
 
-| Provider    | Default model        |
+| Provider    | Default model from ai.ini |
 |-------------|----------------------|
 | OpenRouter  | `openrouter/free`    |
 | DeepSeek    | `deepseek-v4-flash`  |
@@ -176,5 +165,19 @@ Once running, send any message to your bot in Telegram. Shell agent and all skil
 
 OpenRouter provides access to many models through a single API key.
 Free models have the `free` suffix. Full list: `ai -p openrouter -lm`
+
+### API Keys
+
+Access to provider models requires API keys.
+They can be set via environment variables or in `ai.ini` under the `[api_keys]` section:
+
+| Provider         | Environment variable | API Key URL |
+|------------------|----------------------|-------------|
+| DeepSeek         | `DEEPSEEK_API_KEY`   | https://platform.deepseek.com/api_keys |
+| OpenRouter       | `OPENROUTER_API_KEY` | https://openrouter.ai/settings/keys |
+| Anthropic Claude | `ANTHROPIC_API_KEY`  | https://console.anthropic.com/settings/keys |
+| OpenAI ChatGPT   | `OPENAI_API_KEY`     | https://platform.openai.com/api-keys |
+| Google Gemini    | `GEMINI_API_KEY`     | https://aistudio.google.com/app/apikey |
+| XAI Grok         | `XAI_API_KEY`        | https://console.x.ai/team/default/api-keys |
 
 ---
