@@ -41,8 +41,8 @@ completer.py  235  Inline /command autocomplete for interactive chat — ghost t
 	_read_escape(fd)  Read rest of an escape sequence after ESC; return ESC alone if nothing follows in 50 ms.
 	read_input(prompt_str, config_loader)  Read one line with inline /command ghost text; right-arrow or Tab accept completion.
 
-config.py  159  Configuration — TOML file loader, typed runtime config, and config migration.
-	ConfigLoader  Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai-shell/.
+config.py  170  Configuration — TOML file loader, typed runtime config, and config migration.
+	ConfigLoader  Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai.shell/.
 	ConfigLoader.get(*keys)  Look up a nested key path in config; return default if any key is missing.
 	_raw_lines(path)  Parse a config file and return {section: {key: raw_line}} for migration.
 	_insert_into_section(content, section, lines)  Append lines at the end of a named section in config file text.

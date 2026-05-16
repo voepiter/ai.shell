@@ -14,16 +14,27 @@ except ImportError:
 
 
 # Default paths for user-level config and logs when installed as a package
-_USER_CFG    = Path.home() / ".config" / "ai-shell" / "ai.ini"
-_USER_LOG    = Path.home() / ".local" / "share" / "ai-shell" / "log"
+_USER_CFG    = Path.home() / ".config" / "ai.shell" / "ai.ini"
+_USER_LOG    = Path.home() / ".local" / "share" / "ai.shell" / "log"
 _DEFAULT_CFG = Path(__file__).parent.parent / "ai.ini.default"
+
+_OLD_CFG = Path.home() / ".config" / "ai-shell"
+_OLD_LOG = Path.home() / ".local" / "share" / "ai-shell"
+
+
+def _migrate_old_dirs() -> None:
+    # Rename ai-shell → ai.shell once if new path doesn't exist yet
+    for old, new in ((_OLD_CFG, _USER_CFG.parent), (_OLD_LOG, _USER_LOG.parent)):
+        if old.exists() and not new.exists():
+            old.rename(new)
 
 
 class ConfigLoader:
-    """Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai-shell/."""
+    """Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai.shell/."""
 
     # Search order: cwd → script dir → user home config
     def __init__(self, config_path: Optional[Path] = None):
+        _migrate_old_dirs()
         if config_path is None:
             current_dir = Path.cwd()
             script_dir  = Path(__file__).parent.parent.absolute()
