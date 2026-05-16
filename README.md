@@ -2,7 +2,7 @@
 
 AI terminal interface agent. can run shell commands, telegram bot.
 Supports multiple LLM: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
-Requires [API keys](### api-keys)
+Requires [API keys](##api-keys)
 
 [Changelog](CHANGELOG.md)
 
@@ -87,7 +87,7 @@ Each interactive session is saved as a JSONL file in `~/.local/share/ai-shell/lo
 
 Skills are reusable prompt templates stored as Markdown files. Invoke them with a slash command in chat or from the terminal.
 
-```
+```markdown
 skills/
   code-review/code-review.md
   code-explain/code-explain.md
@@ -98,7 +98,7 @@ Each skill file starts with a frontmatter block:
 
 ```markdown
 ---
-description: One-line description shown in /skill list
+description : One-line description shown in /skill list
 ---
 
 Your prompt text here. Use $ARGUMENTS for user-supplied arguments.
@@ -166,7 +166,7 @@ Once running, send any message to your bot in Telegram. Shell agent and all skil
 OpenRouter provides access to many models through a single API key.
 Free models have the `free` suffix. Full list: `ai -p openrouter -lm`
 
-### API Keys
+## API Keys
 
 Access to provider models requires API keys.
 They can be set via environment variables or in `ai.ini` under the `[api_keys]` section:
