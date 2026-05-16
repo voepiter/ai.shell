@@ -48,6 +48,7 @@ ai -p openrouter -lm
 | `-lm`/ `--list-models`    | List available models        |
 | `-v` / `--verbose`        | Show bash commands output in agent mode |
 | `-t` / `--telegram`       | Start Telegram bot polling loop |                                                       |
+| `-u` / `--update`         | Update program from Github repo |                                                       |
 
 ## Verbose Mode
 

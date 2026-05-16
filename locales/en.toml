@@ -101,17 +101,17 @@ arguments:
   prompt                  prompt text (omit to enter chat mode)
 
 options:
-  -h, --help              show this help and exit
+  -h, --help              show this help
   -p, --provider          provider: openrouter, deepseek, anthropic, openai, google, xai
   -m, --model             model name (default: from ai.ini [models])
   -i, --instruction       system instruction (overrides ai.ini [system])
   -l, --language          language: en, ru (overrides system locale)
-  -lm, --list-models      list available models for selected provider and exit
-  -lp, --list-providers   list all supported providers and exit
-  -v, --verbose           show bash commands and output in agent mode
+  -lm, --list-models      list available models for selected provider
+  -lp, --list-providers   list all supported providers
+  -v, --verbose           show bash commands output in agent mode
   -t, --telegram          start Telegram bot polling loop (configure in ai.ini [telegram])
-  -s, --skills            list available skills and exit
-  -u, --update            check for updates and exit
+  -s, --skills            list available skills
+  -u, --update            check for updates
 
   in chat: /<name> [args]     run a skill
 
@@ -121,7 +121,7 @@ examples:
   ai -p openrouter -lm        list models for provider
   ai -p openrouter -m gpt-5.3 "prompt"  use specific provider/model
   ai -s                       list available skills
-  ai -u                       check for updates"""
+"""
 
 [skills]
 header       = "skills:"
