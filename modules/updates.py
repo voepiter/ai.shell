@@ -1,17 +1,11 @@
-"""Auto-update — once per day checks PyPI for a newer release and runs uv tool upgrade."""
-import re
+"""Auto-update — once per day runs uv tool upgrade; source remembered by uv."""
 import subprocess
 from datetime import date
 from pathlib import Path
 
-import requests
-
 from .version import get_version
 
-_REPO          = "voepiter/ai.shell"
-_PYPI_URL      = "https://pypi.org/pypi/ai.shell/json"
-_CHANGELOG_URL = f"https://raw.githubusercontent.com/{_REPO}/main/CHANGELOG.md"
-_CHECK_FILE    = ".update_check"
+_CHECK_FILE = ".update_check"
 
 
 def _check_path(config_loader) -> Path:
@@ -35,88 +29,35 @@ def _mark_checked(path: Path) -> None:
         pass
 
 
-def _newer(latest: str, current: str) -> bool:
-    """Return True if latest version tuple is greater than current."""
-    def parse(v: str) -> tuple:
-        return tuple(int(x) for x in v.lstrip("v").split("."))
-    try:
-        return parse(latest) > parse(current)
-    except (ValueError, AttributeError):
-        return False
-
-
-def _fetch_latest(timeout: int) -> str | None:
-    """Fetch latest version from PyPI; return version string or None."""
-    try:
-        r = requests.get(_PYPI_URL, timeout=timeout)
-        r.raise_for_status()
-        return r.json()["info"]["version"] or None
-    except Exception:
-        return None
-
-
-def _changelog_section(version: str, timeout: int) -> str:
-    """Fetch CHANGELOG.md from GitHub and return the section for version."""
-    try:
-        r = requests.get(_CHANGELOG_URL, timeout=timeout)
-        r.raise_for_status()
-        text = r.text
-    except Exception:
-        return ""
-    m = re.search(rf"(## v{re.escape(version)}[^\n]*\n.*?)(?=\n## v|\Z)", text, re.S)
-    return m.group(1).strip() if m else ""
-
-
-def _run_update(latest: str, timeout: int) -> None:
-    """Download and install latest release; print changelog if available."""
+def _run_update() -> None:
+    """Run uv tool upgrade and report result."""
     current = get_version()
-    print(f" update available: v{current} → v{latest}")
     print(" updating...", flush=True)
-    result = subprocess.run(["uv", "tool", "install", "ai.shell", "--force"], capture_output=True, text=True)
+    result = subprocess.run(["uv", "tool", "upgrade", "ai.shell"], capture_output=True, text=True)
     if result.returncode != 0:
         print(f" update failed: {result.stderr.strip()}")
         return
-    print(f" updated to v{latest}")
-    section = _changelog_section(latest, timeout)
-    if section:
-        print()
-        print(section)
-        print()
+    # uv prints "Updated ai.shell vX -> vY" or "Nothing to upgrade"
+    output = (result.stdout + result.stderr).strip()
+    if "nothing to upgrade" in output.lower() or "already" in output.lower():
+        print(f" already up to date (v{current})")
+    else:
+        print(f" updated — restart to apply")
 
 
 def check_and_update(config_loader) -> None:
-    """Check once per day for a newer release; update and show changelog if found."""
+    """Check once per day for updates via uv tool upgrade."""
     if not config_loader.get("ui", "autoupdate", default=True):
         return
-
     check_path = _check_path(config_loader)
     if _checked_today(check_path):
         return
-
-    timeout = config_loader.get_connection_timeout()
-    print(" checking for updates...", flush=True)
-
-    latest = _fetch_latest(timeout)
     _mark_checked(check_path)
-
-    if not latest:
-        return
-
-    if not _newer(latest, get_version()):
-        return
-
-    _run_update(latest, timeout)
+    print(" checking for updates...", flush=True)
+    _run_update()
 
 
 def force_update(config_loader) -> None:
-    """Check for updates immediately, regardless of last-check date."""
-    timeout = config_loader.get_connection_timeout()
+    """Run update immediately, regardless of last-check date."""
     print(" checking for updates...", flush=True)
-    latest = _fetch_latest(timeout)
-    if not latest:
-        print(" could not reach update server")
-        return
-    if not _newer(latest, get_version()):
-        print(f" already up to date (v{get_version()})")
-        return
-    _run_update(latest, timeout)
+    _run_update()

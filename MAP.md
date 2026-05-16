@@ -113,16 +113,13 @@ ui.py  151  Terminal rendering — banners, stats, model/provider lists.
 	print_providers(config_loader)  Print all providers with default model and env var name.
 	print_models(provider, api_client, config_loader)  Fetch and print available models for provider; mark default.
 
-updates.py  122  Auto-update — once per day checks PyPI for a newer release and runs uv tool upgrade.
+updates.py  63  Auto-update — once per day runs uv tool upgrade; source remembered by uv.
 	_check_path(config_loader)  Return path to the last-check date file, stored next to ai.ini.
 	_checked_today(path)  Return True if the check file contains today's date.
 	_mark_checked(path)  Write today's date to the check file.
-	_newer(latest, current)  Return True if latest version tuple is greater than current.
-	_fetch_latest(timeout)  Fetch latest version from PyPI; return version string or None.
-	_changelog_section(version, timeout)  Fetch CHANGELOG.md from GitHub and return the section for version.
-	_run_update(latest, timeout)  Download and install latest release; print changelog if available.
-	check_and_update(config_loader)  Check once per day for a newer release; update and show changelog if found.
-	force_update(config_loader)  Check for updates immediately, regardless of last-check date.
+	_run_update  Run uv tool upgrade and report result.
+	check_and_update(config_loader)  Check once per day for updates via uv tool upgrade.
+	force_update(config_loader)  Run update immediately, regardless of last-check date.
 
 version.py  49  Version resolution — installed package metadata or pyproject.toml fallback.
 	get_project_meta  Return (name, description) from pyproject.toml, with hardcoded fallbacks.
