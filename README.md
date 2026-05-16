@@ -71,7 +71,6 @@ Each interactive session is saved as a JSONL file in `~/.local/share/ai-shell/lo
 |---------------------------|----------------------------------------------------|
 | `/sessions`               | List the 10 most recent sessions with last prompt  |
 | `/resume <session_id>`    | Load a previous session and continue the dialogue  |
-| `/verbose [true\|false]`  | Toggle display of bash commands in agent mode      |
 
 ```bash
 # List recent sessions
@@ -89,7 +88,7 @@ Skills are reusable prompt templates stored as Markdown files. Invoke them with 
 skills/
   code-review/code-review.md
   code-explain/code-explain.md
-  my-skill/my-skill.md        ← your custom skill
+  my-skill/my-skill.md        # your custom skill name
 ```
 
 Each skill file starts with a frontmatter block:
@@ -152,10 +151,8 @@ Once running, send any message to your bot in Telegram. Shell agent and all skil
 
 ## Proxy support
 
-If specific LLM provider or Telegram messenger not available in your region,
-Socks5 proxy supported via eviroment variable, 'ALL_PROXY=socks5://<IP>:<PORT> ai' 
- 
-
+If specific LLM provider or Telegram messenger is not available in your region,
+Socks5 proxy supported via eviroment variable, `'ALL_PROXY=socks5://IP:PORT ai'` 
 
 ## Supported LLM Providers
 
