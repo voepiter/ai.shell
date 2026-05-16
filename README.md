@@ -4,8 +4,6 @@ AI terminal interface agent. can run shell commands, telegram bot.
 Supports multiple LLM: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
 Requires [API keys](##api-keys)
 
-[Changelog](CHANGELOG.md)
-
 ## Installation
 
 Recommended via the [UV package manager](https://github.com/astral-sh/uv)
@@ -152,6 +150,13 @@ ai
 
 Once running, send any message to your bot in Telegram. Shell agent and all skills are available — e.g. `/code-review` or any bash-capable prompt.
 
+## Proxy support
+
+If specific LLM provider or Telegram messenger not available in your region,
+Socks5 proxy supported via eviroment variable, 'ALL_PROXY=socks5://<IP>:<PORT> ai' 
+ 
+
+
 ## Supported LLM Providers
 
 | Provider    | Default model from ai.ini |
@@ -179,5 +184,7 @@ They can be set via environment variables or in `ai.ini` under the `[api_keys]` 
 | OpenAI ChatGPT   | `OPENAI_API_KEY`     | https://platform.openai.com/api-keys |
 | Google Gemini    | `GEMINI_API_KEY`     | https://aistudio.google.com/app/apikey |
 | XAI Grok         | `XAI_API_KEY`        | https://console.x.ai/team/default/api-keys |
+
+[Changelog](CHANGELOG.md)
 
 ---
