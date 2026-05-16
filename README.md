@@ -1,8 +1,6 @@
 ![AI.SHELL](ai.shell.jpg)
 
-# AI.SHELL
-
-AI terminal interface with a built-in agent. can run shell commands. Supports APIs: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
+AI terminal interface agent. can run shell commands, telegram bot. Supports multiple LLM APIs: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
 [Changelog](CHANGELOG.md)
 
 ## Installation
