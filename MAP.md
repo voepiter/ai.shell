@@ -124,7 +124,7 @@ updates.py  122  Auto-update — once per day checks PyPI for a newer release an
 	check_and_update(config_loader)  Check once per day for a newer release; update and show changelog if found.
 	force_update(config_loader)  Check for updates immediately, regardless of last-check date.
 
-version.py  52  Version resolution — installed package metadata or pyproject.toml fallback.
+version.py  49  Version resolution — installed package metadata or pyproject.toml fallback.
 	get_project_meta  Return (name, description) from pyproject.toml, with hardcoded fallbacks.
 	get_version  Return version as major.minor.{git_commit_count}, falling back to package metadata.
 

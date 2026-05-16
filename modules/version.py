@@ -30,23 +30,20 @@ def get_project_meta() -> tuple[str, str]:
         return "ai.shell", ""
 
 
+_BASE = "0.4"  # major.minor; patch = git commit count (dev) or baked by hatchling (release)
+
+
 def get_version() -> str:
     """Return version as major.minor.{git_commit_count}, falling back to package metadata."""
-    project_root = Path(__file__).parent.parent
-    # Dev build: .git present → pyproject base + git commit count as patch
-    if (project_root / ".git").exists():
-        try:
-            with (project_root / "pyproject.toml").open("rb") as f:
-                raw = tomllib.load(f)["project"]["version"]
-            parts = raw.split(".")
-            base = ".".join(parts[:2]) if len(parts) >= 2 else raw
-            count = _git_count()
-            return f"{base}.{count}" if count else base
-        except Exception:
-            pass
-    # Installed package: use exact version from metadata
+    # Dev build: .git present → base + git commit count as patch
+    if (Path(__file__).parent.parent / ".git").exists():
+        count = _git_count()
+        return f"{_BASE}.{count}" if count else _BASE
+    # Installed package: use exact version baked in at build time
     try:
         return version("ai.shell")
     except PackageNotFoundError:
-        pass
-    return "unknown"
+        return _BASE
+
+
+__version__ = get_version()

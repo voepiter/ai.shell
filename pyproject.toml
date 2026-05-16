@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ai.shell"
-version = "0.4.0"
+dynamic = ["version"]
 description = "Multi-model AI terminal agent"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,6 +18,10 @@ Repository = "https://github.com/voepiter/ai.shell"
 
 [project.scripts]
 ai = "ai:main"
+
+[tool.hatch.version]
+source = "code"
+path = "modules/version.py"
 
 [tool.hatch.build.targets.wheel]
 include = [
