@@ -6,6 +6,43 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 
 _STATIC = """\
+## Common tasks
+
+| Task | File | Line |
+|------|------|------|
+| Add slash command | modules/commands.py | 30 |
+| Add autocomplete entry | modules/completer.py | 12 |
+| Add locale string | locales/en.toml + ru.toml | [common] / [commands] |
+| Add CLI flag | modules/parser.py | 1 |
+| Add provider | providers/ + api.py | new file |
+| Change banner/stats UI | modules/ui.py | 1 |
+| Change update logic | modules/updates.py | 1 |
+| Change agent loop | modules/agent.py | 1 |
+
+## Config keys (ai.ini sections)
+
+| Section | Key | Description |
+|---------|-----|-------------|
+| ui | unicode | Unicode symbols vs ASCII fallback |
+| ui | autoupdate | Auto-check PyPI once per day |
+| ui | language | Override locale (en / ru) |
+| models | \\<provider\\> | Default model per provider |
+| system | instruction | System prompt override |
+| telegram | token | Bot token |
+| telegram | allowed_ids | Allowed usernames (comma-sep) |
+| connection | timeout | HTTP timeout in seconds |
+
+## Env vars → provider key mapping
+
+| Env var | Provider |
+|---------|----------|
+| ANTHROPIC_API_KEY | anthropic |
+| OPENAI_API_KEY | openai |
+| OPENROUTER_API_KEY | openrouter |
+| DEEPSEEK_API_KEY | deepseek |
+| XAI_API_KEY | xai |
+| GOOGLE_API_KEY | google |
+
 ## Config & data files
 
 locales/en.toml  English UI strings — [unicode][keys][settings][ui][common][commands][parser][agent]
