@@ -1,6 +1,6 @@
 ![AI.SHELL](ai.shell.jpg)
 
-AI terminal interface agent. can run shell commands, telegram bot.
+AI terminal interface agent. can run shell commands, Telegram bot.
 Supports multiple LLM: OpenRouter, DeepSeek, OpenAI ChatGPT, Anthropic Claude, Google Gemini, XAI Grok.
 Requires [API keys](##api-keys)
 
@@ -152,7 +152,7 @@ Once running, send any message to your bot in Telegram. Shell agent and all skil
 ## Proxy support
 
 If specific LLM provider or Telegram messenger is not available in your region,
-Socks5 proxy supported via eviroment variable, `'ALL_PROXY=socks5://IP:PORT ai'` 
+Socks5 proxy supported via enviroment variable, `'ALL_PROXY=socks5://IP:PORT ai'` 
 
 ## Supported LLM Providers
 
