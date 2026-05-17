@@ -1,5 +1,6 @@
 """Telegram bot integration — polling loop and LLM dispatch."""
 import re
+import socket
 import sys
 import threading
 import time
@@ -21,6 +22,8 @@ _BASE = "https://api.telegram.org/bot{token}/{method}"
 _lock = threading.Lock()  # serialise LLM calls
 
 _histories: dict[int, list] = {}  # per chat_id conversation history
+_instance_id = socket.gethostname()
+_BOT_MSG = re.compile(r'^@\S+:')  # messages from other bot instances
 
 
 class _CRLFStdout:
@@ -116,6 +119,8 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
         return
     if allowed and username not in allowed:
         return
+    if _BOT_MSG.match(raw):  # ignore messages from other instances
+        return
 
     sender  = msg.get("from", {})
     user_id = sender.get("id", 0)
@@ -191,7 +196,20 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
                 sys.stdout = _orig
 
     _completer.redraw_prompt()  # restore ❯ after all output
-    _send(token, chat_id, format_html(reply))
+    _send(token, chat_id, f"<i>@{_instance_id}:</i> {format_html(reply)}")
+
+
+# ── Notifications ─────────────────────────────────────────────────────────
+
+def _notify(token: str, chat_id: int, key: str) -> None:
+    """Send localized connect/disconnect notification with instance id."""
+    _send(token, chat_id, t('common', key, id=_instance_id))
+
+
+def _notify_chat_id(state) -> int | None:
+    """Return chat_id from config or None if not set."""
+    raw = str(state.config.config_loader.get("telegram", "chat_id", default="")).strip()
+    return int(raw) if raw.lstrip("-").isdigit() else None
 
 
 # ── Polling loop ──────────────────────────────────────────────────────────
@@ -220,15 +238,27 @@ def _loop(state) -> None:
 
 def run(state) -> None:
     """Run polling loop in main thread (--telegram mode)."""
+    cfg     = state.config.config_loader
+    token   = cfg.get("telegram", "token", default="").strip()
+    chat_id = _notify_chat_id(state)
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
+    if token and chat_id:
+        _notify(token, chat_id, 'tg_connected')
     try:
         _loop(state)
     except KeyboardInterrupt:
+        if token and chat_id:
+            _notify(token, chat_id, 'tg_disconnected')
         print(f"\n {_col.dim}{t('common','tg_stopped')}{_R}")
 
 
 def start_thread(state) -> threading.Thread:
     """Start polling loop as a background daemon thread (/telegram command)."""
-    t = threading.Thread(target=_loop, args=(state,), daemon=True)
-    t.start()
-    return t
+    cfg     = state.config.config_loader
+    token   = cfg.get("telegram", "token", default="").strip()
+    chat_id = _notify_chat_id(state)
+    if token and chat_id:
+        _notify(token, chat_id, 'tg_connected')
+    th = threading.Thread(target=_loop, args=(state,), daemon=True)
+    th.start()
+    return th

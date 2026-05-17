@@ -72,6 +72,8 @@ history_cleared   = "history cleared"
 bye               = "bye"
 tg_started        = "telegram bot started (ctrl+c to stop)"
 tg_stopped        = "telegram bot stopped"
+tg_connected      = "@{id} connected"
+tg_disconnected   = "@{id} disconnected"
 
 [commands]
 usage_model         = "usage: /model <name>"

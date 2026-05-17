@@ -8,6 +8,7 @@ timeout = 30
 [telegram]
 token       = ""    # BotFather token (leave empty to disable)
 allowed_ids = ""    # comma-separated Telegram usernames: user1, user2 (empty = allow all)
+chat_id     = ""    # your Telegram chat id for connected/disconnected notifications
 autostart   = false # true = start bot automatically on chat launch
 
 [providers]
