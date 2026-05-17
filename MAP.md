@@ -91,7 +91,7 @@ state.py  49  Shared runtime state passed across all modules.
 
 symbols.py  19  Terminal symbols — unicode or ASCII depending on ai.ini [ui] unicode setting.
 
-telegram.py  280  Telegram bot integration — polling loop and LLM dispatch.
+telegram.py  286  Telegram bot integration — polling loop and LLM dispatch.
 	_CRLFStdout  Wraps sys.stdout to convert \n → \r\n for raw-mode terminal output from background thread.
 	_api_post(token, method, **kwargs)  POST to Telegram Bot API; return JSON or None on error.
 	_send(token, chat_id, text)  Send HTML message; fall back to plain text on parse error.

@@ -271,10 +271,16 @@ def run(state) -> None:
 
 def start_thread(state) -> threading.Thread:
     """Start polling loop as a background daemon thread (/telegram command)."""
+    import atexit
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
     chat_id = _load_chat_id(state)
     if token and chat_id:
         _notify(token, chat_id, 'tg_connected')
+    def _on_exit():
+        cid = _load_chat_id(state)
+        if token and cid:
+            _notify(token, cid, 'tg_disconnected')
+    atexit.register(_on_exit)
     th = threading.Thread(target=_loop, args=(state,), daemon=True)
     th.start()
     return th
