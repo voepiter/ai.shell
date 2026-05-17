@@ -91,7 +91,7 @@ state.py  49  Shared runtime state passed across all modules.
 
 symbols.py  19  Terminal symbols — unicode or ASCII depending on ai.ini [ui] unicode setting.
 
-telegram.py  264  Telegram bot integration — polling loop and LLM dispatch.
+telegram.py  280  Telegram bot integration — polling loop and LLM dispatch.
 	_CRLFStdout  Wraps sys.stdout to convert \n → \r\n for raw-mode terminal output from background thread.
 	_api_post(token, method, **kwargs)  POST to Telegram Bot API; return JSON or None on error.
 	_send(token, chat_id, text)  Send HTML message; fall back to plain text on parse error.
@@ -100,7 +100,9 @@ telegram.py  264  Telegram bot integration — polling loop and LLM dispatch.
 	format_html(text)  Convert LLM markdown response to Telegram HTML.
 	_process(msg, state, token, allowed)  Handle one incoming Telegram message.
 	_notify(token, chat_id, key)  Send localized connect/disconnect notification with instance id.
-	_notify_chat_id(state)  Return chat_id from config or None if not set.
+	_chat_id_path(state)  Return path to .tg_chat file stored next to ai.ini.
+	_load_chat_id(state)  Return last known chat_id from .tg_chat file, or None.
+	_save_chat_id(state, chat_id)  Persist chat_id to .tg_chat file.
 	_loop(state)  Poll Telegram for updates and dispatch messages until interrupted.
 	run(state)  Run polling loop in main thread (--telegram mode).
 	start_thread(state)  Start polling loop as a background daemon thread (/telegram command).

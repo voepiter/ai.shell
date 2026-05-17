@@ -136,6 +136,7 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
         if resolved is not None:
             prompt = resolved
 
+    _save_chat_id(state, chat_id)
     history = _histories.setdefault(chat_id, [])
     history.append({"role": "user", "content": prompt})
 
@@ -206,10 +207,27 @@ def _notify(token: str, chat_id: int, key: str) -> None:
     _send(token, chat_id, t('common', key, id=_instance_id))
 
 
-def _notify_chat_id(state) -> int | None:
-    """Return chat_id from config or None if not set."""
-    raw = str(state.config.config_loader.get("telegram", "chat_id", default="")).strip()
-    return int(raw) if raw.lstrip("-").isdigit() else None
+def _chat_id_path(state):
+    """Return path to .tg_chat file stored next to ai.ini."""
+    from pathlib import Path
+    return Path(state.config.config_loader.config_path).parent / ".tg_chat"
+
+
+def _load_chat_id(state) -> int | None:
+    """Return last known chat_id from .tg_chat file, or None."""
+    try:
+        raw = _chat_id_path(state).read_text().strip()
+        return int(raw) if raw.lstrip("-").isdigit() else None
+    except Exception:
+        return None
+
+
+def _save_chat_id(state, chat_id: int) -> None:
+    """Persist chat_id to .tg_chat file."""
+    try:
+        _chat_id_path(state).write_text(str(chat_id))
+    except Exception:
+        pass
 
 
 # ── Polling loop ──────────────────────────────────────────────────────────
@@ -238,9 +256,8 @@ def _loop(state) -> None:
 
 def run(state) -> None:
     """Run polling loop in main thread (--telegram mode)."""
-    cfg     = state.config.config_loader
-    token   = cfg.get("telegram", "token", default="").strip()
-    chat_id = _notify_chat_id(state)
+    token   = state.config.config_loader.get("telegram", "token", default="").strip()
+    chat_id = _load_chat_id(state)
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
     if token and chat_id:
         _notify(token, chat_id, 'tg_connected')
@@ -254,9 +271,8 @@ def run(state) -> None:
 
 def start_thread(state) -> threading.Thread:
     """Start polling loop as a background daemon thread (/telegram command)."""
-    cfg     = state.config.config_loader
-    token   = cfg.get("telegram", "token", default="").strip()
-    chat_id = _notify_chat_id(state)
+    token   = state.config.config_loader.get("telegram", "token", default="").strip()
+    chat_id = _load_chat_id(state)
     if token and chat_id:
         _notify(token, chat_id, 'tg_connected')
     th = threading.Thread(target=_loop, args=(state,), daemon=True)
