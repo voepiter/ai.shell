@@ -1,4 +1,5 @@
 """Telegram bot integration — polling loop and LLM dispatch."""
+import getpass
 import re
 import socket
 import sys
@@ -22,7 +23,7 @@ _BASE = "https://api.telegram.org/bot{token}/{method}"
 _lock = threading.Lock()  # serialise LLM calls
 
 _histories: dict[int, list] = {}  # per chat_id conversation history
-_instance_id = socket.gethostname()
+_instance_id = f"{getpass.getuser()}@{socket.gethostname()}"
 _BOT_MSG = re.compile(r'^@\S+:')  # messages from other bot instances
 
 
@@ -207,7 +208,7 @@ def _notify(token: str, chat_id: int, key: str) -> None:
     from .version import get_project_meta, get_version
     name, _ = get_project_meta()
     ver     = get_version()
-    user    = f"{name} {ver} at {_instance_id}"
+    user    = f"{name} v{ver} at {_instance_id}"
     _send(token, chat_id, t('common', key, id=user))
 
 
