@@ -4,14 +4,15 @@ All notable changes to ai.shell are documented here.
 
 ## v0.4.111 — 2026-05-18
 
-### Новое
-- Telegram: при запуске и остановке бота отправляется уведомление в чат (`ai.shell v0.4.x at user@host connected/disconnected`)
-- Telegram: несколько инстансов на разных машинах с одним токеном — каждый ответ помечается префиксом `@user@host:`, сообщения от других инстансов игнорируются (защита от бесконечных циклов)
-- Telegram: `chat_id` для уведомлений сохраняется автоматически в `.tg_chat` — ручная настройка не нужна
+### New
+- Telegram: connect/disconnect notification sent to chat on bot start and stop (`ai.shell v0.4.x at user@host connected/disconnected`)
+- Telegram: multiple instances on different machines sharing one token — each reply is prefixed with `@user@host:`, messages from other instances are ignored (loop protection)
+- Telegram: `chat_id` for notifications saved automatically to `.tg_chat` — no manual setup required
+- Telegram: `chat_id` bootstrapped from pending updates on fresh instance — connected notification fires before the first incoming message
 
-### Изменено
-- `ai -u` теперь автоматически перезапускает процесс после обновления; вывод показывает переход версий (`updating v0.4.x... → updating to v0.4.y... → restarting ...`)
-- Уведомление об отключении Telegram теперь отправляется при выходе через Ctrl+C (режим autostart)
+### Changed
+- `ai -u` now automatically restarts after update; output shows version transition (`updating to v0.4.y... → restarting ...`)
+- Telegram disconnect notification now sent on Ctrl+C exit (autostart mode)
 
 ## v0.4.81 — 2026-05-15
 
