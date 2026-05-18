@@ -235,6 +235,22 @@ def _save_chat_id(state, chat_id: int) -> None:
         pass
 
 
+def _bootstrap_chat_id(token: str, state) -> int | None:
+    """Try to find chat_id from pending updates (timeout=0, no long-poll)."""
+    try:
+        r = requests.get(_BASE.format(token=token, method="getUpdates"),
+                         params={"timeout": 0}, timeout=10)
+        updates = r.json().get("result", []) if r.json().get("ok") else []
+        for upd in reversed(updates):
+            if "message" in upd:
+                cid = upd["message"]["chat"]["id"]
+                _save_chat_id(state, cid)
+                return cid
+    except Exception:
+        pass
+    return None
+
+
 # ── Polling loop ──────────────────────────────────────────────────────────
 
 def _loop(state) -> None:
@@ -262,7 +278,7 @@ def _loop(state) -> None:
 def run(state) -> None:
     """Run polling loop in main thread (--telegram mode)."""
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
-    chat_id = _load_chat_id(state)
+    chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
     if token and chat_id:
         _notify(token, chat_id, 'tg_connected')
@@ -278,7 +294,7 @@ def start_thread(state) -> threading.Thread:
     """Start polling loop as a background daemon thread (/telegram command)."""
     import atexit
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
-    chat_id = _load_chat_id(state)
+    chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
     if token and chat_id:
         _notify(token, chat_id, 'tg_connected')
     def _on_exit():
