@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 *.log
 .claude/
+.update_check
 log/
 CLAUDE.md
 ai.ini
