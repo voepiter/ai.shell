@@ -35,7 +35,6 @@ def _mark_checked(path: Path) -> None:
 def _run_update() -> None:
     """Run uv tool upgrade; restart process if a new version was installed."""
     current = get_version()
-    print(f" updating v{current}...", flush=True)
     result = subprocess.run(["uv", "tool", "upgrade", "ai.shell"], capture_output=True, text=True)
     if result.returncode != 0:
         print(f" update failed: {result.stderr.strip()}")
