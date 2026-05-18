@@ -1,5 +1,8 @@
 """Auto-update — once per day runs uv tool upgrade; source remembered by uv."""
+import os
+import re
 import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -30,19 +33,21 @@ def _mark_checked(path: Path) -> None:
 
 
 def _run_update() -> None:
-    """Run uv tool upgrade and report result."""
+    """Run uv tool upgrade; restart process if a new version was installed."""
     current = get_version()
-    print(" updating...", flush=True)
+    print(f" updating v{current}...", flush=True)
     result = subprocess.run(["uv", "tool", "upgrade", "ai.shell"], capture_output=True, text=True)
     if result.returncode != 0:
         print(f" update failed: {result.stderr.strip()}")
         return
-    # uv prints "Updated ai.shell vX -> vY" or "Nothing to upgrade"
     output = (result.stdout + result.stderr).strip()
     if "nothing to upgrade" in output.lower() or "already" in output.lower():
         print(f" already up to date (v{current})")
-    else:
-        print(f" updated — restart to apply")
+        return
+    m = re.search(r'v[\d.]+\s*->\s*v([\d.]+)', output)
+    new_ver = m.group(1) if m else "?"
+    print(f" updating v{current} to v{new_ver}... restarting", flush=True)
+    os.execv(sys.argv[0], sys.argv)
 
 
 def check_and_update(config_loader) -> None:
