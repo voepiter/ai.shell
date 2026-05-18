@@ -117,7 +117,7 @@ ui.py  151  Terminal rendering — banners, stats, model/provider lists.
 	print_providers(config_loader)  Print all providers with default model and env var name.
 	print_models(provider, api_client, config_loader)  Fetch and print available models for provider; mark default.
 
-updates.py  68  Auto-update — once per day runs uv tool upgrade; source remembered by uv.
+updates.py  69  Auto-update — once per day runs uv tool upgrade; source remembered by uv.
 	_check_path(config_loader)  Return path to the last-check date file, stored next to ai.ini.
 	_checked_today(path)  Return True if the check file contains today's date.
 	_mark_checked(path)  Write today's date to the check file.

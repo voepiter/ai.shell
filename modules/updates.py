@@ -46,7 +46,8 @@ def _run_update() -> None:
         return
     m = re.search(r'v[\d.]+\s*->\s*v([\d.]+)', output)
     new_ver = m.group(1) if m else "?"
-    print(f" updating v{current} to v{new_ver}... restarting", flush=True)
+    print(f" updating to v{new_ver} ...", flush=True)
+    print(f" restarting ...", flush=True)
     os.execv(sys.argv[0], sys.argv)
 
 
