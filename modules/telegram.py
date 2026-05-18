@@ -197,14 +197,18 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
                 sys.stdout = _orig
 
     _completer.redraw_prompt()  # restore ❯ after all output
-    _send(token, chat_id, f"<i>@{_instance_id}:</i> {format_html(reply)}")
+    _send(token, chat_id, f"@{_instance_id}: {format_html(reply)}")
 
 
 # ── Notifications ─────────────────────────────────────────────────────────
 
 def _notify(token: str, chat_id: int, key: str) -> None:
-    """Send localized connect/disconnect notification with instance id."""
-    _send(token, chat_id, t('common', key, id=_instance_id))
+    """Send localized connect/disconnect notification with program name, version, and instance id."""
+    from .version import get_project_meta, get_version
+    name, _ = get_project_meta()
+    ver     = get_version()
+    user    = f"{name} {ver} at {_instance_id}"
+    _send(token, chat_id, t('common', key, id=user))
 
 
 def _chat_id_path(state):
