@@ -1,34 +1,12 @@
 """DeepSeek API client (api.deepseek.com/v1/chat/completions)."""
-from typing import Dict, List, Optional, Tuple
 import requests
 
-from .base import BaseAPIClient
+from .openai import OpenAIClient
 
 
-class DeepSeekClient(BaseAPIClient):
+class DeepSeekClient(OpenAIClient):
 
-    def _make_request(self, messages: List[Dict], system_instruction: str) -> requests.Response:
-        full_messages = []
-        if system_instruction:
-            full_messages.append({"role": "system", "content": system_instruction})
-        full_messages.extend(messages)
-
-        return requests.post(
-            "https://api.deepseek.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {self.api_key}"},
-            json={"model": self.model, "messages": full_messages},
-            timeout=self.timeout,
-        )
-
-    def extract_response(self, data: Dict) -> str:
-        try:
-            return data["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError):
-            raise ValueError("Unexpected API response format")
-
-    def extract_usage(self, data: Dict) -> Tuple[Optional[int], Optional[int]]:
-        usage = data.get("usage", {})
-        return usage.get("prompt_tokens"), usage.get("completion_tokens")
+    API_URL = "https://api.deepseek.com/v1/chat/completions"
 
     def list_models(self) -> list:
         response = requests.get(

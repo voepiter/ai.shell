@@ -20,6 +20,15 @@ class AppState:
     total_out:       int   = 0
     total_elapsed:   float = 0.0
 
+    def rebuild_client(self, provider: str = None, model: str = None) -> None:
+        """Rebuild api_client after provider/model change."""
+        self.api_client = APIFactory.create_client(
+            provider=provider or self.config.provider,
+            model=model or self.config.model,
+            timeout=self.config.timeout,
+            config_loader=self.config.config_loader,
+        )
+
     @classmethod
     def from_args(cls, args) -> "AppState":
         """Build AppState from parsed CLI args and ai.ini config."""

@@ -5,7 +5,6 @@ from pathlib import Path
 from . import colors as _col
 from . import text as ct
 from . import symbols as sym
-from .api import APIFactory
 from . import ui
 from . import locale as _locale
 from .locale import t
@@ -42,11 +41,7 @@ def handle(raw: str, history: list, state) -> str | None:
             return None
         try:
             state.config.model = arg
-            state.api_client   = APIFactory.create_client(
-                provider=state.config.provider,
-                model=arg,
-                timeout=state.config.timeout,
-            )
+            state.rebuild_client(model=arg)
             ui.print_current_status(state.config.provider, state.api_client.model)
         except ValueError as e:
             print(f" {_col.error}{e}{_R}", file=sys.stderr)
@@ -60,11 +55,7 @@ def handle(raw: str, history: list, state) -> str | None:
             # Switch provider and reset to its default model
             state.config.provider = arg.lower()
             state.config.model    = state.config.config_loader.get_default_model(state.config.provider)
-            state.api_client = APIFactory.create_client(
-                provider=state.config.provider,
-                model=state.config.model,
-                timeout=state.config.timeout,
-            )
+            state.rebuild_client()
             ui.print_current_status(state.config.provider, state.api_client.model)
             return "reset"
         except ValueError as e:

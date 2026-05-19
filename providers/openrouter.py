@@ -1,5 +1,5 @@
 """OpenRouter API client — unified gateway to multiple LLM providers (openrouter.ai/api/v1)."""
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Optional
 import requests
 
 from .openai import OpenAIClient
@@ -8,19 +8,6 @@ from .openai import OpenAIClient
 class OpenRouterClient(OpenAIClient):
 
     API_URL = "https://openrouter.ai/api/v1/chat/completions"
-
-    def _make_request(self, messages: List[Dict], system_instruction: str) -> requests.Response:
-        full_messages = []
-        if system_instruction:
-            full_messages.append({"role": "system", "content": system_instruction})
-        full_messages.extend(messages)
-
-        return requests.post(
-            self.API_URL,
-            headers={"Authorization": f"Bearer {self.api_key}"},
-            json={"model": self.model, "messages": full_messages},
-            timeout=self.timeout,
-        )
 
     def list_models(self) -> list:
         response = requests.get("https://openrouter.ai/api/v1/models", timeout=self.timeout)

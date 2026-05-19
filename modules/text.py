@@ -1,20 +1,11 @@
 """Terminal text rendering — ANSI colors and markdown highlighting."""
 import re
 from . import colors as _col
+from .colors import forecolor, backcolor  # re-exported for callers
 from . import symbols as sym
 
 # ANSI reset to default terminal color
 resetcolor = "\033[0m"
-
-
-# Build ANSI 256-color foreground escape sequence
-def forecolor(color: int) -> str:
-    return f"\033[38;5;{color}m"
-
-
-# Build ANSI 256-color background escape sequence
-def backcolor(color: int) -> str:
-    return f"\033[48;5;{color}m"
 
 
 # Apply ANSI color formatting to markdown-style syntax in LLM output
