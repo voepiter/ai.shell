@@ -2,6 +2,11 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.4.118 — 2026-05-20
+
+### Fixed
+- `/model` and `/provider` commands now correctly read API key from `ai.ini` when no environment variable is set
+
 ## v0.4.111 — 2026-05-18
 
 ### New
