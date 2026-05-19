@@ -5,4 +5,5 @@ __pycache__/
 .update_check
 log/
 CLAUDE.md
+MAP.md
 ai.ini
