@@ -41,12 +41,18 @@ def _api_post(token: str, method: str, **kwargs) -> dict | None:
     """POST to Telegram Bot API; return JSON or None on error."""
     url = _BASE.format(token=token, method=method)
     try:
-        r = requests.post(url, json=kwargs, timeout=35)
+        r = requests.post(url, json=kwargs, timeout=(5, 30))
         return r.json()
     except KeyboardInterrupt:
         raise
+    except requests.exceptions.ConnectionError:
+        print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
+        return None
+    except requests.exceptions.Timeout:
+        print(f" {_col.error}telegram: request timeout{_R}", file=sys.stderr)
+        return None
     except Exception as e:
-        print(f" {_col.error}tg: {e}{_R}", file=sys.stderr)
+        print(f" {_col.error}telegram: {e}{_R}", file=sys.stderr)
         return None
 
 
@@ -63,7 +69,7 @@ def _get_updates(token: str, offset: int) -> list:
     url = _BASE.format(token=token, method="getUpdates")
     try:
         r = requests.get(url, params={"offset": offset, "timeout": 30},
-                         timeout=35)
+                         timeout=(5, 35))
         d = r.json()
         return d.get("result", []) if d.get("ok") else []
     except Exception:
@@ -241,7 +247,7 @@ def _bootstrap_chat_id(token: str, state) -> int | None:
     """Try to find chat_id from pending updates (timeout=0, no long-poll)."""
     try:
         r = requests.get(_BASE.format(token=token, method="getUpdates"),
-                         params={"timeout": 0}, timeout=10)
+                         params={"timeout": 0}, timeout=(5, 10))
         updates = r.json().get("result", []) if r.json().get("ok") else []
         for upd in reversed(updates):
             if "message" in upd:
