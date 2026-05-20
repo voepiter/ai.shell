@@ -2,6 +2,13 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.4.136 — 2026-05-20
+
+### Fixed
+- `/changelog` now works on pip-installed instances — `CHANGELOG.md` is bundled in the wheel and read via `importlib.resources`
+- Telegram: startup connection check is now synchronous — no more Ctrl+C hang or atexit crash when Telegram is unreachable at launch
+- Telegram: duplicate `service unavailable` messages are suppressed — the polling loop deduplicates them, so only one is shown per outage
+
 ## v0.4.131 — 2026-05-20
 
 ### Fixed
