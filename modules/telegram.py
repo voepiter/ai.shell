@@ -64,14 +64,16 @@ def _send(token: str, chat_id: int, text: str) -> None:
         _api_post(token, "sendMessage", chat_id=chat_id, text=text)
 
 
-def _get_updates(token: str, offset: int) -> list:
-    """Long-poll getUpdates; return list of updates or [] on error."""
+def _get_updates(token: str, offset: int) -> list | None:
+    """Long-poll getUpdates; return list of updates, [] on soft error, None on ConnectionError."""
     url = _BASE.format(token=token, method="getUpdates")
     try:
         r = requests.get(url, params={"offset": offset, "timeout": 30},
                          timeout=(5, 35))
         d = r.json()
         return d.get("result", []) if d.get("ok") else []
+    except requests.exceptions.ConnectionError:
+        return None
     except Exception:
         return []
 
@@ -254,6 +256,8 @@ def _bootstrap_chat_id(token: str, state) -> int | None:
                 cid = upd["message"]["chat"]["id"]
                 _save_chat_id(state, cid)
                 return cid
+    except requests.exceptions.ConnectionError:
+        print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
     except Exception:
         pass
     return None
@@ -272,10 +276,20 @@ def _loop(state) -> None:
     allowed = {x.strip().lstrip("@").lower() for x in str(raw_ids).split(",") if x.strip().lstrip("@")}
 
     offset = 0
+    available = True  # track connection state to print status changes once
     while True:
         updates = _get_updates(token, offset)
+        if updates is None:  # ConnectionError signal from _get_updates
+            if available:
+                print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
+                available = False
+            time.sleep(5)
+            continue
+        if not available:
+            print(f" {_col.dim}telegram: reconnected{_R}", file=sys.stderr)
+            available = True
         if not updates:
-            time.sleep(1)  # back-off on network errors
+            time.sleep(1)
             continue
         for upd in updates:
             offset = upd["update_id"] + 1
@@ -286,8 +300,8 @@ def _loop(state) -> None:
 def run(state) -> None:
     """Run polling loop in main thread (--telegram mode)."""
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
-    chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
+    chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
     try:
         if token and chat_id:
             _notify(token, chat_id, 'tg_connected')
@@ -302,8 +316,8 @@ def start_thread(state) -> threading.Thread:
     """Start polling loop as a background daemon thread (/telegram command)."""
     import atexit
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
-    chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
+    chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
     if token and chat_id:
         try:
             _notify(token, chat_id, 'tg_connected')
