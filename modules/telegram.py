@@ -68,8 +68,8 @@ def _get_updates(token: str, offset: int) -> list | None:
     """Long-poll getUpdates; return list of updates, [] on soft error, None on ConnectionError."""
     url = _BASE.format(token=token, method="getUpdates")
     try:
-        r = requests.get(url, params={"offset": offset, "timeout": 30},
-                         timeout=(5, 35))
+        r = requests.get(url, params={"offset": offset, "timeout": 10},
+                         timeout=(5, 15))
         d = r.json()
         if not d.get("ok"):
             desc = d.get("description", "unknown error")
@@ -78,6 +78,8 @@ def _get_updates(token: str, offset: int) -> list | None:
         return d.get("result", [])
     except requests.exceptions.ConnectionError:
         return None
+    except requests.exceptions.ReadTimeout:
+        return []  # normal when no messages arrive within poll window
     except Exception:
         return []
 
