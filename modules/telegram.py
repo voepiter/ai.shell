@@ -133,6 +133,10 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
     if _BOT_MSG.match(raw):  # ignore messages from other instances
         return
 
+    # persist chat_id on first message if not already saved
+    if not _load_chat_id(state):
+        _save_chat_id(state, chat_id)
+
     sender  = msg.get("from", {})
     user_id = sender.get("id", 0)
     name    = sender.get("username") or sender.get("first_name") or str(user_id)
