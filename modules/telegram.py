@@ -47,12 +47,8 @@ def _api_post(token: str, method: str, **kwargs) -> dict | None:
         return r.json()
     except KeyboardInterrupt:
         raise
-    except requests.exceptions.ConnectionError:
-        print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
-        return None
-    except requests.exceptions.Timeout:
-        print(f" {_col.error}telegram: request timeout{_R}", file=sys.stderr)
-        return None
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return None  # _loop tracks and reports connectivity state via available flag
     except Exception as e:
         print(f" {_col.error}telegram: {e}{_R}", file=sys.stderr)
         return None
