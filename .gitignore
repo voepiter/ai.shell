@@ -2,6 +2,8 @@ __pycache__/
 *.py[cod]
 *.log
 .claude/
+.codegraph
+.cursor
 .update_check
 log/
 CLAUDE.md
