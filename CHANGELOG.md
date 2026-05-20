@@ -2,6 +2,13 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.4.131 — 2026-05-20
+
+### Fixed
+- `ai -u` no longer shows "already up to date" right after a successful update — the process now restarts without the `-u` flag
+- Telegram: `chat_id` is now auto-saved to `ai.ini` on first incoming message; connect notification is sent at that point instead of at startup
+- Telegram: SOCKS proxy missing-dependency warning is now printed only once per session
+
 ## v0.4.121 — 2026-05-20
 
 ### Fixed
