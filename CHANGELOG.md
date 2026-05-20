@@ -2,6 +2,14 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.4.121 — 2026-05-20
+
+### Fixed
+- Telegram: Ctrl+C during startup no longer crashes with a traceback when Telegram is unreachable
+- Telegram: startup no longer hangs for 30s — connect timeout reduced to 5s
+- Telegram: connection errors now show a short `telegram: service unavailable` message instead of a full urllib3 exception dump
+- `/model` and `/provider` commands now correctly read API key from `ai.ini` when no environment variable is set (regression from v0.4.118, now fully fixed)
+
 ## v0.4.118 — 2026-05-20
 
 ### Fixed
