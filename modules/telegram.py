@@ -24,6 +24,7 @@ _lock = threading.Lock()  # serialise LLM calls
 
 _histories: dict[int, list] = {}  # per chat_id conversation history
 _socks_warned = False             # print PySocks install hint only once
+_pending_connect = False          # send "connected" on first message if chat_id was unknown at startup
 _instance_id = f"{getpass.getuser()}@{socket.gethostname()}"
 _BOT_MSG = re.compile(r'^@\S+:')  # messages from other bot instances
 
@@ -84,7 +85,7 @@ def _get_updates(token: str, offset: int) -> list | None:
     except Exception as e:
         global _socks_warned
         if not _socks_warned and ("SOCKS" in str(e) or "Missing dependencies" in str(e)):
-            print(f" {_col.error}telegram: SOCKS proxy requires PySocks — run: pip install --user PySocks{_R}", file=sys.stderr)
+            print(f" {_col.error}telegram: SOCKS proxy requires PySocks — run: uv add pysocks{_R}", file=sys.stderr)
             _socks_warned = True
         return []
 
@@ -144,9 +145,13 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
     if _BOT_MSG.match(raw):  # ignore messages from other instances
         return
 
-    # persist chat_id on first message if not already saved
+    # persist chat_id on first message if not already saved; send deferred "connected"
+    global _pending_connect
     if not _load_chat_id(state):
         _save_chat_id(state, chat_id)
+        if _pending_connect:
+            _notify(token, chat_id, 'tg_connected')
+            _pending_connect = False
 
     sender  = msg.get("from", {})
     user_id = sender.get("id", 0)
@@ -237,21 +242,8 @@ def _notify(token: str, chat_id: int, key: str) -> None:
     _send(token, chat_id, t('common', key, id=user))
 
 
-def _chat_id_path(state):
-    """Return path to .tg_chat file stored next to ai.ini."""
-    from pathlib import Path
-    return Path(state.config.config_loader.config_path).parent / ".tg_chat"
-
-
 def _load_chat_id(state) -> int | None:
-    """Return chat_id from .tg_chat file, then ai.ini [telegram] chat_id, or None."""
-    try:
-        raw = _chat_id_path(state).read_text().strip()
-        if raw.lstrip("-").isdigit():
-            return int(raw)
-    except Exception:
-        pass
-    # fallback: read from ai.ini
+    """Return chat_id from ai.ini [telegram] chat_id, or None."""
     try:
         raw = str(state.config.config_loader.get("telegram", "chat_id", default="")).strip()
         if raw.lstrip("-").isdigit():
@@ -262,29 +254,20 @@ def _load_chat_id(state) -> int | None:
 
 
 def _save_chat_id(state, chat_id: int) -> None:
-    """Persist chat_id to .tg_chat file."""
+    """Write chat_id into ai.ini [telegram] section in-place."""
+    import re
+    path = state.config.config_loader.config_path
     try:
-        _chat_id_path(state).write_text(str(chat_id))
+        text = path.read_text(encoding="utf-8")
+        text = re.sub(
+            r'(?m)^(chat_id\s*=\s*)"[^"]*"',
+            rf'\g<1>"{chat_id}"',
+            text,
+        )
+        path.write_text(text, encoding="utf-8")
+        state.config.config_loader.config = state.config.config_loader._load()
     except Exception:
         pass
-
-
-def _bootstrap_chat_id(token: str, state) -> int | None:
-    """Try to find chat_id from pending updates (timeout=0, no long-poll)."""
-    try:
-        r = requests.get(_BASE.format(token=token, method="getUpdates"),
-                         params={"timeout": 0}, timeout=(5, 10))
-        updates = r.json().get("result", []) if r.json().get("ok") else []
-        for upd in reversed(updates):
-            if "message" in upd:
-                cid = upd["message"]["chat"]["id"]
-                _save_chat_id(state, cid)
-                return cid
-    except requests.exceptions.ConnectionError:
-        print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
-    except Exception:
-        pass
-    return None
 
 
 # ── Polling loop ──────────────────────────────────────────────────────────
@@ -329,30 +312,37 @@ def _loop(state) -> None:
 
 def run(state) -> None:
     """Run polling loop in main thread (--telegram mode)."""
+    global _pending_connect
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
-    chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
+    chat_id = _load_chat_id(state)
+    if token and chat_id:
+        _notify(token, chat_id, 'tg_connected')
+    else:
+        _pending_connect = True
     try:
-        if token and chat_id:
-            _notify(token, chat_id, 'tg_connected')
         _loop(state)
     except KeyboardInterrupt:
-        if token and chat_id:
-            _notify(token, chat_id, 'tg_disconnected')
+        cid = _load_chat_id(state)
+        if token and cid:
+            _notify(token, cid, 'tg_disconnected')
         print(f"\n {_col.dim}{t('common','tg_stopped')}{_R}")
 
 
 def start_thread(state) -> threading.Thread:
     """Start polling loop as a background daemon thread (/telegram command)."""
+    global _pending_connect
     import atexit
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
-    chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
+    chat_id = _load_chat_id(state)
     if token and chat_id:
         try:
             _notify(token, chat_id, 'tg_connected')
         except (Exception, KeyboardInterrupt):
             pass
+    else:
+        _pending_connect = True
     def _on_exit():
         cid = _load_chat_id(state)
         if token and cid:

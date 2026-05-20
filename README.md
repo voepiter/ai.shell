@@ -150,6 +150,8 @@ ai
 
 Once running, send any message to your bot in Telegram. Shell agent and all skills are available — e.g. `/code-review` or any bash-capable prompt.
 
+`chat_id` in `ai.ini` is used to send connect/disconnect notifications. Leave it empty — it will be auto-saved from your first incoming message. Alternatively, set it manually.
+
 ## Proxy support
 
 If specific LLM provider or Telegram messenger is not available in your region,
