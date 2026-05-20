@@ -80,7 +80,9 @@ def _get_updates(token: str, offset: int) -> list | None:
         return None
     except requests.exceptions.ReadTimeout:
         return []  # normal when no messages arrive within poll window
-    except Exception:
+    except Exception as e:
+        if "SOCKS" in str(e) or "Missing dependencies" in str(e):
+            print(f" {_col.error}telegram: SOCKS proxy requires PySocks — run: pip install PySocks{_R}", file=sys.stderr)
         return []
 
 
