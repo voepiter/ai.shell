@@ -71,7 +71,11 @@ def _get_updates(token: str, offset: int) -> list | None:
         r = requests.get(url, params={"offset": offset, "timeout": 30},
                          timeout=(5, 35))
         d = r.json()
-        return d.get("result", []) if d.get("ok") else []
+        if not d.get("ok"):
+            desc = d.get("description", "unknown error")
+            print(f" {_col.error}telegram: {desc}{_R}", file=sys.stderr)
+            return []
+        return d.get("result", [])
     except requests.exceptions.ConnectionError:
         return None
     except Exception:
