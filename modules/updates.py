@@ -47,7 +47,8 @@ def _run_update() -> None:
     new_ver = m.group(1) if m else "?"
     print(f" updating to v{new_ver} ...", flush=True)
     print(f" restarting ...", flush=True)
-    os.execv(sys.argv[0], sys.argv)
+    restart_args = [a for a in sys.argv if a not in ("-u", "--update")]
+    os.execv(sys.argv[0], restart_args)
 
 
 def check_and_update(config_loader) -> None:
