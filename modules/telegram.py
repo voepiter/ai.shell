@@ -23,6 +23,7 @@ _BASE = "https://api.telegram.org/bot{token}/{method}"
 _lock = threading.Lock()  # serialise LLM calls
 
 _histories: dict[int, list] = {}  # per chat_id conversation history
+_socks_warned = False             # print PySocks install hint only once
 _instance_id = f"{getpass.getuser()}@{socket.gethostname()}"
 _BOT_MSG = re.compile(r'^@\S+:')  # messages from other bot instances
 
@@ -81,8 +82,10 @@ def _get_updates(token: str, offset: int) -> list | None:
     except requests.exceptions.ReadTimeout:
         return []  # normal when no messages arrive within poll window
     except Exception as e:
-        if "SOCKS" in str(e) or "Missing dependencies" in str(e):
-            print(f" {_col.error}telegram: SOCKS proxy requires PySocks — run: pip install PySocks{_R}", file=sys.stderr)
+        global _socks_warned
+        if not _socks_warned and ("SOCKS" in str(e) or "Missing dependencies" in str(e)):
+            print(f" {_col.error}telegram: SOCKS proxy requires PySocks — run: pip install --user PySocks{_R}", file=sys.stderr)
+            _socks_warned = True
         return []
 
 
