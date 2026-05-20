@@ -33,4 +33,5 @@ include = [
     "skills",
     "logo.ascii",
     "ai.ini.default",
+    "CHANGELOG.md",
 ]

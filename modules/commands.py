@@ -221,13 +221,19 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
 
 
 def _cmd_changelog(base_dir: Path) -> None:
-    """Print CHANGELOG.md contents."""
+    """Print CHANGELOG.md contents, using importlib.resources when installed."""
     path = base_dir / "CHANGELOG.md"
-    if not path.exists():
-        print(f" {_col.dim}CHANGELOG.md not found{_R}")
-        return
+    if path.exists():
+        text = path.read_text(encoding="utf-8")
+    else:
+        try:
+            import importlib.resources as _res
+            text = _res.files("ai.shell").joinpath("CHANGELOG.md").read_text(encoding="utf-8")
+        except Exception:
+            print(f" {_col.dim}CHANGELOG.md not found{_R}")
+            return
     print()
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in text.splitlines():
         if line.startswith("## "):
             print(f" {_col.provider}{line}{_R}")
         elif line.startswith("### "):
