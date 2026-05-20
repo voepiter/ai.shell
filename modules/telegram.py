@@ -229,12 +229,21 @@ def _chat_id_path(state):
 
 
 def _load_chat_id(state) -> int | None:
-    """Return last known chat_id from .tg_chat file, or None."""
+    """Return chat_id from .tg_chat file, then ai.ini [telegram] chat_id, or None."""
     try:
         raw = _chat_id_path(state).read_text().strip()
-        return int(raw) if raw.lstrip("-").isdigit() else None
+        if raw.lstrip("-").isdigit():
+            return int(raw)
     except Exception:
-        return None
+        pass
+    # fallback: read from ai.ini
+    try:
+        raw = str(state.config.config_loader.get("telegram", "chat_id", default="")).strip()
+        if raw.lstrip("-").isdigit():
+            return int(raw)
+    except Exception:
+        pass
+    return None
 
 
 def _save_chat_id(state, chat_id: int) -> None:
@@ -278,23 +287,29 @@ def _loop(state) -> None:
     offset = 0
     available = True  # track connection state to print status changes once
     while True:
-        updates = _get_updates(token, offset)
-        if updates is None:  # ConnectionError signal from _get_updates
-            if available:
-                print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
-                available = False
+        try:
+            updates = _get_updates(token, offset)
+            if updates is None:  # ConnectionError signal from _get_updates
+                if available:
+                    print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
+                    available = False
+                time.sleep(5)
+                continue
+            if not available:
+                print(f" {_col.dim}telegram: reconnected{_R}", file=sys.stderr)
+                available = True
+            if not updates:
+                time.sleep(1)
+                continue
+            for upd in updates:
+                offset = upd["update_id"] + 1
+                if "message" in upd:
+                    _process(upd["message"], state, token, allowed)
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:
+            print(f" {_col.error}telegram loop error: {e}{_R}", file=sys.stderr)
             time.sleep(5)
-            continue
-        if not available:
-            print(f" {_col.dim}telegram: reconnected{_R}", file=sys.stderr)
-            available = True
-        if not updates:
-            time.sleep(1)
-            continue
-        for upd in updates:
-            offset = upd["update_id"] + 1
-            if "message" in upd:
-                _process(upd["message"], state, token, allowed)
 
 
 def run(state) -> None:
