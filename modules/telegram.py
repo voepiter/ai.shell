@@ -43,6 +43,8 @@ def _api_post(token: str, method: str, **kwargs) -> dict | None:
     try:
         r = requests.post(url, json=kwargs, timeout=35)
         return r.json()
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
         print(f" {_col.error}tg: {e}{_R}", file=sys.stderr)
         return None
@@ -280,9 +282,9 @@ def run(state) -> None:
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
     chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
-    if token and chat_id:
-        _notify(token, chat_id, 'tg_connected')
     try:
+        if token and chat_id:
+            _notify(token, chat_id, 'tg_connected')
         _loop(state)
     except KeyboardInterrupt:
         if token and chat_id:
@@ -295,8 +297,12 @@ def start_thread(state) -> threading.Thread:
     import atexit
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
     chat_id = _load_chat_id(state) or _bootstrap_chat_id(token, state)
+    print(f" {_col.dim}{t('common','tg_started')}{_R}")
     if token and chat_id:
-        _notify(token, chat_id, 'tg_connected')
+        try:
+            _notify(token, chat_id, 'tg_connected')
+        except (Exception, KeyboardInterrupt):
+            pass
     def _on_exit():
         cid = _load_chat_id(state)
         if token and cid:
