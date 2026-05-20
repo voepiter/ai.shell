@@ -22,7 +22,7 @@ def print_startup_line() -> None:
     """Print name, version, and description — shown first in both single and interactive modes."""
     name, desc = get_project_meta()
     ver = get_version()
-    print(f"{_col.provider}{name}{_R}  {_col.model}v{ver}{_R}  {_col.dim}{desc}{_R}")
+    print(f" {_col.provider}{name}{_R} {_col.model}v{ver}{_R} {_col.dim}{desc}{_R}")
 
 
 def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True, telegram: bool = False):

@@ -25,6 +25,7 @@ _lock = threading.Lock()  # serialise LLM calls
 _histories: dict[int, list] = {}  # per chat_id conversation history
 _socks_warned = False             # print PySocks install hint only once
 _pending_connect = False          # send "connected" on first message if chat_id was unknown at startup
+_tg_connected = False             # True only after a successful API round-trip; guards atexit notification
 _instance_id = f"{getpass.getuser()}@{socket.gethostname()}"
 _BOT_MSG = re.compile(r'^@\S+:')  # messages from other bot instances
 
@@ -47,12 +48,8 @@ def _api_post(token: str, method: str, **kwargs) -> dict | None:
         return r.json()
     except KeyboardInterrupt:
         raise
-    except requests.exceptions.ConnectionError:
-        print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
-        return None
-    except requests.exceptions.Timeout:
-        print(f" {_col.error}telegram: request timeout{_R}", file=sys.stderr)
-        return None
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        return None  # _loop tracks and reports connectivity state via available flag
     except Exception as e:
         print(f" {_col.error}telegram: {e}{_R}", file=sys.stderr)
         return None
@@ -272,7 +269,7 @@ def _save_chat_id(state, chat_id: int) -> None:
 
 # ── Polling loop ──────────────────────────────────────────────────────────
 
-def _loop(state) -> None:
+def _loop(state, available: bool = True) -> None:
     """Poll Telegram for updates and dispatch messages until interrupted."""
     cfg     = state.config.config_loader
     token   = cfg.get("telegram", "token", default="").strip()
@@ -282,20 +279,27 @@ def _loop(state) -> None:
         return
     allowed = {x.strip().lstrip("@").lower() for x in str(raw_ids).split(",") if x.strip().lstrip("@")}
 
+    global _tg_connected
     offset = 0
-    available = True  # track connection state to print status changes once
+    # available may be pre-set to False by caller if initial connection check failed
     while True:
         try:
             updates = _get_updates(token, offset)
             if updates is None:  # ConnectionError signal from _get_updates
                 if available:
+                    _completer.erase_prompt()
                     print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
+                    _completer.redraw_prompt()
                     available = False
+                _tg_connected = False
                 time.sleep(5)
                 continue
             if not available:
+                _completer.erase_prompt()
                 print(f" {_col.dim}telegram: reconnected{_R}", file=sys.stderr)
+                _completer.redraw_prompt()
                 available = True
+            _tg_connected = True
             if not updates:
                 time.sleep(1)
                 continue
@@ -306,48 +310,74 @@ def _loop(state) -> None:
         except KeyboardInterrupt:
             raise
         except Exception as e:
+            _completer.erase_prompt()
             print(f" {_col.error}telegram loop error: {e}{_R}", file=sys.stderr)
+            _completer.redraw_prompt()
             time.sleep(5)
 
 
 def run(state) -> None:
     """Run polling loop in main thread (--telegram mode)."""
-    global _pending_connect
+    global _pending_connect, _tg_connected
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
+
+    available = _api_post(token, "getMe") is not None if token else False
+    _tg_connected = available
+    if token and not available:
+        print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
+
     chat_id = _load_chat_id(state)
-    if token and chat_id:
+    if token and chat_id and available:
         _notify(token, chat_id, 'tg_connected')
-    else:
+    elif not (token and chat_id):
         _pending_connect = True
     try:
-        _loop(state)
+        _loop(state, available)
     except KeyboardInterrupt:
-        cid = _load_chat_id(state)
-        if token and cid:
-            _notify(token, cid, 'tg_disconnected')
+        if _tg_connected:
+            try:
+                cid = _load_chat_id(state)
+                if token and cid:
+                    _notify(token, cid, 'tg_disconnected')
+            except (Exception, KeyboardInterrupt):
+                pass
         print(f"\n {_col.dim}{t('common','tg_stopped')}{_R}")
 
 
 def start_thread(state) -> threading.Thread:
     """Start polling loop as a background daemon thread (/telegram command)."""
-    global _pending_connect
+    global _pending_connect, _tg_connected
     import atexit
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
+
+    # Synchronous connection check — printed before version line (chat.run not yet called)
+    available = _api_post(token, "getMe") is not None if token else False
+    _tg_connected = available
+    if token and not available:
+        print(f" {_col.error}telegram: service unavailable{_R}", file=sys.stderr)
+
     chat_id = _load_chat_id(state)
-    if token and chat_id:
+    if token and chat_id and available:
         try:
             _notify(token, chat_id, 'tg_connected')
         except (Exception, KeyboardInterrupt):
             pass
+    elif token and chat_id:
+        pass  # will notify on reconnect
     else:
         _pending_connect = True
     def _on_exit():
-        cid = _load_chat_id(state)
-        if token and cid:
-            _notify(token, cid, 'tg_disconnected')
+        try:
+            if not _tg_connected:
+                return
+            cid = _load_chat_id(state)
+            if token and cid:
+                _notify(token, cid, 'tg_disconnected')
+        except (Exception, KeyboardInterrupt):
+            pass
     atexit.register(_on_exit)
-    th = threading.Thread(target=_loop, args=(state,), daemon=True)
+    th = threading.Thread(target=_loop, args=(state, available), daemon=True)
     th.start()
     return th
