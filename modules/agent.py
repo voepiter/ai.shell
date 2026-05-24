@@ -83,7 +83,7 @@ def agentic_loop(
 
         model_name = api_client.model
         request    = request_counter.request
-        spinner    = Spinner(config.provider, model_name, request)
+        spinner    = Spinner(config.provider, model_name)
         spinner.start()
         try:
             data, elapsed = api_client.generate_chat(

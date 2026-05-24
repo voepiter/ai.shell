@@ -20,7 +20,7 @@ def run(state: AppState, prompt: str):
     ui.print_startup_line()
     request    = state.request_counter.request
     model_name = state.api_client.model
-    spinner    = Spinner(state.config.provider, model_name, request)
+    spinner    = Spinner(state.config.provider, model_name)
     spinner.start()
     try:
         data, elapsed = state.api_client.generate_content(
