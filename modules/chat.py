@@ -14,7 +14,7 @@ from .locale import t
 from . import completer as _completer
 from providers import APIError
 
-_R = ct.resetcolor
+_R = _col.reset
 
 
 def run(state: AppState):

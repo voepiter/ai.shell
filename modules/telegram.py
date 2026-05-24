@@ -18,7 +18,7 @@ from . import skills as _skills
 from .locale import t
 from providers import APIError
 
-_R    = ct.resetcolor
+_R    = _col.reset
 _BASE = "https://api.telegram.org/bot{token}/{method}"
 _lock = threading.Lock()  # serialise LLM calls
 

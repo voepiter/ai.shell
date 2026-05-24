@@ -12,7 +12,7 @@ from . import symbols as sym
 from .locale import t
 from providers import APIError
 
-_R = ct.resetcolor
+_R = _col.reset
 
 
 def run(state: AppState, prompt: str):

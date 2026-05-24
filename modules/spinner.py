@@ -1,7 +1,6 @@
 """Animated status spinner shown while waiting for LLM response."""
 import time
 import threading
-from . import text as ct
 from . import colors as _col
 from . import symbols as sym
 
@@ -41,10 +40,10 @@ class Spinner:
             elapsed = time.perf_counter() - self.start_time
             spin    = frames[frame % len(frames)]
             print(
-                f"\r{_col.marker}{spin}{ct.resetcolor} "
-                f"{_col.provider}{self.provider}{ct.resetcolor}"
+                f"\r{_col.marker}{spin}{_col.reset} "
+                f"{_col.provider}{self.provider}{_col.reset}"
                 f"/{self.model}"
-                f"  {_col.model}{elapsed:.1f}{ct.resetcolor}s ",
+                f"  {_col.model}{elapsed:.1f}{_col.reset}s ",
                 end="", flush=True,
             )
             frame += 1
