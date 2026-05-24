@@ -2,7 +2,6 @@
 import re
 import subprocess
 from dataclasses import dataclass
-from typing import List
 
 # Regex patterns to extract commands from LLM output
 BASH_RE     = re.compile(r"<bash>(.*?)</bash>", re.DOTALL | re.IGNORECASE)
@@ -18,8 +17,8 @@ class CommandResult:
     exit_code: int
     timed_out: bool = False
 
+    # Format result as context string for LLM (stdout, stderr, exit code)
     def to_context(self) -> str:
-        """Format result as context string for LLM (stdout, stderr, exit code)."""
         parts = [f"$ {self.command}"]
         if self.timed_out:
             parts.append("[timed out]")
@@ -33,23 +32,22 @@ class CommandResult:
         return "\n".join(parts)
 
 
-def extract_commands(text: str) -> List[str]:
-    """Extract bash commands from <bash>…</bash> tags or markdown code blocks."""
-    # Prefer explicit <bash> tags; fall back to markdown fences
+# Extract bash commands from <bash>…</bash> tags or markdown code blocks
+def extract_commands(text: str) -> list[str]:
     cmds = [m.strip() for m in BASH_RE.findall(text) if m.strip()]
     if not cmds:
         cmds = [m.strip() for m in MARKDOWN_RE.findall(text) if m.strip()]
     return cmds
 
 
-def is_dangerous(command: str, patterns: List[str]) -> bool:
-    """Return True if command matches any dangerous pattern from config."""
+# Return True if command matches any dangerous pattern from config
+def is_dangerous(command: str, patterns: list[str]) -> bool:
     lower = command.lower()
     return any(p.lower() in lower for p in patterns)
 
 
+# Run shell command, capture stdout/stderr; return CommandResult
 def run_command(command: str, timeout: int = 30) -> CommandResult:
-    """Run shell command, capture stdout/stderr; return CommandResult."""
     try:
         result = subprocess.run(
             command,
@@ -66,5 +64,7 @@ def run_command(command: str, timeout: int = 30) -> CommandResult:
             stderr=result.stderr,
             exit_code=result.returncode,
         )
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as e:
+        if e.process:
+            e.process.kill()
         return CommandResult(command=command, stdout="", stderr="", exit_code=-1, timed_out=True)
