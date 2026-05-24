@@ -10,7 +10,7 @@ from . import locale as _locale
 from .locale import t
 from . import skills as _skills
 
-_R = ct.resetcolor
+_R = _col.reset
 
 
 def handle(raw: str, history: list, state) -> str | None:

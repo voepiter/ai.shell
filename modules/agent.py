@@ -8,7 +8,7 @@ from . import symbols as sym
 from .locale import t
 from providers import APIError
 
-_R = ct.resetcolor
+_R = _col.reset
 
 # System prompt appended when shell mode is active
 _SHELL_HINT = (

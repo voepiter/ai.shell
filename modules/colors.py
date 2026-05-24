@@ -7,6 +7,9 @@ def forecolor(n: int) -> str: return f"\033[38;5;{n}m"
 # Build ANSI 256-color background escape sequence
 def backcolor(n: int) -> str: return f"\033[48;5;{n}m"
 
+# Reset to default terminal color
+reset = "\033[0m"
+
 _cfg = ConfigLoader()
 _c   = lambda key, default: int(_cfg.get("color", key, default=default))
 

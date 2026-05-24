@@ -1,11 +1,12 @@
 """Terminal text rendering — ANSI colors and markdown highlighting."""
 import re
 from . import colors as _col
-from .colors import forecolor, backcolor  # re-exported for callers
 from . import symbols as sym
 
-# ANSI reset to default terminal color
-resetcolor = "\033[0m"
+def _fmt_bash(code: str) -> str:
+    """Format bash code block as colored prefixed command lines."""
+    lines = [line for line in code.strip().splitlines() if line.strip()]
+    return "\n".join(f"{_col.bash}{sym.bash_prefix} {line}{_col.reset}" for line in lines) if lines else ""
 
 
 # Apply ANSI color formatting to markdown-style syntax in LLM output
@@ -13,14 +14,9 @@ def highlight(text: str) -> str:
     # **bold**
     text = re.sub(
         r"\*\*([^*]+)\*\*",
-        lambda m: f"{_col.bold}{m.group(1)}{resetcolor}",
+        lambda m: f"{_col.bold}{m.group(1)}{_col.reset}",
         text,
     )
-
-    # Format bash code block or tag as colored command lines
-    def _fmt_bash(code: str) -> str:
-        lines = [l for l in code.strip().splitlines() if l.strip()]
-        return "\n".join(f"{_col.bash}{sym.bash_prefix} {l}{resetcolor}" for l in lines) if lines else ""
 
     # <bash> execution tags
     text = re.sub(
@@ -42,8 +38,8 @@ def highlight(text: str) -> str:
     text = re.sub(
         r"```([a-zA-Z0-9_-]+)\s*\n?(.*?)```",
         lambda m: (
-            f"{_col.code_bg}{_col.code_lang}{m.group(1)}{resetcolor}\n"
-            f"{_col.code_bg}{_col.code_body}{m.group(2)}{resetcolor}"
+            f"{_col.code_bg}{_col.code_lang}{m.group(1)}{_col.reset}\n"
+            f"{_col.code_bg}{_col.code_body}{m.group(2)}{_col.reset}"
         ),
         text,
         flags=re.S,
@@ -52,7 +48,7 @@ def highlight(text: str) -> str:
     # `inline code`
     text = re.sub(
         r"`([^`]+)`",
-        lambda m: f"{_col.inline}{m.group(1)}{resetcolor}",
+        lambda m: f"{_col.inline}{m.group(1)}{_col.reset}",
         text,
     )
 

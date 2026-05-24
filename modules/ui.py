@@ -1,14 +1,13 @@
 """Terminal rendering — banners, stats, model/provider lists."""
 import sys
 import requests
-from . import text as ct
 from . import colors as _col
 from . import symbols as sym
 from .api import APIFactory
 from .locale import t
 from .version import get_version, get_project_meta
 
-_R = ct.resetcolor
+_R = _col.reset
 
 
 # Format token count as "1.2k" for large values, plain number otherwise
