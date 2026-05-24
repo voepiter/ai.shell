@@ -7,6 +7,7 @@ import select
 import readline
 from . import colors as _col
 from . import skills as _skills
+from .config import ConfigLoader
 
 # All built-in slash commands
 _BUILTIN = [
@@ -21,7 +22,7 @@ _BUILTIN = [
     "/usage", "/u",
     "/clear", "/cls",
     "/verbose",
-    "/skill",
+    "/skills",
     "/sessions",
     "/resume",
     "/changelog",
@@ -39,32 +40,32 @@ _DOWN  = "\x1b[B"
 _DEL   = "\x1b[3~"
 
 
-def _all_commands(config_loader) -> list[str]:
-    """Return sorted list of all /commands including skill names."""
+# Return sorted list of all /commands including skill names
+def _all_commands(config_loader: ConfigLoader) -> list[str]:
     cmds = list(_BUILTIN)
     for name, _ in _skills.list_skills(config_loader):
         cmds.append(f"/{name}")
     return sorted(set(cmds))
 
 
+# Clear the readline prompt line before background thread output
 def erase_prompt() -> None:
-    """Clear the readline prompt line before background thread output."""
     if not _active_prompt:
         return
     sys.stdout.write("\r\x1b[2K")
     sys.stdout.flush()
 
 
+# Redraw the readline prompt after background thread output
 def redraw_prompt() -> None:
-    """Redraw the readline prompt after background thread output."""
     if not _active_prompt:
         return
     sys.stdout.write(f"\r{_active_prompt}\x1b[K\x1b[0m")
     sys.stdout.flush()
 
 
+# Return completion suffix if exactly one command starts with text, else ''
 def _complete(text: str, commands: list[str]) -> str:
-    """Return completion suffix if exactly one command starts with text, else ''."""
     if not text.startswith("/"):
         return ""
     matches = [c for c in commands if c.startswith(text) and c != text]
@@ -73,8 +74,8 @@ def _complete(text: str, commands: list[str]) -> str:
     return ""
 
 
+# Read rest of an escape sequence after ESC; return ESC alone if nothing follows in 50 ms
 def _read_escape(fd: int) -> str:
-    """Read rest of an escape sequence after ESC; return ESC alone if nothing follows in 50 ms."""
     ready, _, _ = select.select([fd], [], [], 0.05)
     if not ready:
         return _ESC
@@ -94,8 +95,8 @@ def _read_escape(fd: int) -> str:
     return _ESC + seq
 
 
-def read_input(prompt_str: str, config_loader) -> str:
-    """Read one line with inline /command ghost text; right-arrow or Tab accept completion."""
+# Read one line with inline /command ghost text; right-arrow or Tab accept completion
+def read_input(prompt_str: str, config_loader: ConfigLoader) -> str:
     global _active_prompt
     _active_prompt = prompt_str
     commands = _all_commands(config_loader)
