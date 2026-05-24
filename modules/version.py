@@ -1,13 +1,16 @@
 """Version resolution — installed package metadata or pyproject.toml fallback."""
 import subprocess
-import tomllib
 from importlib.metadata import version, PackageNotFoundError
 from pathlib import Path
 
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore
 
 
+# Return total git commit count as string, or None if git unavailable
 def _git_count() -> str | None:
-    # Return total git commit count as string, or None if git unavailable
     try:
         result = subprocess.run(
             ["git", "rev-list", "--count", "HEAD"],
@@ -19,8 +22,8 @@ def _git_count() -> str | None:
         return None
 
 
+# Return (name, description) from pyproject.toml, with hardcoded fallbacks
 def get_project_meta() -> tuple[str, str]:
-    """Return (name, description) from pyproject.toml, with hardcoded fallbacks."""
     try:
         pyproject = Path(__file__).parent.parent / "pyproject.toml"
         with pyproject.open("rb") as f:
@@ -33,8 +36,8 @@ def get_project_meta() -> tuple[str, str]:
 _BASE = "0.4"  # major.minor; patch = git commit count (dev) or baked by hatchling (release)
 
 
+# Return version as major.minor.{git_commit_count}, falling back to package metadata
 def get_version() -> str:
-    """Return version as major.minor.{git_commit_count}, falling back to package metadata."""
     # Dev build: .git present → base + git commit count as patch
     if (Path(__file__).parent.parent / ".git").exists():
         count = _git_count()
