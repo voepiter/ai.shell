@@ -1,8 +1,8 @@
 """Configuration — TOML file loader, typed runtime config, and config migration."""
 import os
 import re
+import sys
 from pathlib import Path
-from typing import Dict, Optional
 
 try:
     import tomllib
@@ -21,9 +21,15 @@ _DEFAULT_CFG = Path(__file__).parent.parent / "ai.ini.default"
 _OLD_CFG = Path.home() / ".config" / "ai-shell"
 _OLD_LOG = Path.home() / ".local" / "share" / "ai-shell"
 
+_migrated = False  # guard: run _migrate_old_dirs only once per process
+
 
 def _migrate_old_dirs() -> None:
     # Rename ai-shell → ai.shell once if new path doesn't exist yet
+    global _migrated
+    if _migrated:
+        return
+    _migrated = True
     for old, new in ((_OLD_CFG, _USER_CFG.parent), (_OLD_LOG, _USER_LOG.parent)):
         if old.exists() and not new.exists():
             old.rename(new)
@@ -33,7 +39,7 @@ class ConfigLoader:
     """Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai.shell/."""
 
     # Search order: cwd → script dir → user home config
-    def __init__(self, config_path: Optional[Path] = None):
+    def __init__(self, config_path: Path | None = None):
         _migrate_old_dirs()
         if config_path is None:
             current_dir = Path.cwd()
@@ -46,18 +52,22 @@ class ConfigLoader:
         self.config_path = config_path
         self.config = self._load()
 
-    # Return empty dict on any parse error to allow graceful fallback
-    def _load(self) -> Dict:
+    def _load(self) -> dict:
+        # Return empty dict if config absent; warn and return {} on parse error
         if not self.config_path.exists():
             return {}
         try:
             with open(self.config_path, "rb") as f:
                 return tomllib.load(f)
-        except Exception:
+        except tomllib.TOMLDecodeError as e:
+            print(f"warning: {self.config_path}: {e}", file=sys.stderr)
+            return {}
+        except Exception as e:
+            print(f"warning: could not read {self.config_path}: {e}", file=sys.stderr)
             return {}
 
+    # Look up a nested key path in config; return default if any key is missing
     def get(self, *keys, default=None):
-        """Look up a nested key path in config; return default if any key is missing."""
         value = self.config
         for key in keys:
             if isinstance(value, dict):
@@ -75,14 +85,14 @@ class ConfigLoader:
     def get_default_provider(self, default: str = "google") -> str:
         return str(self.get("providers", "default", default=default)).lower()
 
-    def get_default_model(self, provider: str) -> Optional[str]:
+    def get_default_model(self, provider: str) -> str | None:
         return self.get("models", provider.lower(), default=None)
 
-    def get_api_key(self, env_var: str) -> Optional[str]:
+    def get_api_key(self, env_var: str) -> str | None:
         val = self.get("api_keys", env_var, default=None)
         return val if val else None
 
-    def get_system_instruction(self) -> Optional[str]:
+    def get_system_instruction(self) -> str | None:
         return self.get("system", "instruction", default=None)
 
 
@@ -90,9 +100,9 @@ class ConfigLoader:
 class Config:
     def __init__(
         self,
-        provider:           Optional[str] = None,
-        model:              Optional[str] = None,
-        system_instruction: Optional[str] = None,
+        provider:           str | None = None,
+        model:              str | None = None,
+        system_instruction: str | None = None,
     ):
         self.base_dir = Path(__file__).parent.parent.absolute()
         # Use user home log dir when running from an installed package
@@ -107,9 +117,9 @@ class Config:
         self.system_instruction = system_instruction or self.config_loader.get_system_instruction() or ""
 
 
-def _raw_lines(path: Path) -> Dict[str, Dict[str, str]]:
+def _raw_lines(path: Path) -> dict[str, dict[str, str]]:
     """Parse a config file and return {section: {key: raw_line}} for migration."""
-    result: Dict[str, Dict[str, str]] = {}
+    result: dict[str, dict[str, str]] = {}
     section = None
     for line in path.read_text().splitlines():
         stripped = line.strip()
@@ -151,7 +161,7 @@ def migrate_config(config_loader) -> None:
     default_raw = _raw_lines(_DEFAULT_CFG)
 
     # Collect raw lines for keys present in default but absent in user config
-    missing: Dict[str, list] = {}
+    missing: dict[str, list] = {}
     for section, values in default_cfg.items():
         if not isinstance(values, dict):
             continue
