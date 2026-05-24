@@ -1,7 +1,5 @@
 """Factory for creating API provider clients."""
 import os
-from typing import Optional
-
 from providers import (
     BaseAPIClient,
     GoogleClient,
@@ -11,48 +9,39 @@ from providers import (
     AnthropicClient,
     OpenRouterClient,
 )
+from .config import ConfigLoader
 
 
-# Maps provider names to client classes and their API key env vars
+# Maps provider name → (client class, API key env var)
 class APIFactory:
-    # Provider name → client class
-    PROVIDERS = {
-        "google":     GoogleClient,
-        "openai":     OpenAIClient,
-        "xai":        XAIClient,
-        "deepseek":   DeepSeekClient,
-        "anthropic":  AnthropicClient,
-        "openrouter": OpenRouterClient,
+    PROVIDERS: dict[str, tuple] = {
+        "google":     (GoogleClient,     "GEMINI_API_KEY"),
+        "openai":     (OpenAIClient,     "OPENAI_API_KEY"),
+        "xai":        (XAIClient,        "XAI_API_KEY"),
+        "deepseek":   (DeepSeekClient,   "DEEPSEEK_API_KEY"),
+        "anthropic":  (AnthropicClient,  "ANTHROPIC_API_KEY"),
+        "openrouter": (OpenRouterClient, "OPENROUTER_API_KEY"),
     }
 
-    # Provider name → expected API key environment variable
-    API_KEY_ENV_VARS = {
-        "google":     "GEMINI_API_KEY",
-        "openai":     "OPENAI_API_KEY",
-        "xai":        "XAI_API_KEY",
-        "deepseek":   "DEEPSEEK_API_KEY",
-        "anthropic":  "ANTHROPIC_API_KEY",
-        "openrouter": "OPENROUTER_API_KEY",
-    }
-
+    # Instantiate the right provider client; resolves api_key from env or ai.ini
     @classmethod
     def create_client(
         cls,
-        provider:      Optional[str] = None,
-        api_key:       Optional[str] = None,
-        model:         Optional[str] = None,
+        provider:      str | None = None,
+        api_key:       str | None = None,
+        model:         str | None = None,
         timeout:       int = 30,
-        config_loader=None,
+        config_loader: ConfigLoader | None = None,
     ) -> BaseAPIClient:
-        """Instantiate the right provider client; resolves api_key from env or ai.ini."""
         provider = (provider or os.getenv("AI_PROVIDER", "google")).lower()
         if provider not in cls.PROVIDERS:
             supported = ", ".join(cls.PROVIDERS.keys())
             raise ValueError(f"Unsupported provider: '{provider}'. Supported: {supported}")
 
+        client_cls, env_var = cls.PROVIDERS[provider]
+
         # Resolve API key: argument → env var → ai.ini [api_keys]
         if not api_key:
-            env_var = cls.API_KEY_ENV_VARS[provider]
             api_key = os.getenv(env_var)
             if not api_key and config_loader is not None:
                 api_key = config_loader.get_api_key(env_var)
@@ -64,9 +53,9 @@ class APIFactory:
                 f"No model configured for '{provider}'. "
                 f"Set it in ai.ini under [models] {provider} = <model-name>"
             )
-        return cls.PROVIDERS[provider](api_key=api_key, model=model, timeout=timeout)
+        return client_cls(api_key=api_key, model=model, timeout=timeout)
 
     # Return list of supported provider names
     @classmethod
-    def list_providers(cls) -> list:
+    def list_providers(cls) -> list[str]:
         return list(cls.PROVIDERS.keys())
