@@ -18,8 +18,8 @@ class _HelpAction(argparse.Action):
         sys.exit(0)
 
 
+# Build and return the argparse parser with localised help strings
 def build() -> argparse.ArgumentParser:
-    """Build and return the argparse parser with localised help strings."""
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("-h", "--help", action=_HelpAction)
     parser.add_argument("prompt", nargs="?")
