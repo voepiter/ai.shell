@@ -13,7 +13,7 @@ def _rgb(r: int, g: int, b: int) -> str:
 
 
 # Convert hue (0.0–1.0) to (r, g, b) floats via HSV with S=V=1
-def _hue_to_rgb(hue: float):
+def _hue_to_rgb(hue: float) -> tuple[float, float, float]:
     h = (hue % 1.0) * 6
     i = int(h)
     f = h - i
@@ -37,8 +37,8 @@ def _colorize(line: str, hue_start: float, col_freq: float) -> str:
     return "".join(parts)
 
 
+# Print ASCII logo with animated rainbow gradient; skip silently if file missing
 def print_logo(path: Path | str, delay: float = 0.05, logo_gradient: float = 0.25):
-    """Print ASCII logo with animated rainbow gradient; skip silently if file missing."""
     p = Path(path)
     if not p.exists():
         return
@@ -48,7 +48,7 @@ def print_logo(path: Path | str, delay: float = 0.05, logo_gradient: float = 0.2
         return
 
     # Scale color frequency so gradient spans the full logo width and height
-    max_width = max((len(l) for l in lines), default=1)
+    max_width = max((len(line) for line in lines), default=1)
     col_freq  = logo_gradient / max_width
     row_freq  = logo_gradient / max(len(lines), 1) * 0.4
     hue_start = random.random()
