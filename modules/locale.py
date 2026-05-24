@@ -30,7 +30,7 @@ def _detect_lang() -> str:
 
 
 # Load locale TOML file; fall back to "en" if requested lang is missing
-def _load(lang: str) -> dict:
+def _load_strings(lang: str) -> dict:
     for code in (lang, "en"):
         path = _LOCALES / f"{code}.toml"
         if path.exists():
@@ -43,7 +43,8 @@ def _load(lang: str) -> dict:
 
 
 # Strings are loaded once at import time using the detected system language
-_strings = _load(_detect_lang())
+_strings = _load_strings(_detect_lang())
+
 
 
 # Load strings for lang code (falls back to en); return resolved code
@@ -52,7 +53,7 @@ def set_lang(lang: str) -> str:
     for code in (lang, "en"):
         path = _LOCALES / f"{code}.toml"
         if path.exists():
-            _strings = _load(code)
+            _strings = _load_strings(code)
             return code
     return "en"
 
