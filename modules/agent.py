@@ -82,7 +82,7 @@ def agentic_loop(
         history.append({"role": "user", "content": tool_msg})
 
         model_name = api_client.model
-        request    = request_counter.request
+        request    = request_counter.next()
         spinner    = Spinner(config.provider, model_name)
         spinner.start()
         try:
@@ -121,6 +121,5 @@ def agentic_loop(
         history.append({"role": "assistant", "content": text})
         logger.log_tool(tool_msg)
         logger.log_assistant(text, model_name, token_in, token_out, elapsed)
-        request_counter.request += 1
 
     return total_in, total_out, total_elapsed, text

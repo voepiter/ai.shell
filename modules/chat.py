@@ -64,7 +64,7 @@ def run(state: AppState):
         history.append({"role": "user", "content": raw})
 
         # Send user message to LLM
-        request    = state.request_counter.request
+        request    = state.request_counter.next()
         model_name = state.api_client.model
         spinner    = Spinner(state.config.provider, model_name)
         spinner.start()
@@ -109,7 +109,6 @@ def run(state: AppState):
         history.append({"role": "assistant", "content": text})
         state.logger.log_user(raw)
         state.logger.log_assistant(text, model_name, token_in, token_out, elapsed)
-        state.request_counter.request += 1
 
         # Run agent loop if shell commands were detected in the response
         if state.shell_mode:

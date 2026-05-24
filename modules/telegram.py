@@ -169,7 +169,7 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
     history.append({"role": "user", "content": prompt})
 
     with _lock:
-        request    = state.request_counter.request
+        request    = state.request_counter.next()
         model_name = state.api_client.model
         spinner    = Spinner(state.config.provider, model_name)
         spinner.start()
@@ -201,7 +201,6 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
         history.append({"role": "assistant", "content": reply})
         state.logger.log_user(prompt)
         state.logger.log_assistant(reply, model_name, token_in, token_out, elapsed)
-        state.request_counter.request += 1
 
         # Skip printing initial reply when shell commands present — agentic_loop prints them
         has_cmds = state.shell_mode and bool(extract_commands(reply))
