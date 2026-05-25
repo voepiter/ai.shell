@@ -9,13 +9,17 @@ from . import ui
 from . import locale as _locale
 from .locale import t
 from . import skills as _skills
+from .config import ConfigLoader
 
 _R = _col.reset
 
+# Tool messages start with these prefixes — skip them when finding last user prompt
+_TOOL_PREFIXES = ("Command output:", "Вывод команды:")
 
+
+# Route slash command to handler; return 'quit', 'reset', or None
+# state: AppState — .config, .api_client, .shell_mode
 def handle(raw: str, history: list, state) -> str | None:
-    """Route slash command to handler; return 'quit', 'reset', or None."""
-    # state: AppState — .config, .api_client, .shell_mode
     parts = raw.split(maxsplit=1)
     cmd   = parts[0].lower()
     arg   = parts[1].strip() if len(parts) > 1 else ""
@@ -129,8 +133,8 @@ def handle(raw: str, history: list, state) -> str | None:
     return None
 
 
-def cmd_skills(config_loader) -> None:
-    """Print table of available skills with descriptions."""
+# Print table of available skills with descriptions
+def cmd_skills(config_loader: ConfigLoader) -> None:
     items = _skills.list_skills(config_loader)
     if not items:
         print(f" {_col.dim}{t('skills','no_skills')}{_R}")
@@ -141,8 +145,8 @@ def cmd_skills(config_loader) -> None:
     print()
 
 
+# Print table of 10 most recent sessions from JSONL logs
 def _cmd_sessions(log_dir: Path) -> None:
-    """Print table of 10 most recent sessions from JSONL logs."""
     files = sorted(log_dir.glob("*.jsonl"), reverse=True)[:10]
     if not files:
         print(f" {_col.dim}{t('commands','no_sessions')}{_R}")
@@ -154,8 +158,6 @@ def _cmd_sessions(log_dir: Path) -> None:
     print(f"\n {_col.dim}{col_id:<20} {col_model:<22} {col_prompt}{_R}")
     print(f" {_col.dim}{'-'*20} {'-'*22} {'-'*50}{_R}")
 
-    # Tool messages start with these prefixes — skip them when finding last user prompt
-    _TOOL_PREFIXES = ("Command output:", "Вывод команды:")
     for f in files:
         session_id = f.stem
         last_user  = ""
@@ -179,8 +181,8 @@ def _cmd_sessions(log_dir: Path) -> None:
     print()
 
 
+# Load session history into active conversation and display transcript
 def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
-    """Load session history into active conversation and display transcript."""
     logfile = log_dir / f"{session_id}.jsonl"
     if not logfile.exists():
         print(f" {_col.error}{t('commands','session_not_found',id=session_id)}{_R}", file=sys.stderr)
@@ -220,8 +222,8 @@ def _cmd_resume(session_id: str, history: list, log_dir: Path) -> None:
     print(f" {_col.dim}{t('commands','history_loaded')}{_R}\n")
 
 
+# Print CHANGELOG.md contents, using importlib.resources when installed
 def _cmd_changelog(base_dir: Path) -> None:
-    """Print CHANGELOG.md contents, using importlib.resources when installed."""
     path = base_dir / "CHANGELOG.md"
     if path.exists():
         text = path.read_text(encoding="utf-8")
