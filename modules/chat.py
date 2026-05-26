@@ -17,8 +17,8 @@ from providers import APIError
 _R = _col.reset
 
 
-def run(state: AppState):
-    """Run interactive chat loop — handles input, slash commands, and agent dispatch."""
+# Run interactive chat loop — handles input, slash commands, and agent dispatch
+def run(state: AppState) -> None:
     cfg = state.config.config_loader
 
     ui.print_startup_line()
@@ -28,8 +28,8 @@ def run(state: AppState):
         print_logo(
             state.config.base_dir / "logo.ascii",
             delay=cfg.get("ui", "logo_delay", default=0.02),
-            logo_gradient=cfg.get("ui", "logo_gradient", default=0.25)
-            )
+            logo_gradient=cfg.get("ui", "logo_gradient", default=0.25),
+        )
 
     ui.print_banner(state.config.provider, state.api_client.model, state.shell_mode, state.verbose, state.telegram)
 
@@ -76,12 +76,10 @@ def run(state: AppState):
                 ),
             )
         except KeyboardInterrupt:
-            spinner.stop()
             history.pop()
             print(f"\n {_col.error}{t('common','interrupted')}{_R}")
             continue
         except APIError:
-            spinner.stop()
             history.pop()
             continue
         finally:
