@@ -15,8 +15,8 @@ from providers import APIError
 _R = _col.reset
 
 
-def run(state: AppState, prompt: str):
-    """Send one prompt, print response; runs agent loop if shell commands are detected."""
+# Send one prompt, print response; runs agent loop if shell commands are detected
+def run(state: AppState, prompt: str) -> None:
     ui.print_startup_line()
     model_name = state.api_client.model
     spinner    = Spinner(state.config.provider, model_name)
