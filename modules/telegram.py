@@ -16,6 +16,7 @@ from .shell import extract_commands
 from .spinner import Spinner
 from . import skills as _skills
 from .locale import t
+from .state import AppState
 from providers import APIError
 
 _R    = _col.reset
@@ -30,8 +31,8 @@ _instance_id = f"{getpass.getuser()}@{socket.gethostname()}"
 _BOT_MSG = re.compile(r'^@\S+:')  # messages from other bot instances
 
 
+# Wraps sys.stdout to convert \n → \r\n for raw-mode terminal output from background thread
 class _CRLFStdout:
-    """Wraps sys.stdout to convert \\n → \\r\\n for raw-mode terminal output from background thread."""
     def __init__(self, w):        self._w = w
     def write(self, s: str) -> int: return self._w.write(s.replace("\n", "\r\n"))
     def flush(self):              self._w.flush()
@@ -40,8 +41,8 @@ class _CRLFStdout:
 
 # ── Telegram API helpers ──────────────────────────────────────────────────
 
+# POST to Telegram Bot API; return JSON or None on error
 def _api_post(token: str, method: str, **kwargs) -> dict | None:
-    """POST to Telegram Bot API; return JSON or None on error."""
     url = _BASE.format(token=token, method=method)
     try:
         r = requests.post(url, json=kwargs, timeout=(5, 30))
@@ -55,16 +56,16 @@ def _api_post(token: str, method: str, **kwargs) -> dict | None:
         return None
 
 
+# Send HTML message; fall back to plain text on parse error
 def _send(token: str, chat_id: int, text: str) -> None:
-    """Send HTML message; fall back to plain text on parse error."""
     res = _api_post(token, "sendMessage", chat_id=chat_id,
                     text=text, parse_mode="HTML")
     if res and not res.get("ok"):
         _api_post(token, "sendMessage", chat_id=chat_id, text=text)
 
 
+# Long-poll getUpdates; return list of updates, [] on soft error, None on ConnectionError
 def _get_updates(token: str, offset: int) -> list | None:
-    """Long-poll getUpdates; return list of updates, [] on soft error, None on ConnectionError."""
     url = _BASE.format(token=token, method="getUpdates")
     try:
         r = requests.get(url, params={"offset": offset, "timeout": 10},
@@ -99,8 +100,8 @@ def _esc(s: str) -> str:
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+# Escape HTML and apply bold/italic/inline-code to a plain-text segment
 def _inline(text: str) -> str:
-    """Escape HTML and apply bold/italic/inline-code to a plain-text segment."""
     parts, last = [], 0
     for m in _ICODE.finditer(text):
         seg = _esc(text[last:m.start()])
@@ -116,8 +117,8 @@ def _inline(text: str) -> str:
     return "".join(parts)
 
 
+# Convert LLM markdown response to Telegram HTML
 def format_html(text: str) -> str:
-    """Convert LLM markdown response to Telegram HTML."""
     parts, last = [], 0
     for m in _FENCE.finditer(text):
         parts.append(_inline(text[last:m.start()]))
@@ -129,8 +130,8 @@ def format_html(text: str) -> str:
 
 # ── Message processing ────────────────────────────────────────────────────
 
-def _process(msg: dict, state, token: str, allowed: set) -> None:
-    """Handle one incoming Telegram message."""
+# Handle one incoming Telegram message
+def _process(msg: dict, state: AppState, token: str, allowed: set) -> None:
     chat_id  = msg["chat"]["id"]
     username = (msg.get("from", {}).get("username") or "").lower()
     raw      = (msg.get("text") or "").strip()
@@ -181,7 +182,6 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
                 ),
             )
         except (KeyboardInterrupt, APIError):
-            spinner.stop()
             history.pop()
             return
         finally:
@@ -229,8 +229,8 @@ def _process(msg: dict, state, token: str, allowed: set) -> None:
 
 # ── Notifications ─────────────────────────────────────────────────────────
 
+# Send localized connect/disconnect notification with program name, version, and instance id
 def _notify(token: str, chat_id: int, key: str) -> None:
-    """Send localized connect/disconnect notification with program name, version, and instance id."""
     from .version import get_project_meta, get_version
     name, _ = get_project_meta()
     ver     = get_version()
@@ -238,8 +238,8 @@ def _notify(token: str, chat_id: int, key: str) -> None:
     _send(token, chat_id, t('common', key, id=user))
 
 
-def _load_chat_id(state) -> int | None:
-    """Return chat_id from ai.ini [telegram] chat_id, or None."""
+# Return chat_id from ai.ini [telegram] chat_id, or None
+def _load_chat_id(state: AppState) -> int | None:
     try:
         raw = str(state.config.config_loader.get("telegram", "chat_id", default="")).strip()
         if raw.lstrip("-").isdigit():
@@ -249,9 +249,8 @@ def _load_chat_id(state) -> int | None:
     return None
 
 
-def _save_chat_id(state, chat_id: int) -> None:
-    """Write chat_id into ai.ini [telegram] section in-place."""
-    import re
+# Write chat_id into ai.ini [telegram] section in-place
+def _save_chat_id(state: AppState, chat_id: int) -> None:
     path = state.config.config_loader.config_path
     try:
         text = path.read_text(encoding="utf-8")
@@ -268,8 +267,8 @@ def _save_chat_id(state, chat_id: int) -> None:
 
 # ── Polling loop ──────────────────────────────────────────────────────────
 
-def _loop(state, available: bool = True) -> None:
-    """Poll Telegram for updates and dispatch messages until interrupted."""
+# Poll Telegram for updates and dispatch messages until interrupted
+def _loop(state: AppState, available: bool = True) -> None:
     cfg     = state.config.config_loader
     token   = cfg.get("telegram", "token", default="").strip()
     raw_ids = cfg.get("telegram", "allowed_ids", default="")
@@ -315,8 +314,8 @@ def _loop(state, available: bool = True) -> None:
             time.sleep(5)
 
 
-def run(state) -> None:
-    """Run polling loop in main thread (--telegram mode)."""
+# Run polling loop in main thread (--telegram mode)
+def run(state: AppState) -> None:
     global _pending_connect, _tg_connected
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
     print(f" {_col.dim}{t('common','tg_started')}{_R}")
@@ -344,8 +343,8 @@ def run(state) -> None:
         print(f"\n {_col.dim}{t('common','tg_stopped')}{_R}")
 
 
-def start_thread(state) -> threading.Thread:
-    """Start polling loop as a background daemon thread (/telegram command)."""
+# Start polling loop as a background daemon thread (/telegram command)
+def start_thread(state: AppState) -> threading.Thread:
     global _pending_connect, _tg_connected
     import atexit
     token   = state.config.config_loader.get("telegram", "token", default="").strip()
@@ -376,6 +375,7 @@ def start_thread(state) -> threading.Thread:
                 _notify(token, cid, 'tg_disconnected')
         except (Exception, KeyboardInterrupt):
             pass
+
     atexit.register(_on_exit)
     th = threading.Thread(target=_loop, args=(state, available), daemon=True)
     th.start()
