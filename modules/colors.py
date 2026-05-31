@@ -11,7 +11,10 @@ def backcolor(n: int) -> str: return f"\033[48;5;{n}m"
 reset = "\033[0m"
 
 _cfg = ConfigLoader()
-_c   = lambda key, default: int(_cfg.get("color", key, default=default))
+
+
+def _c(key: str, default: int) -> int:
+    return int(_cfg.get("color", key, default=default))
 
 # ui / cli colors
 accent    = forecolor(_c("accent",    99))   # purple  — borders / accents
