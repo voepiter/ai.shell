@@ -2,6 +2,18 @@
 
 All notable changes to ai.shell are documented here.
 
+## v0.4.162 — 2026-05-31
+
+### Fixed
+- Setup wizard no longer creates `~/.config/ai-shell/` — config directory is now correctly named `~/.config/ai.shell/`
+- Auto-update no longer crashes on dev machines without `uv` installed — skipped silently with a clear message
+- Shell agent now properly kills timed-out child processes instead of leaving them running
+- `/skills` autocomplete command now works — was incorrectly registered as `/skill`
+- Language detection no longer uses deprecated `locale.getdefaultlocale()` — compatible with Python 3.15
+
+### Changed
+- Internal improvements (type annotations, code cleanup across all modules)
+
 ## v0.4.136 — 2026-05-20
 
 ### Fixed
