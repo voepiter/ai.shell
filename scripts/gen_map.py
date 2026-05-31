@@ -26,7 +26,7 @@ _STATIC = """\
 | ui | unicode | Unicode symbols vs ASCII fallback |
 | ui | autoupdate | Auto-check PyPI once per day |
 | ui | language | Override locale (en / ru) |
-| models | \\<provider\\> | Default model per provider |
+| models | <provider> | Default model per provider |
 | system | instruction | System prompt override |
 | telegram | token | Bot token |
 | telegram | allowed_ids | Allowed usernames (comma-sep) |
@@ -56,6 +56,16 @@ def _first_line(s: str) -> str:
     return s.strip().splitlines()[0] if s else ""
 
 
+# Return the # comment on the line immediately before node (1-based lineno)
+def _preceding_comment(lines: list[str], node: ast.AST) -> str:
+    idx = node.lineno - 2  # lineno is 1-based
+    if idx >= 0:
+        line = lines[idx].strip()
+        if line.startswith("#"):
+            return line.lstrip("#").strip()
+    return ""
+
+
 def _sig_args(node: ast.FunctionDef) -> str:
     args = []
     for a in node.args.args:
@@ -68,40 +78,42 @@ def _sig_args(node: ast.FunctionDef) -> str:
     return ", ".join(args)
 
 
+# Return {lines, doc, symbols} extracted via ast
 def parse_file(path: Path) -> dict:
-    """Return {lines, doc, symbols} extracted via ast."""
     source = path.read_text(encoding="utf-8", errors="replace")
-    lines = len(source.splitlines())
+    src_lines = source.splitlines()
+    lines = len(src_lines)
     try:
         tree = ast.parse(source)
     except SyntaxError:
         return {"lines": lines, "doc": "", "symbols": []}
 
+    # Module-level description still comes from the module docstring
     doc = _first_line(ast.get_docstring(tree) or "")
     symbols = []
 
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            fdoc = _first_line(ast.get_docstring(node) or "")
-            if fdoc:
-                symbols.append((node.name, _sig_args(node), fdoc))
+            comment = _preceding_comment(src_lines, node)
+            if comment:
+                symbols.append((node.name, _sig_args(node), comment))
         elif isinstance(node, ast.ClassDef):
-            cdoc = _first_line(ast.get_docstring(node) or "")
-            if cdoc:
-                symbols.append((node.name, "", cdoc))
+            comment = _preceding_comment(src_lines, node)
+            if comment:
+                symbols.append((node.name, "", comment))
             for item in ast.iter_child_nodes(node):
                 if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     if item.name.startswith("__"):
                         continue
-                    mdoc = _first_line(ast.get_docstring(item) or "")
-                    if mdoc:
-                        symbols.append((f"{node.name}.{item.name}", _sig_args(item), mdoc))
+                    mcomment = _preceding_comment(src_lines, item)
+                    if mcomment:
+                        symbols.append((f"{node.name}.{item.name}", _sig_args(item), mcomment))
 
     return {"lines": lines, "doc": doc, "symbols": symbols}
 
 
+# Format one file entry: header line + tab-indented symbols
 def fmt_entry(name: str, info: dict) -> str:
-    """Format one file entry: header line + tab-indented symbols."""
     doc_part = f"  {info['doc']}" if info["doc"] else ""
     rows = [f"{name}  {info['lines']}{doc_part}"]
     for sym_name, args, sym_doc in info["symbols"]:
@@ -110,14 +122,14 @@ def fmt_entry(name: str, info: dict) -> str:
     return "\n".join(rows)
 
 
+# Build one ## section from a list of .py paths
 def build_section(title: str, paths: list) -> str:
-    """Build one ## section from a list of .py paths."""
     entries = [fmt_entry(p.name, parse_file(p)) for p in sorted(paths)]
     return f"## {title}\n\n" + "\n\n".join(entries)
 
 
-def main():
-    """Write MAP.md to project root."""
+# Write MAP.md to project root
+def main() -> None:
     modules = [
         p for p in sorted((ROOT / "modules").glob("*.py"))
         if p.name != "__init__.py"

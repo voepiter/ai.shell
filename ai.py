@@ -2,6 +2,7 @@
 """Entry point — parses args, routes to setup / single-turn / interactive chat."""
 
 import sys
+from pathlib import Path
 
 # backspace on multi-byte chars (Cyrillic, CJK) raises UnicodeDecodeError in strict mode
 sys.stdin.reconfigure(encoding="utf-8", errors="replace")
@@ -14,10 +15,11 @@ except ImportError:
 from modules import parser, chat, single_turn, ui
 from modules.locale import set_lang
 from modules.state import AppState
+from modules.config import _USER_CFG
 
 
+# Read language from -l argv or ai.ini [ui] language before parser is built
 def _early_lang() -> str | None:
-    """Read language from -l argv or ai.ini [ui] language before parser is built."""
     argv = sys.argv[1:]
     for flag in ("-l", "--language"):
         if flag in argv:
@@ -28,15 +30,13 @@ def _early_lang() -> str | None:
     return ConfigLoader().get("ui", "language", default=None)
 
 
-def main():
-    """Parse args, set locale early, dispatch to setup / single_turn / chat."""
+# Parse args, set locale early, dispatch to setup / single_turn / chat
+def main() -> None:
     lang = _early_lang()
     if lang:
         set_lang(lang)
     args = parser.build().parse_args()
 
-    from pathlib import Path
-    from modules.config import _USER_CFG
     _here = Path(__file__).resolve().parent
     if not (_here / "ai.ini").exists() and not _USER_CFG.exists():
         from modules.setup import run as _setup
