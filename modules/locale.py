@@ -1,5 +1,6 @@
 """Language detection and translated string lookup."""
 import os
+import sys
 import locale as _locale
 from pathlib import Path
 
@@ -20,7 +21,7 @@ def _detect_lang() -> str:
             if code and code not in ("c", "posix"):
                 return code
     try:
-        loc = _locale.getdefaultlocale()[0] or ""
+        loc = _locale.getlocale()[0] or ""
         if loc:
             return loc.split("_")[0].lower()
     except Exception:
@@ -29,27 +30,30 @@ def _detect_lang() -> str:
 
 
 # Load locale TOML file; fall back to "en" if requested lang is missing
-def _load(lang: str) -> dict:
+def _load_strings(lang: str) -> dict:
     for code in (lang, "en"):
         path = _LOCALES / f"{code}.toml"
         if path.exists():
-            with open(path, "rb") as f:
-                return tomllib.load(f)
+            try:
+                with open(path, "rb") as f:
+                    return tomllib.load(f)
+            except tomllib.TOMLDecodeError as e:
+                print(f"warning: {path}: {e}", file=sys.stderr)
     return {}
 
 
 # Strings are loaded once at import time using the detected system language
-_strings = _load(_detect_lang())
+_strings = _load_strings(_detect_lang())
 
 
+
+# Load strings for lang code (falls back to en); return resolved code
 def set_lang(lang: str) -> str:
-    """Load strings for lang code (falls back to en); return resolved code."""
     global _strings
     for code in (lang, "en"):
         path = _LOCALES / f"{code}.toml"
         if path.exists():
-            with open(path, "rb") as f:
-                _strings = tomllib.load(f)
+            _strings = _load_strings(code)
             return code
     return "en"
 

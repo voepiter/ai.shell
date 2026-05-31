@@ -1,10 +1,11 @@
 """Terminal rendering — banners, stats, model/provider lists."""
 import sys
-import requests
 from . import colors as _col
 from . import symbols as sym
 from .api import APIFactory
+from .config import ConfigLoader
 from .locale import t
+from providers.base import BaseAPIClient
 from .version import get_version, get_project_meta
 
 _R = _col.reset
@@ -17,15 +18,15 @@ def fmt_num(n: int | None) -> str:
     return f"{n / 1000:.1f}k" if n >= 1000 else str(n)
 
 
+# Print name, version, and description — shown first in both single and interactive modes
 def print_startup_line() -> None:
-    """Print name, version, and description — shown first in both single and interactive modes."""
     name, desc = get_project_meta()
     ver = get_version()
     print(f" {_col.provider}{name}{_R} {_col.model}v{ver}{_R} {_col.dim}{desc}{_R}")
 
 
-def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True, telegram: bool = False):
-    """Print interactive mode header with provider, model, shell/verbose/telegram status."""
+# Print interactive mode header with provider, model, shell/verbose/telegram status
+def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = True, telegram: bool = False) -> None:
     sh  = f"{_col.model}on{_R}"  if shell_mode else f"{_col.dim}off{_R}"
     vrb = f"{_col.model}on{_R}"  if verbose    else f"{_col.dim}off{_R}"
     tg  = f"{_col.model}on{_R}"  if telegram   else f"{_col.dim}off{_R}"
@@ -42,15 +43,15 @@ def print_banner(provider: str, model: str, shell_mode: bool, verbose: bool = Tr
 
 
 # Print current provider and model after a /provider or /model switch
-def print_current_status(provider: str, model: str):
+def print_current_status(provider: str, model: str) -> None:
     print(
         f" {_col.dim}provider {sym.arrow}{_R} {_col.provider}{provider}{_R}  "
         f"{_col.dim}model {sym.arrow}{_R} {_col.model}{model}{_R}"
     )
 
 
-def print_chat_help():
-    """Print available slash commands."""
+# Print available slash commands
+def print_chat_help() -> None:
     print()
     print(f" {_col.dim}{t('ui','commands_header')}{_R}")
     print(f"  {_col.command}/model{_R} {_col.dim}<name>{_R}          {t('ui','help_model')}")
@@ -72,13 +73,13 @@ def print_chat_help():
     print(f"  {_col.command}/update{_R}                {t('commands','help_update')}")
 
 
+# Print token usage and elapsed time for one request
 def print_stats(
     token_in:    int | None,
     token_out:   int | None,
     elapsed:     float,
     request_num: int | None = None,
-):
-    """Print token usage and elapsed time for one request."""
+) -> None:
     if token_in is None and token_out is None:
         return
     req = f"{_col.dim}#{request_num} " if request_num is not None else ""
@@ -93,7 +94,7 @@ def print_stats(
 
 
 # Print cumulative token usage for the session
-def print_usage(total_in: int, total_out: int, total_elapsed: float):
+def print_usage(total_in: int, total_out: int, total_elapsed: float) -> None:
     if not total_in and not total_out:
         print(f" {_col.dim}—{_R}")
         return
@@ -106,14 +107,14 @@ def print_usage(total_in: int, total_out: int, total_elapsed: float):
 
 
 # Print session totals on exit with surrounding blank lines
-def print_chat_totals(total_in: int, total_out: int, total_elapsed: float = 0.0):
+def print_chat_totals(total_in: int, total_out: int, total_elapsed: float = 0.0) -> None:
     print()
     print_usage(total_in, total_out, total_elapsed)
     print()
 
 
-def print_providers(config_loader):
-    """Print all providers with default model and env var name."""
+# Print all providers with default model and env var name
+def print_providers(config_loader: ConfigLoader) -> None:
     print()
     print(f" {_col.dim}{t('ui','providers_header')}{_R}")
     for name in APIFactory.list_providers():
@@ -126,8 +127,8 @@ def print_providers(config_loader):
         )
 
 
-def print_models(provider: str, api_client, config_loader):
-    """Fetch and print available models for provider; mark default."""
+# Fetch and print available models for provider; mark default
+def print_models(provider: str, api_client: BaseAPIClient, config_loader: ConfigLoader) -> None:
     default_model = config_loader.get_default_model(provider) or ""
     print(f"\n {_col.dim}{t('ui','provider_label')}{_R} {_col.provider}{provider}{_R}")
     try:
@@ -135,7 +136,7 @@ def print_models(provider: str, api_client, config_loader):
     except NotImplementedError as e:
         print(f" {_col.error}{e}{_R}", file=sys.stderr)
         sys.exit(1)
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         print(f" {_col.error}error: {e}{_R}", file=sys.stderr)
         sys.exit(1)
 

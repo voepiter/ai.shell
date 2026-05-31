@@ -1,5 +1,4 @@
 """OpenAI API client (api.openai.com/v1/chat/completions)."""
-from typing import Dict, List, Optional, Tuple
 import requests
 
 from .base import BaseAPIClient
@@ -9,7 +8,7 @@ class OpenAIClient(BaseAPIClient):
 
     API_URL = "https://api.openai.com/v1/chat/completions"
 
-    def _make_request(self, messages: List[Dict], system_instruction: str) -> requests.Response:
+    def _make_request(self, messages: list[dict], system_instruction: str) -> requests.Response:
         full_messages = []
         if system_instruction:
             full_messages.append({"role": "system", "content": system_instruction})
@@ -22,17 +21,17 @@ class OpenAIClient(BaseAPIClient):
             timeout=self.timeout,
         )
 
-    def extract_response(self, data: Dict) -> str:
+    def extract_response(self, data: dict) -> str:
         try:
             return data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError):
             raise ValueError("Unexpected API response format")
 
-    def extract_usage(self, data: Dict) -> Tuple[Optional[int], Optional[int]]:
+    def extract_usage(self, data: dict) -> tuple[int | None, int | None]:
         usage = data.get("usage", {})
         return usage.get("prompt_tokens"), usage.get("completion_tokens")
 
-    def _extract_error_message(self, err_data: Dict) -> Optional[str]:
+    def _extract_error_message(self, err_data: dict) -> str | None:
         if "error" in err_data:
             err = err_data["error"]
             if isinstance(err, dict):

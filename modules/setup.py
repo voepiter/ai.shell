@@ -1,5 +1,4 @@
 """First-run setup wizard — creates ai.ini from ai.ini.default."""
-import locale
 import os
 import sys
 from pathlib import Path
@@ -9,11 +8,12 @@ try:
 except ImportError:
     import tomli as tomllib  # type: ignore
 
+from .locale import _detect_lang, _load_strings as _load_str
+
 _BASE      = Path(__file__).parent.parent
 _EXAMPLE   = _BASE / "ai.ini.default"
-_LOCALES   = _BASE / "locales"
 _installed = "site-packages" in str(_BASE)
-_CONFIG    = (Path.home() / ".config" / "ai-shell" / "ai.ini"
+_CONFIG    = (Path.home() / ".config" / "ai.shell" / "ai.ini"
               if _installed else _BASE / "ai.ini")
 
 # Provider name → (env var name, api key url)
@@ -25,33 +25,6 @@ _PROVIDERS = {
     "anthropic":  ("ANTHROPIC_API_KEY",  "https://console.anthropic.com"),
     "openrouter": ("OPENROUTER_API_KEY", "https://openrouter.ai/keys"),
 }
-
-
-# Detect system language from env vars, fall back to "en"
-def _detect_lang() -> str:
-    for var in ("LANGUAGE", "LANG", "LC_ALL", "LC_MESSAGES"):
-        val = os.environ.get(var, "")
-        if val:
-            code = val.split("_")[0].split(".")[0].lower()
-            if code and code not in ("c", "posix"):
-                return code
-    try:
-        loc = locale.getdefaultlocale()[0] or ""
-        if loc:
-            return loc.split("_")[0].lower()
-    except Exception:
-        pass
-    return "en"
-
-
-# Load locale TOML file; fall back to "en" if requested lang is missing
-def _load_strings(lang: str) -> dict:
-    for code in (lang, "en"):
-        path = _LOCALES / f"{code}.toml"
-        if path.exists():
-            with open(path, "rb") as f:
-                return tomllib.load(f)
-    return {}
 
 
 # Look up a translated string by nested key path and format with kwargs
@@ -186,7 +159,7 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
 # Entry point for the setup wizard — called by main() on first run
 def run(lang: str | None = None):
     lang = lang or _detect_lang()
-    s    = _load_strings(lang)
+    s    = _load_str(lang)
 
     unicode_ok = _step_unicode(s)
     keys       = _step_keys(s)

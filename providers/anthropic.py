@@ -1,5 +1,4 @@
 """Anthropic Claude API client (api.anthropic.com/v1/messages)."""
-from typing import Dict, List, Optional, Tuple
 import requests
 
 from .base import BaseAPIClient
@@ -9,7 +8,7 @@ class AnthropicClient(BaseAPIClient):
 
     _HEADERS = {"anthropic-version": "2023-06-01"}
 
-    def _make_request(self, messages: List[Dict], system_instruction: str) -> requests.Response:
+    def _make_request(self, messages: list[dict], system_instruction: str) -> requests.Response:
         payload = {
             "model": self.model,
             "max_tokens": 4096,
@@ -25,7 +24,7 @@ class AnthropicClient(BaseAPIClient):
             timeout=self.timeout,
         )
 
-    def extract_response(self, data: Dict) -> str:
+    def extract_response(self, data: dict) -> str:
         try:
             content = data["content"]
             if isinstance(content, list) and content:
@@ -34,11 +33,11 @@ class AnthropicClient(BaseAPIClient):
         except (KeyError, IndexError, TypeError):
             raise ValueError("Unexpected API response format")
 
-    def extract_usage(self, data: Dict) -> Tuple[Optional[int], Optional[int]]:
+    def extract_usage(self, data: dict) -> tuple[int | None, int | None]:
         usage = data.get("usage", {})
         return usage.get("input_tokens"), usage.get("output_tokens")
 
-    def _extract_error_message(self, err_data: Dict) -> Optional[str]:
+    def _extract_error_message(self, err_data: dict) -> str | None:
         if "error" in err_data:
             err = err_data["error"]
             if isinstance(err, dict):

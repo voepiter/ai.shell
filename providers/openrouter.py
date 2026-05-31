@@ -1,5 +1,4 @@
 """OpenRouter API client — unified gateway to multiple LLM providers (openrouter.ai/api/v1)."""
-from typing import Dict, Optional
 import requests
 
 from .openai import OpenAIClient
@@ -31,7 +30,7 @@ class OpenRouterClient(OpenAIClient):
         result.sort(key=lambda x: x[0])
         return result
 
-    def _extract_error_message(self, err_data: Dict) -> Optional[str]:
+    def _extract_error_message(self, err_data: dict) -> str | None:
         if "error" in err_data:
             err = err_data["error"]
             if isinstance(err, dict):

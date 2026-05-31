@@ -4,13 +4,14 @@ from .config import Config
 from .api import APIFactory
 from .logger import Logger
 from .counter import RequestCounter
+from providers.base import BaseAPIClient
 
 
 # Central state object passed to chat, single_turn, and agent modules
 @dataclass
 class AppState:
     config:          Config
-    api_client:      object   # BaseAPIClient
+    api_client:      BaseAPIClient
     logger:          Logger
     request_counter: RequestCounter
     shell_mode:      bool
@@ -20,8 +21,8 @@ class AppState:
     total_out:       int   = 0
     total_elapsed:   float = 0.0
 
+    # Rebuild api_client after provider/model change
     def rebuild_client(self, provider: str = None, model: str = None) -> None:
-        """Rebuild api_client after provider/model change."""
         self.api_client = APIFactory.create_client(
             provider=provider or self.config.provider,
             model=model or self.config.model,
@@ -29,9 +30,9 @@ class AppState:
             config_loader=self.config.config_loader,
         )
 
+    # Build AppState from parsed CLI args and ai.ini config
     @classmethod
     def from_args(cls, args) -> "AppState":
-        """Build AppState from parsed CLI args and ai.ini config."""
         config = Config(
             provider=args.provider,
             model=args.model,

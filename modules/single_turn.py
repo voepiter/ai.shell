@@ -15,12 +15,11 @@ from providers import APIError
 _R = _col.reset
 
 
-def run(state: AppState, prompt: str):
-    """Send one prompt, print response; runs agent loop if shell commands are detected."""
+# Send one prompt, print response; runs agent loop if shell commands are detected
+def run(state: AppState, prompt: str) -> None:
     ui.print_startup_line()
-    request    = state.request_counter.request
     model_name = state.api_client.model
-    spinner    = Spinner(state.config.provider, model_name, request)
+    spinner    = Spinner(state.config.provider, model_name)
     spinner.start()
     try:
         data, elapsed = state.api_client.generate_content(
@@ -50,7 +49,6 @@ def run(state: AppState, prompt: str):
 
         state.logger.log_user(prompt)
         state.logger.log_assistant(text, model_name, token_in, token_out, elapsed)
-        state.request_counter.request += 1
 
         if agent_will_run:
             # Build minimal history so the agent loop has conversation context

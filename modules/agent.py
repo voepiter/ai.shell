@@ -6,7 +6,11 @@ from .spinner import Spinner
 from .ui import print_stats
 from . import symbols as sym
 from .locale import t
+from .config import Config
+from .logger import Logger
+from .counter import RequestCounter
 from providers import APIError
+from providers.base import BaseAPIClient
 
 _R = _col.reset
 
@@ -20,27 +24,27 @@ _SHELL_HINT = (
 )
 
 
+# Append shell hint to system instruction when shell mode is active
 def build_system_instruction(base: str, shell_mode: bool) -> str:
-    """Append shell hint to system instruction when shell mode is active."""
     if not shell_mode:
         return base
     return f"{base}\n\n{_SHELL_HINT}" if base else _SHELL_HINT
 
 
+# Run bash commands from LLM response, feed output back, repeat until no commands remain
 def agentic_loop(
-    history:       list,
-    text:          str,
-    api_client,
-    config,
-    logger,
-    request_counter,
-    shell_mode:    bool,
-    total_in:      int,
-    total_out:     int,
-    total_elapsed: float = 0.0,
-    verbose:       bool  = True,
+    history:         list,
+    text:            str,
+    api_client:      BaseAPIClient,
+    config:          Config,
+    logger:          Logger,
+    request_counter: RequestCounter,
+    shell_mode:      bool,
+    total_in:        int,
+    total_out:       int,
+    total_elapsed:   float = 0.0,
+    verbose:         bool  = True,
 ) -> tuple[int, int, float, str]:
-    """Run bash commands from LLM response, feed output back, repeat until no commands remain."""
     # Read shell execution limits from config
     cfg         = config.config_loader
     max_iter    = cfg.get("shell", "max_iterations",    default=5)
@@ -82,8 +86,8 @@ def agentic_loop(
         history.append({"role": "user", "content": tool_msg})
 
         model_name = api_client.model
-        request    = request_counter.request
-        spinner    = Spinner(config.provider, model_name, request)
+        request    = request_counter.next()
+        spinner    = Spinner(config.provider, model_name)
         spinner.start()
         try:
             data, elapsed = api_client.generate_chat(
@@ -93,12 +97,10 @@ def agentic_loop(
                 ),
             )
         except KeyboardInterrupt:
-            spinner.stop()
             history.pop()
             print(f"\n {_col.error}{t('common','interrupted')}{_R}")
             break
         except APIError:
-            spinner.stop()
             history.pop()
             break
         finally:
@@ -121,6 +123,5 @@ def agentic_loop(
         history.append({"role": "assistant", "content": text})
         logger.log_tool(tool_msg)
         logger.log_assistant(text, model_name, token_in, token_out, elapsed)
-        request_counter.request += 1
 
     return total_in, total_out, total_elapsed, text

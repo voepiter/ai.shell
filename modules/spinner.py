@@ -1,17 +1,19 @@
 """Animated status spinner shown while waiting for LLM response."""
+import shutil
 import time
 import threading
 from . import colors as _col
 from . import symbols as sym
 
+_R = _col.reset
+
 
 # Displays a spinning animation in-place while the LLM request is in flight
 class Spinner:
     # Initialize with request metadata shown in the spinner label
-    def __init__(self, provider: str, model: str, request: int):
+    def __init__(self, provider: str, model: str):
         self.provider    = provider
         self.model       = model
-        self.request     = request
         self.start_time  = None
         self.done        = False
         self.thread      = None
@@ -20,7 +22,7 @@ class Spinner:
     def start(self):
         self.start_time = time.perf_counter()
         self.done       = False
-        self.thread     = threading.Thread(target=self._run)
+        self.thread     = threading.Thread(target=self._run, daemon=True)
         self.thread.start()
 
     # Stop animation and clear the spinner line
@@ -30,7 +32,8 @@ class Spinner:
         self.done = True
         if self.thread:
             self.thread.join()
-        print("\r" + " " * 80 + "\r", end="", flush=True)
+        width = shutil.get_terminal_size().columns
+        print("\r" + " " * width + "\r", end="", flush=True)
 
     # Animation loop — runs in a background thread until done is set
     def _run(self):
@@ -40,10 +43,8 @@ class Spinner:
             elapsed = time.perf_counter() - self.start_time
             spin    = frames[frame % len(frames)]
             print(
-                f"\r{_col.marker}{spin}{_col.reset} "
-                f"{_col.provider}{self.provider}{_col.reset}"
-                f"/{self.model}"
-                f"  {_col.model}{elapsed:.1f}{_col.reset}s ",
+                f"\r{_col.marker}{spin}{_R} {_col.provider}{self.provider}{_R}"
+                f"/{self.model}  {_col.model}{elapsed:.1f}s{_R} ",
                 end="", flush=True,
             )
             frame += 1
