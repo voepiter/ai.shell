@@ -1,10 +1,9 @@
 """Abstract base client and APIError — shared by all provider implementations."""
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple
 import sys
 import time
 import requests
-import modules.text as ct
+from modules import colors as _col
 
 
 class APIError(Exception):
@@ -18,14 +17,14 @@ class BaseAPIClient(ABC):
         self.model = model
         self.timeout = timeout
 
-    def generate_content(self, prompt: str, system_instruction: str = "") -> Tuple[Dict, float]:
+    def generate_content(self, prompt: str, system_instruction: str = "") -> tuple[dict, float]:
         messages = [{"role": "user", "content": prompt}]
         return self._send(messages, system_instruction)
 
-    def generate_chat(self, messages: List[Dict], system_instruction: str = "") -> Tuple[Dict, float]:
+    def generate_chat(self, messages: list[dict], system_instruction: str = "") -> tuple[dict, float]:
         return self._send(messages, system_instruction)
 
-    def _send(self, messages: List[Dict], system_instruction: str) -> Tuple[Dict, float]:
+    def _send(self, messages: list[dict], system_instruction: str) -> tuple[dict, float]:
         for attempt in range(2):
             start_time = time.perf_counter()
             try:
@@ -38,7 +37,7 @@ class BaseAPIClient(ABC):
                 return response.json(), elapsed
 
             except requests.exceptions.Timeout:
-                print(f"\n{ct.forecolor(196)}error: request timeout{ct.resetcolor}", file=sys.stderr)
+                print(f"\n{_col.error}error: request timeout{_col.reset}", file=sys.stderr)
                 raise APIError("request timeout")
             except requests.exceptions.HTTPError as e:
                 self._handle_http_error(e)
@@ -46,15 +45,15 @@ class BaseAPIClient(ABC):
                 if attempt == 0:
                     time.sleep(3)
                     continue
-                print(f"\n{ct.forecolor(196)}error: network connection error{ct.resetcolor}", file=sys.stderr)
+                print(f"\n{_col.error}error: network connection error{_col.reset}", file=sys.stderr)
                 raise APIError("network connection error")
 
     @abstractmethod
-    def _make_request(self, messages: List[Dict], system_instruction: str) -> requests.Response:
+    def _make_request(self, messages: list[dict], system_instruction: str) -> requests.Response:
         # messages = [{"role": "user"|"assistant", "content": "..."}]
         pass
 
-    def _handle_http_error(self, e: requests.exceptions.HTTPError):
+    def _handle_http_error(self, e: requests.exceptions.HTTPError) -> None:
         msg = str(e).split(" for url: https:")[0]
         resp = getattr(e, "response", None)
         if resp is not None:
@@ -66,10 +65,10 @@ class BaseAPIClient(ABC):
                 detail_msg = self._extract_error_message(err_data)
                 if detail_msg:
                     msg = detail_msg
-        print(f"\n{ct.forecolor(219)}error: {msg}{ct.resetcolor}", file=sys.stderr)
+        print(f"\n{_col.error}error: {msg}{_col.reset}", file=sys.stderr)
         raise APIError(msg)
 
-    def _extract_error_message(self, err_data: Dict) -> Optional[str]:
+    def _extract_error_message(self, err_data: dict) -> str | None:
         if "error" not in err_data:
             return None
         err = err_data["error"]
@@ -91,9 +90,9 @@ class BaseAPIClient(ABC):
         raise NotImplementedError(f"list_models not supported for {self.__class__.__name__}")
 
     @abstractmethod
-    def extract_response(self, data: Dict) -> str:
+    def extract_response(self, data: dict) -> str:
         pass
 
     @abstractmethod
-    def extract_usage(self, data: Dict) -> Tuple[Optional[int], Optional[int]]:
+    def extract_usage(self, data: dict) -> tuple[int | None, int | None]:
         pass

@@ -1,5 +1,4 @@
 """Google Gemini API client (generativelanguage.googleapis.com)."""
-from typing import Dict, List, Optional, Tuple
 import requests
 
 from .base import BaseAPIClient
@@ -7,7 +6,7 @@ from .base import BaseAPIClient
 
 class GoogleClient(BaseAPIClient):
 
-    def _make_request(self, messages: List[Dict], system_instruction: str) -> requests.Response:
+    def _make_request(self, messages: list[dict], system_instruction: str) -> requests.Response:
         url = (
             f"https://generativelanguage.googleapis.com/v1beta/"
             f"models/{self.model}:generateContent"
@@ -44,12 +43,12 @@ class GoogleClient(BaseAPIClient):
                 models.append(name)
         return sorted(models)
 
-    def extract_response(self, data: Dict) -> str:
+    def extract_response(self, data: dict) -> str:
         try:
             return data["candidates"][0]["content"]["parts"][0]["text"]
         except (KeyError, IndexError, TypeError):
             raise ValueError("Unexpected API response format")
 
-    def extract_usage(self, data: Dict) -> Tuple[Optional[int], Optional[int]]:
+    def extract_usage(self, data: dict) -> tuple[int | None, int | None]:
         usage = data.get("usageMetadata", {})
         return usage.get("promptTokenCount"), usage.get("candidatesTokenCount")
