@@ -38,7 +38,7 @@ def _colorize(line: str, hue_start: float, col_freq: float) -> str:
 
 
 # Print ASCII logo with animated rainbow gradient; skip silently if file missing
-def print_logo(path: Path | str, delay: float = 0.05, logo_gradient: float = 0.25):
+def print_logo(path: Path | str, delay: float = 0.05, logo_gradient: float = 0.25) -> None:
     p = Path(path)
     if not p.exists():
         return

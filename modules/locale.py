@@ -46,7 +46,6 @@ def _load_strings(lang: str) -> dict:
 _strings = _load_strings(_detect_lang())
 
 
-
 # Load strings for lang code (falls back to en); return resolved code
 def set_lang(lang: str) -> str:
     global _strings
@@ -58,8 +57,8 @@ def set_lang(lang: str) -> str:
     return "en"
 
 
+# Look up translated string by section + key; format with kwargs
 def t(*keys: str, **fmt) -> str:
-    """Look up translated string by section + key; format with kwargs."""
     val = _strings
     for k in keys:
         if not isinstance(val, dict):
