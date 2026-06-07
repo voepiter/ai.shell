@@ -67,7 +67,7 @@ class ConfigLoader:
             return {}
 
     # Look up a nested key path in config; return default if any key is missing
-    def get(self, *keys, default=None):
+    def get(self, *keys, default=None) -> object:
         value = self.config
         for key in keys:
             if isinstance(value, dict):
@@ -117,8 +117,8 @@ class Config:
         self.system_instruction = system_instruction or self.config_loader.get_system_instruction() or ""
 
 
+# Parse a config file and return {section: {key: raw_line}} for migration
 def _raw_lines(path: Path) -> dict[str, dict[str, str]]:
-    """Parse a config file and return {section: {key: raw_line}} for migration."""
     result: dict[str, dict[str, str]] = {}
     section = None
     for line in path.read_text().splitlines():
@@ -132,8 +132,8 @@ def _raw_lines(path: Path) -> dict[str, dict[str, str]]:
     return result
 
 
+# Append lines at the end of a named section in config file text
 def _insert_into_section(content: str, section: str, lines: list) -> str:
-    """Append lines at the end of a named section in config file text."""
     added = "\n".join(lines)
     m = re.search(rf"^\[{re.escape(section)}\]", content, re.M)
     if not m:
@@ -147,8 +147,8 @@ def _insert_into_section(content: str, section: str, lines: list) -> str:
     return content.rstrip() + f"\n{added}\n"
 
 
+# Add keys from ai.ini.default that are missing from the user's ai.ini
 def migrate_config(config_loader) -> None:
-    """Add keys from ai.ini.default that are missing from the user's ai.ini."""
     user_path = config_loader.config_path
     if not user_path.exists() or not _DEFAULT_CFG.exists():
         return

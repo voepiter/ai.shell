@@ -4,9 +4,8 @@ from datetime import datetime
 from pathlib import Path
 
 
+# Writes one JSONL file per session to log_dir/YYYYMMDD_HHMMSS.jsonl
 class Logger:
-    """Writes one JSONL file per session to log_dir/YYYYMMDD_HHMMSS.jsonl."""
-
     # Create log directory and open a new session file named by current timestamp
     def __init__(self, log_dir: Path):
         log_dir.mkdir(parents=True, exist_ok=True)

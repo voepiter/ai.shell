@@ -105,7 +105,7 @@ def _step_settings(s: dict, keys: dict) -> str:
 
 
 # Write ai.ini by patching the default template line-by-line
-def _write_config(keys: dict, provider: str, unicode_ok: bool):
+def _write_config(keys: dict, provider: str, unicode_ok: bool) -> None:
     if not _EXAMPLE.exists():
         raise FileNotFoundError(f"Template not found: {_EXAMPLE}")
 
@@ -157,7 +157,7 @@ def _write_config(keys: dict, provider: str, unicode_ok: bool):
 
 
 # Entry point for the setup wizard — called by main() on first run
-def run(lang: str | None = None):
+def run(lang: str | None = None) -> None:
     lang = lang or _detect_lang()
     s    = _load_str(lang)
 

@@ -19,14 +19,14 @@ class Spinner:
         self.thread      = None
 
     # Start the background animation thread
-    def start(self):
+    def start(self) -> None:
         self.start_time = time.perf_counter()
         self.done       = False
         self.thread     = threading.Thread(target=self._run, daemon=True)
         self.thread.start()
 
     # Stop animation and clear the spinner line
-    def stop(self):
+    def stop(self) -> None:
         if self.done:
             return
         self.done = True
@@ -36,7 +36,7 @@ class Spinner:
         print("\r" + " " * width + "\r", end="", flush=True)
 
     # Animation loop — runs in a background thread until done is set
-    def _run(self):
+    def _run(self) -> None:
         frames = sym.spinner_frames
         frame  = 0
         while not self.done:
