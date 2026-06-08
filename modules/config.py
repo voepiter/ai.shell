@@ -35,9 +35,8 @@ def _migrate_old_dirs() -> None:
             old.rename(new)
 
 
+# Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai.shell/
 class ConfigLoader:
-    """Reads ai.ini (TOML); resolves path from cwd, script dir, or ~/.config/ai.shell/."""
-
     # Search order: cwd → script dir → user home config
     def __init__(self, config_path: Path | None = None):
         _migrate_old_dirs()

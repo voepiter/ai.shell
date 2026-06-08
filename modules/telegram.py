@@ -35,7 +35,7 @@ _BOT_MSG = re.compile(r'^@\S+:')  # messages from other bot instances
 class _CRLFStdout:
     def __init__(self, w):        self._w = w
     def write(self, s: str) -> int: return self._w.write(s.replace("\n", "\r\n"))
-    def flush(self):              self._w.flush()
+    def flush(self) -> None:      self._w.flush()
     def __getattr__(self, name):  return getattr(self._w, name)
 
 
@@ -366,7 +366,7 @@ def start_thread(state: AppState) -> threading.Thread:
         pass  # will notify on reconnect
     else:
         _pending_connect = True
-    def _on_exit():
+    def _on_exit() -> None:
         try:
             if not _tg_connected:
                 return

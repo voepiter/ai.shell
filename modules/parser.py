@@ -7,11 +7,11 @@ from .locale import t
 
 # Custom action: print locale help block and exit
 class _HelpAction(argparse.Action):
-    def __init__(self, option_strings, dest=argparse.SUPPRESS, default=argparse.SUPPRESS, help=None):
+    def __init__(self, option_strings, dest=argparse.SUPPRESS, default=argparse.SUPPRESS, help=None) -> None:
         super().__init__(option_strings=option_strings, dest=dest, default=default,
                          nargs=0, help=help)
 
-    def __call__(self, parser, namespace, values, option_string=None):
+    def __call__(self, parser, namespace, values, option_string=None) -> None:
         from . import ui
         ui.print_startup_line()
         print(t('parser', 'full_help').format(version=get_version()))

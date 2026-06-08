@@ -3,8 +3,9 @@ import re
 from . import colors as _col
 from . import symbols as sym
 
+
+# Format bash code block as colored prefixed command lines
 def _fmt_bash(code: str) -> str:
-    """Format bash code block as colored prefixed command lines."""
     lines = [line for line in code.strip().splitlines() if line.strip()]
     return "\n".join(f"{_col.bash}{sym.bash_prefix} {line}{_col.reset}" for line in lines) if lines else ""
 
